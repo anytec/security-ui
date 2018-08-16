@@ -1,0 +1,245 @@
+/*realtimem start*/
+.center_box{
+	position: absolute;
+	top: 90px;
+	left: 265px;
+	height:-webkit-calc(100% - 130px); 
+	height:-moz-calc(100% - 130px); 
+	height:calc(100% - 130px);
+	width:-webkit-calc(100% - 325px); 
+	width:-moz-calc(100% - 325px); 
+	width:calc(100% - 325px);
+}
+.video_box{
+	height: 708px;
+}
+.video_top{
+	width: 1244px;
+	height: 708px;
+	float: left;
+}
+.video_minbox{
+	margin-left: 8px;
+	margin-bottom: 8px;
+	width: 612px;
+	height: 344px;
+	float: left;
+	position: relative;
+	background-color: #e8e8e8;
+}
+.choose_box{
+	background: url(../assets/realtimem/choose_bg.png) no-repeat;
+	background-size: 100% 100%;
+	position: absolute;
+	right: 40px;
+	top: 0px;
+	width: 110px;
+	height: 35px;
+	text-align: center;
+	line-height: 28px;
+	color: white;
+	font-size: 16px;
+	font-family: "微软雅黑";
+}
+.re_bottombox{
+	width: 100%;
+	height:-webkit-calc(100% - 708px); 
+	height:-moz-calc(100% - 708px); 
+	height:calc(100% - 708px);
+}
+.re_imgbox{
+	height: 100%;
+	width:1247px;
+	float:left;
+	overflow: hidden;
+}
+.re_leftbox{
+	/*width: 1247px;*/
+	height: 100%;
+	float: left;
+	padding-left: 8px;
+	/*width:1367px;*/
+	width:1475px;
+	margin-left:-115px;
+}
+.photo_box{
+	width: 103px;
+	height: 100%;
+	float: left;
+    background-color: rgba(0,0,0,0.4);
+	margin-right: 10.2px;
+}
+.photo_img{
+	width: 103px;
+	height: 103px;
+	background: url(../assets/historyface/img1.jpg) no-repeat;
+	background-size: 100% 100%;
+}
+.photo_text{
+	width: 103px;
+	height: 25px;
+	color: white;
+	text-align: center;
+	line-height: 25px;
+	margin-top: 5px;
+}
+.information_box{
+	float: right;
+	width:-webkit-calc(100% - 1265px);
+	width:-moz-calc(100% - 1265px); 
+	width:calc(100% - 1265px);
+	height:-webkit-calc(100% - 10px);
+	height:-moz-calc(100% - 10px); 
+	height:calc(100% - 14px);
+	background-color: rgba(0,0,0,0.2);
+	overflow: hidden;
+}
+.info_alarm{
+	height: calc(100% +161px); 
+	margin-top:-175px;
+}
+.info_minbox{
+	width: 100%;
+	height: 167px;
+	margin-bottom: 8px;
+}
+.re_toptitle{
+	width: 100%;
+	height: 30px;
+	position: relative;
+	background-color: rgba(93,201,93,0.4);
+}
+.icon_bg{
+	position: absolute;
+	top: 0;
+	right: 30px;
+	width: 73px;
+	height: 100%;
+	background:url(../assets/realtimem/icon_bg.png) no-repeat;
+	background-size: 100% 100%;
+}
+.re_lefttext{
+	width: 200px;
+	height: 100%;
+	color: white;
+	float: left;
+	line-height: 30px;
+	padding-left: 15px;
+	font-weight: bold;
+}
+.re_icon{
+	width: 100px;
+	height: 30px;
+	float: right;
+}
+.re_lefticon,.re_righticon{
+	float: left;
+	width: 48px;
+	height: 30px;
+}
+.re_righticon{
+	float: right;
+}
+.re_lefticon img{
+	margin-left: 27px;
+	margin-top: 3px;
+	cursor: pointer;
+}
+.re_righticon img{
+	margin-left: 18px;
+	margin-top: 4px;
+	cursor: pointer;
+}
+.re_infotext{
+	width: 126px;
+	height: 127px;
+	float: left;
+	padding-top: 10px;
+}
+.re_photoinfo{
+	width: 200px;
+	height: 137px;
+	float: right;
+}
+.re_infotext p{
+	font-size: 15px;
+	padding-left: 15px;
+	margin:0;
+	margin-bottom: 6px;
+	color: white;
+}
+.re_photobox{
+	width: 100px;
+	height: 100%;
+	float: left;
+}
+.re_photobox img{
+	width: 100%
+}
+.re_photobox span{
+	width: 100%;
+	text-align: center;
+	color: white;
+}
+.re_icontext{
+	color: white;
+	width: 100%;
+	text-align: center;
+}
+.re_rightbox{
+  width: 330px;
+  margin-left: 8px;
+  height: 100%;
+  float: left;
+  background: url(../assets/realtimem/data_bg.png) no-repeat;
+  background-size: 100% 100%;
+}
+.data_title{
+	width: 170px;
+	height: 30px;
+	line-height: 30px;
+	margin-top: 13px;
+	margin-left: 80px;
+	text-align: center;
+	float: left;
+	color: white;
+	font-size: 19px;
+}
+.history{
+	width: 65px;
+	height: 20px;
+	line-height: 20px;
+	text-align: center;
+	margin-top: 22px;
+	margin-left: 13px;
+	float: left;
+	color: white;
+	font-size: 14px;
+}
+.data_box{
+	width: 100%;
+	height: 90px;
+	margin-top: 45px;
+}
+.alarm{
+	width: 100%;
+	height: 40px;
+	margin-bottom: 5px;
+	position: relative;
+}
+.alarm_text{
+	position: absolute;
+	left: 15px;
+	bottom: 5px;
+	color: white;
+	font-size: 17px;
+}
+.alarm_number{
+	font-size: 30px;
+	position: absolute;
+	right: 5px;
+	bottom: 0px;
+	color: #5dff51;
+	font-weight: 100;
+}
+/*realtimem end*/

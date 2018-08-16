@@ -1,0 +1,128 @@
+/*新增样式*/
+.mack_box{
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 999;
+	background-color: rgba(0,0,0,0.3);
+}
+.bounced_add{
+	position: fixed;
+	top: 35%;
+	left: 35%;
+	background-color: #111c29;
+	z-index: 9999;
+	width: 623px;
+	height: 215px;
+	border: 1px solid #00b7ee;
+	border-radius: 5px;
+	box-shadow: 0px 0px 29px #3aabda;
+}
+.bounced_box{
+	position: relative;
+	width: 623px;
+	height: 215px;
+	border-radius: 5px;
+}
+.bounced_top{
+	width: 100%;
+	height: 38px;
+	border-bottom: 1px solid #00b7ee;
+}
+.bounced_title{
+	height: 38px;
+	color: #00ffff;
+	font-size: 14px;
+	line-height: 38px;
+	float: right;
+	margin-right: 20px;
+}
+.file_box{
+	position: absolute;
+	top: -50px;
+	left: 17px;
+	width: 200px;
+	height: 200px;
+	border: 1px solid #00b7ee;
+	background-color: #000000;
+}
+.file_img{
+	position: absolute;
+	top: -48px;
+	left: 0px;
+	width: 234px;
+	height: 200px;
+}
+.file_img img,.file_box img{
+	width: 100%;
+	height: 100%;
+}
+
+.input_file{
+	position: absolute;
+	top: -50px;
+	left: 17px;
+	width: 200px;
+	height: 200px;
+	opacity: 0;
+	cursor: pointer;
+}
+.choose_input{
+	width: 390px;
+	height: 114px;
+	float: right;
+}
+.choose_top{
+	padding-top: 5px;
+	width: 100%;
+	height: 88px;
+}
+.choose_top input{
+	float: left;
+	border-radius: 5px;
+	margin:6px 15px 5px 0px;
+	width: 155px;
+	padding:0px 10px;
+	height: 25px;
+	font-size: 14px;
+}
+.choose_top select{
+	float: left;
+	border-radius: 5px;
+	margin:6px 15px 5px 0px;
+	width: 175px;
+	padding:0px 10px;
+	height: 29px;
+	font-size: 14px;
+}
+.mmbtn_box{
+	float: right;
+	margin-right: 20px;
+	width: 90px;
+	height: 24px;
+	line-height: 24px;
+	background-color: #0068B7;
+	color: white;
+	text-align: center;
+	font-size: 14px;
+	border-radius: 5px;
+	cursor: pointer;
+}
+.left_mmbox{
+	background-color: #626262;
+}
+.mmbottom_input{
+	float: left;
+	width: 566px;
+	height: 25px;
+	margin: 10px 17px;
+	margin-top:18px;
+}
+.mmbottom_input input{
+	padding: 0px 10px;
+	width: 100%;
+	height: 23px;
+	border-radius: 5px;
+}
