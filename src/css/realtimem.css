@@ -26,13 +26,32 @@
 	float: left;
 	position: relative;
 	background-color: #e8e8e8;
+	overflow: hidden;
+}
+.camera_text{
+	color: white;
+	position: absolute;
+	top: 0px;
+	padding: 10px 20px;
+}
+.refresh_icon{
+	width: 22px;
+	height: 22px;
+	position: absolute;
+	top: -35px;
+	right: 10px;
+	margin-top: 8px;
+	cursor: pointer;
+}
+.refresh_icon img{
+	width: 100%;
 }
 .choose_box{
 	background: url(../assets/realtimem/choose_bg.png) no-repeat;
 	background-size: 100% 100%;
 	position: absolute;
 	right: 40px;
-	top: 0px;
+	top: -35px;
 	width: 110px;
 	height: 35px;
 	text-align: center;
@@ -40,6 +59,71 @@
 	color: white;
 	font-size: 16px;
 	font-family: "微软雅黑";
+	cursor: pointer;
+}
+
+.choose_box1{
+	/*8-17-2*/
+	animation:myfirst 0.5s;
+	-moz-animation:myfirst  0.5s; /* Firefox */
+	-webkit-animation:myfirst  0.3s; /* Safari and Chrome */
+	-o-animation:myfirst  0.3s; /* Opera */
+	animation-fill-mode: forwards;
+}
+.choose_box2{
+	/*8-17-2*/
+	animation:myfirst1  0.5s;
+	-moz-animation:myfirst1  0.5s; /* Firefox */
+	-webkit-animation:myfirst1  0.3s; /* Safari and Chrome */
+	-o-animation:myfirst1  0.3s; /* Opera */
+	animation-fill-mode: forwards;
+}
+/*8-17-3*/
+@keyframes myfirst
+{
+from {top: -35;}
+to {top: 0;}
+}
+
+@-moz-keyframes myfirst /* Firefox */
+{
+from {top: -35;}
+to {top: 0;}
+}
+
+@-webkit-keyframes myfirst /* Safari 和 Chrome */
+{
+from {top: -35;}
+to {top: 0;}
+}
+
+@-o-keyframes myfirst /* Opera */
+{
+from {top: -35;}
+to {top: 0;}
+}
+@keyframes myfirst1
+{
+from {top: 0;}
+to {top: -35;}
+}
+
+@-moz-keyframes myfirst1 /* Firefox */
+{
+from {top: 0;}
+to {top: -35;}
+}
+
+@-webkit-keyframes myfirst1 /* Safari 和 Chrome */
+{
+from {top: 0;}
+to {top: -35;}
+}
+
+@-o-keyframes myfirst1 /* Opera */
+{
+from {top: 0;}
+to {top: -35;}
 }
 .re_bottombox{
 	width: 100%;

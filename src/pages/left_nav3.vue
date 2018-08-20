@@ -9,7 +9,7 @@
 						<span>{{item_group.name}}</span>
 					</template>
 					<el-menu-item-group>
-						<el-menu-item :index="item_group.uuid+'-'+video_item.uuid" v-for="video_item in video_names[item_group.uuid]" :key="video_item.uuid" @click="click_to_change_video(video_item.sdkId)">{{video_item.name}}</el-menu-item>
+						<el-menu-item :index="item_group.uuid+'-'+video_item.uuid" v-for="video_item in video_names[item_group.uuid]" :key="video_item.uuid" @click="click_to_change_video(video_item.sdkId,video_item.name)">{{video_item.name}}</el-menu-item>
 					</el-menu-item-group>
 				</el-submenu>	
 			</el-menu>
@@ -66,9 +66,10 @@
 			        return ;
 			    })
 			},
-			click_to_change_video(sdkId){
+			click_to_change_video(sdkId,name){
 				// console.log(sdkId)
 				this.$store.state.realtime_data.sdkId = sdkId
+				this.$store.state.realtime_data.name = name
 			}
 		},
 		mounted:function(){

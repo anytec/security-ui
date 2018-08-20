@@ -26,6 +26,9 @@ const store = new Vuex.Store({
         facepath_data:{
             photo: "",
         },
+        dataview_data:{
+            choose_day: null,
+        }
     },
     // 修改全局变量必须通过mutations中的方法
     // mutations只能采用同步方法

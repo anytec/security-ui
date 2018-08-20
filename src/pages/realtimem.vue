@@ -6,34 +6,28 @@
                 <div class="video_box">
                     <div class="video_top">
                         <div class="video_minbox">
+                            <div class="camera_text">
+                                {{ video_srcs[0].name }}
+                            </div>
                             <object class="player" id="player1">
                                 <embed src="/static/grindPlayer/GrindPlayer.swf" width="612px" height="344px" type=application/x-shockwave-flash
                                        wmode="transparent" quality="high"></embed>
                             </object>
                         </div>
-                        <div class="video_minbox">
-                            <div class="choose_box" @click="change_video(2)">
-                                选择设备
+                        <div class="video_minbox" v-for="item in [2,3,4]" @mouseenter="change_choose_show(true,item)" @mouseleave="change_choose_show(false,item)">
+                            <div class="camera_text">
+                                {{ video_srcs[item-1].name }}
                             </div>
-                            <object class="player" id="player2">
-                                <embed src="/static/grindPlayer/GrindPlayer.swf" width="612px" height="344px" type=application/x-shockwave-flash
-                                       wmode="transparent" quality="high"></embed>
-                            </object>
-                        </div>
-                        <div class="video_minbox">
-                            <div class="choose_box" @click="change_video(3)">
+<!--                        <div class="choose_box" @click="change_video(item)" v-show="is_choose_change[item-2]">
                                 选择设备
+                            </div> -->
+                            <div class="choose_box" :class="{'choose_box1':isactive[item-2],'choose_box2':!isactive[item-2]}" @click="change_video(item)">
+                                  选择设备
                             </div>
-                            <object class="player" id="player3">
-                                <embed src="/static/grindPlayer/GrindPlayer.swf" width="612px" height="344px" type=application/x-shockwave-flash
-                                       wmode="transparent" quality="high"></embed>
-                            </object>
-                        </div>
-                        <div class="video_minbox">
-                            <div class="choose_box" @click="change_video(4)">
-                                选择设备
+                            <div class="refresh_icon" :class="{'choose_box1':isactive[item-2],'choose_box2':!isactive[item-2]}" @mouseover="refresh_icon = refresh_icon2" @mouseout="refresh_icon = refresh_icon1">
+                                <img :src="refresh_icon" />
                             </div>
-                            <object class="player" id="player4">
+                            <object class="player" :id="'player'+item">
                                 <embed src="/static/grindPlayer/GrindPlayer.swf" width="612px" height="344px" type=application/x-shockwave-flash
                                        wmode="transparent" quality="high"></embed>
                             </object>
@@ -82,8 +76,8 @@
                                 :key="item.id" 
                                 :style="{'transform':'translateX('+item.move_pix+'px)','transition-duration':item.translatetime+'s'}" 
                             >
-                                <div class="photo_img">
-                                    <div class="catch_message" v-show="is_trans">{{item.emotion}}</div>
+                                <div class="photo_img" :title="item.cameraName">
+                                    <div class="catch_message" v-show="is_trans">{{item.emotions}}</div>
                                     <div class="catch_message" v-show="!is_trans">{{item.time}}</div>
                                     <img :src="item.img" style="width:100%;height:100%"/>
                                 </div>
@@ -121,9 +115,7 @@
             <div class="face_title">
                 <div class="snap real_snap">抓拍：3214</div>
                 <div class="snap real_anap">报警：0</div>
-                <div class="state">正常</div>
-                <div class="face_icon1"><img src="../assets/historyface/icon7.png"/></div>
-                <div class="face_icon2"><img src="../assets/historyface/icon2.png"/></div>
+                <div class="state add_state">正常</div>
             </div>
             <div class="real_camera">
                 <select class="center_select real_select" v-model="choose_groupName">
@@ -132,7 +124,11 @@
                 <input class="real_input" type="text" placeholder="设备名称或设备ID" v-model="cameraName"/>
             </div>
             <div class="real_conter">
-                <div class="real_ConterText" v-for="item in info_show_data" @dblclick="choose_this_url(item.sdkId)" v-show="item.isshow">{{ item.name }}</div>
+                <div class="real_ConterText" v-for="item in info_show_data" @dblclick="choose_this_url(item.sdkId,item.name)" v-show="item.isshow">
+                    <div class="real_text">{{ item.name }}</div>
+                    <div class="face_icon1" @click="choose_this_url(item.sdkId,item.name)"><img src="../assets/historyface/icon7.png"/></div>
+                    <div class="face_icon2"><img src="../assets/historyface/icon2.png"/></div>
+                </div>
             </div>
             <div class="bottom_bg">
                 <img src="../assets/realtimem/bottom.svg" />
@@ -140,6 +136,8 @@
         </div>
         <!--警告-->
         <!--遮罩层-->
+        <!-- <div class="mack_box" @click="close_info"></div> -->
+        <!-- <div class="warning_box" @click="click_to_move"> -->
         <div class="mack_box" v-show="open_alarm" @click="close_info"></div>
         <div class="warning_box" v-show="open_alarm" @click="click_to_move">
             <div class="warning_title">最新预警</div>
@@ -178,25 +176,30 @@
     export default {
         data(){
             return {
+                refresh_icon:require('../assets/realtimem/refresh_icon.png'),
+                refresh_icon1:require('../assets/realtimem/refresh_icon.png'),
+                refresh_icon2:require('../assets/realtimem/refresh_icon_1.png'),
+                isactive: [false,false,false],
+
                 default_data:{
-                    img: require("../assets/historyface/img1.jpg"),
-                    time: "--:--:--",
-                    emotion: "**，**",
-                    age: "**",
-                    gender: "**",
+                    img: "",
+                    time: "",
+                    emotion: "",
+                    age: "",
+                    gender: "",
                 },
                 default_data1:{
-                    cameraGroupName: '*****',
-                    cameraName: '*****',
-                    time_ymd: '****-**-**',
-                    time_hms: '--:--:--',
-                    confidence: '**',
-                    name: '***',
-                    gender: '*',
-                    age: '**',
-                    personGroupName: '****',
-                    snapshotUrl: require("../assets/historyface/img1.jpg"),
-                    faceUrl: require("../assets/historyface/img1.jpg"),
+                    cameraGroupName: '',
+                    cameraName: '',
+                    time_ymd: '',
+                    time_hms: '',
+                    confidence: '',
+                    name: '',
+                    gender: '',
+                    age: '',
+                    personGroupName: '',
+                    snapshotUrl: '',
+                    faceUrl: '',
                 },
                 show_data:[],
                 alarm_showdata:[],
@@ -206,18 +209,22 @@
                 // 视频数据
                 video_srcs:[
                     {
+                        name: "1",
                         playAddress: "",
                         sdkId: "",
                     },
                     {
+                        name: "2",
                         playAddress: "",
                         sdkId: "",
                     },
                     {
+                        name: "3",
                         playAddress: "",
                         sdkId: "",
                     },
                     {
+                        name: "4",
                         playAddress: "",
                         sdkId: "",
                     },
@@ -227,7 +234,7 @@
                     src: "",
                     streamType: "live",
                     scaleMode: "zoom", // 自动缩放
-                    bufferTime: 0.5,
+                    bufferTime: 0,
                 },
                 params:{
                     allowFullScreen: false,
@@ -254,7 +261,12 @@
                 myID: null,
                 subscribers: [],
 
+                // 初始化请求
+                default_data_alarm: null,
+                default_show_data: null,
+
                 // 弹窗
+                is_choose_change: [false,false,false],
                 open_flag: false,
                 open_alarm:false,
                 active_box_num: null,
@@ -267,6 +279,9 @@
                     // snapshotUrl: "http://192.168.10.208:3333/uploads//20180428/15249092470250564_norm.png",
                 },
                 timer_num: null,
+
+                // 第一次进入页面标志
+                first_flag: true,
             }
         },
         components: {
@@ -276,7 +291,8 @@
         methods:{
             // test
             click_to_move:function(){
-
+                // console.log("haha")
+                // this.video_srcs[0].name = Date()
                 // let temp_data = JSON.parse(JSON.stringify(this.default_data1))
                 // temp_data.confidence = 100
                 // this.rolling_alarm(temp_data)
@@ -291,8 +307,15 @@
                 //     this.open_alarm = false
                 // }, 2000)
             },
+            // 底栏图片显示切换
             change_show:function(flag){
                 this.is_trans = flag
+            },
+            // 选择设备栏切换
+            change_choose_show:function(flag,num){
+                // console.log(flag,num)
+                // this.is_choose_change.splice(num-2,1,flag)
+                this.isactive.splice(num-2,1,flag)
             },
 
             // 页面跳转
@@ -337,53 +360,97 @@
                     this.video_names[num][i].isshow = true
                     this.info_show_data.splice(-1,0,this.video_names[num][i])
                 }
+                // console.log(this.info_show_data)
             },
             // 选择设备后，获取url
-            choose_this_url:function(sdkId){
+            choose_this_url:function(sdkId,name){
+                console.log(sdkId,name)
+                if( !sdkId || !name ){
+                    return 
+                }
+                console.log(sdkId,name)
+                // console.log(item)
                 // sdkId = "camera1"
                 // console.log("sdkId = "+sdkId)
+                // console.log("name = "+item.name)
                 // console.log("player_box_num = " + this.active_box_num)
                 // console.log("previous_sdkId = " + this.video_srcs[this.active_box_num-1].sdkId)
-                let send_data = JSON.stringify({ 'cameraId': sdkId ,'previous':this.video_srcs[this.active_box_num-1].sdkId,'playerId':this.active_box_num,'guid':this.myID})
+                let flag = true
+                for(let j = 0; j < this.subscribers.length; j++){
+
+                    if( this.subscribers[j].id == this.video_srcs[this.active_box_num-1].sdkId ){
+                        for( let i = 0; i <  this.video_srcs.length; i++){
+                            if( i != ( this.active_box_num-1 ) ){
+                                if( this.video_srcs[i].sdkId == this.subscribers[j].id ){
+                                    flag = false
+                                    break
+                                }
+                            }
+                        }
+                        if( flag ){
+                            this.subscribers[j].unsubscribe();
+                            this.subscribers.splice(j,1);
+                            break
+                        }
+                        
+                    }
+                }
+
+                let send_data
+                if( flag ){
+                    send_data = JSON.stringify({ 'cameraId': sdkId ,'previous':this.video_srcs[this.active_box_num-1].sdkId,'playerId':this.active_box_num,'guid':this.myID})
+                }else{
+                    send_data = JSON.stringify({ 'cameraId': sdkId ,'previous':'','playerId':this.active_box_num,'guid':this.myID})
+                }
+                
                 this.stompClient.send("/app/camera/registry",{},send_data)
                 for( let i = 0; i < this.subscribers.length; i++ ){
-                    if( this.subscribers[i] === sdkId){
+                    if( this.subscribers[i].id === sdkId){
                         return 0;
                     }
                 }
 
-                this.subscribers.push(sdkId)
                 let close_cam = this.stompClient.subscribe('/topic/camera/'+sdkId, (data) => {
-                    console.log( "接收数据 " + sdkId)
-                    console.log(data.body)
+                    // console.log( "接收数据 " + sdkId)
+                    // console.log(data.body)
                     let jsonData = JSON.parse(data.body)
                     if( jsonData.status === 0 && this.is_trans){
                         if(jsonData.msg === "stream" && this.myID === jsonData.data.guid){
                             if( jsonData.data.play_stream != "error"){
                                 this.open_flag = false
-                                this.playvideo(jsonData.data.play_stream,jsonData.data.playerId,sdkId)
+                                if( jsonData.data.play_stream != "" ){
+                                    this.playvideo(jsonData.data.play_stream,jsonData.data.playerId,sdkId,name)
+                                }   
                             }else{
-                                this.error_info("视频未打开成功")
-                            }
-                            
-                        }else if (jsonData.msg === "unsubscribe"){
-                            close_cam.unsubscribe()
-                            for( let i = 0; i < this.subscribers.length; i++ ){
-                                if( this.subscribers[i] === sdkId){
-                                    this.subscribers.splice(i,1);
+                                if( sdkId === this.video_srcs[this.active_box_num-1].sdkId ){
+                                    this.error_info("视频未打开成功")
                                 }
                             }
+                            
                         }else if(jsonData.msg === "normal"){
+                            console.log(jsonData)
                             this.catch_oneday = jsonData.data.snapshotOfDay
                             let temp_data = {}
                             temp_data.time = jsonData.data.catchTime.split(" ")[1]
                             temp_data.img = jsonData.data.snapshotUrl
-
+                            temp_data.cameraName = jsonData.data.cameraName
+                            if( jsonData.data.emotions ){
+                                temp_data.emotions = this.emotion_analysis(jsonData.data.emotions)
+                            }
+                            if( jsonData.data.gender === "female" ){
+                                temp_data.gender = "女"
+                            }else if( jsonData.data.gender === "male" ){
+                                temp_data.gender = "男"
+                            }
                             // this.show_face_list.push(JSON.parse(JSON.stringify(temp_data)))
+                            console.log("temp_data")
+                            console.log(temp_data)
                             this.rolling_picture(temp_data)
                         }
                     }
                 });
+                close_cam.id = sdkId
+                this.subscribers.push(close_cam)
             },
 
             // 滚动图片
@@ -392,6 +459,9 @@
                 if( this.end_id === 12 ){
                     this.show_data[0].img = temp_data.img
                     this.show_data[0].time = temp_data.time
+                    this.show_data[0].gender = temp_data.gender
+                    this.show_data[0].emotions = temp_data.emotions
+                    this.show_data[0].cameraName = temp_data.cameraName
                     this.show_data[0].translatetime = 0.5
                     // temp_data.translatetime = 0.5
                     // temp_data.move_pix = this.show_data[0].move_pix
@@ -399,6 +469,9 @@
                 }else{
                     this.show_data[this.end_id+1].img = temp_data.img
                     this.show_data[this.end_id+1].time = temp_data.time
+                    this.show_data[this.end_id+1].gender = temp_data.gender
+                    this.show_data[this.end_id+1].emotions = temp_data.emotions
+                    this.show_data[this.end_id+1].cameraName = temp_data.cameraName
                     this.show_data[this.end_id+1].translatetime = 0.5
                     // temp_data.translatetime = 0.5
                     // temp_data.move_pix = this.show_data[this.end_id+1].move_pix
@@ -461,13 +534,15 @@
                 }
                 this.timer_num = setTimeout(() => {
                     this.open_alarm = false
-                }, 2000)
+                }, 4000)
             },
 
             // 视频播放
-            playvideo:function(video_url,player_num,sdkId){
+            playvideo:function(video_url,player_num,sdkId,name){
                 this.video_srcs[player_num-1].playAddress = video_url
                 this.video_srcs[player_num-1].sdkId = sdkId
+                this.video_srcs[player_num-1].name = name
+                // console.log(this.video_srcs)
                 this.flashvars.src = video_url
                 swfobject.embedSWF("/static/grindPlayer/GrindPlayer.swf", "player"+player_num, "612px", "344px", "10.2", null, this.flashvars, this.params, this.attrs);
             },
@@ -483,7 +558,8 @@
             // sockJS、Stomp
             // 请求初始化
             initSocket:function(){
-                let socket = new SockJS('http://192.168.10.158:9999/gee');
+                // let socket = new SockJS('http://192.168.10.158:9999/gee');
+                let socket = new SockJS('http://192.168.10.126:9990/gee');
                 // let socket = new SockJS('http://192.168.10.132:9999/gee');
                 // let socket = new SockJS('gee');
                 this.stompClient = Stomp.over(socket);
@@ -522,69 +598,155 @@
                 })
             },
 
-            // 初始化历史报警数据
-            // get_init_data1:function(){
-            //     var params = new URLSearchParams()
-            //     this.$ajax.post("/history/getWarningFaceList",params).then((res) => {
-            //         if( res.data.status === 0){
-            //             let temp_data = JSON.parse(JSON.stringify(res.data.data.list))
-            //             for( let i = 0; i < 6; i++){
-            //                 if( i === 0 || i === 5 ){
+            // 初始化请求
+            // 抓拍
+            get_init_data:function(){
+                var params = new URLSearchParams()
+                params.append("pageNum",1)
+                params.append("pageSize",20)
+                this.$ajax.post("/history/getSnapshotList",params).then((res) => {
+                    if( res.data.status === 0){
+                        this.default_show_data = res.data.data.list
+                        // this.init_data.allnum = res.data.data.total
+                        for( let i = 0; i < this.default_show_data.length; i++){
+                            this.default_show_data[i].uuid = i
+                            this.default_show_data[i].ischecked = false
+                            if( this.default_show_data[i].emotions ){
+                                this.default_show_data[i].emotions = this.emotion_analysis(this.default_show_data[i].emotions)
+                            }
+                            if( this.default_show_data[i].gender === "female" ){
+                                this.default_show_data[i].gender = "女"
+                            }else if( this.default_show_data[i].gender === "male" ){
+                                this.default_show_data[i].gender = "男"
+                            }
+                            this.default_show_data[i].confidence = Math.round(this.default_show_data[i].confidence)
+                        }
+                        for ( let i = 0; i < 13; i++){
+                            if( i === 0 || i === 12 ){
+                                this.show_data.push(JSON.parse(JSON.stringify(this.default_data)))
+                            }else{
+                                if( this.default_show_data.length > i - 1 ){
+                                    this.show_data.push(JSON.parse(JSON.stringify(this.default_show_data[i-1])))
+                                    this.show_data[i].img = this.default_show_data[i-1].snapshotUrl
+                                }else{
+                                    this.show_data.push(JSON.parse(JSON.stringify(this.default_data)))
+                                }
+                                
+                            }
+                            
+                            this.show_data[i].uuid = i+1
 
-            //                 }
-            //             }
-            //         }else if( res.data.status === 1 ){
-            //             this.error_info('请求失败 ' + res.msg)
-            //             return ;
-            //         }else if( res.data.status === 2 ){
-            //             this.error_info('参数错误 ' + res.msg)
-            //             return ;
-            //         }else if( res.data.status === 10 ){
-            //             this.error_info('请先登录')
-            //             return ;
-            //         }
-            //     }).catch((error) => {
-            //         console.log(error)
-            //         this.error_info('网络连接出错')
-            //         return ;
-            //     })
-            // },
+                            this.show_data[i].move_pix = 0
+                            this.show_data[i].translatetime = 0.5
+                        }
+
+                    }else if( res.data.status === 1 ){
+                        this.error_info('请求失败 ' + res.msg)
+                        return ;
+                    }else if( res.data.status === 2 ){
+                        this.error_info('参数错误 ' + res.msg)
+                        return ;
+                    }else if( res.data.status === 10 ){
+                        this.error_info('请先登录')
+                        return ;
+                    }
+                }).catch((error) => {
+                    console.log(error)
+                    this.error_info('网络连接出错')
+                    return ;
+                })
+            },
+            // 预警
+            get_init_data2:function(){
+                var params = new URLSearchParams()
+                this.$ajax.post("/history/getWarningFaceList",params).then((res) => {
+                    if( res.data.status === 0){
+                        this.default_data_alarm = res.data.data.list
+                        // 初始化报警数据
+                        for ( let i = 0; i < 6;i++ ){
+                            if( i === 0 || i === 5 ){
+                                this.alarm_showdata.push( JSON.parse(JSON.stringify(this.default_data1)) )
+                            }else{
+                                if( this.default_data_alarm.length > i-1 ){
+                                    this.alarm_showdata.push( JSON.parse(JSON.stringify(this.default_data_alarm[i-1])) )
+                                    this.alarm_showdata[i].time_ymd = this.default_data_alarm[i-1].catchTime.split(" ")[0]
+                                    this.alarm_showdata[i].time_hms = this.default_data_alarm[i-1].catchTime.split(" ")[1]
+                                }else{
+                                    this.alarm_showdata.push( JSON.parse(JSON.stringify(this.default_data1)) )
+                                }
+                                
+                            }
+                            
+                            this.alarm_showdata[i].uuid = i
+                            // this.alarm_showdata[i].confidence =  20+i
+
+                            this.alarm_showdata[i].move_pix = 0
+                            this.alarm_showdata[i].translatetime = 0.5
+                        }
+                    }else if( res.data.status === 1 ){
+                        this.error_info('请求失败 ' + res.msg)
+                        return ;
+                    }else if( res.data.status === 2 ){
+                        this.error_info('参数错误 ' + res.msg)
+                        return ;
+                    }else if( res.data.status === 10 ){
+                        this.error_info('请先登录')
+                        return ;
+                    }
+                }).catch((error) => {
+                    console.log(error)
+                    this.error_info('网络连接出错')
+                    return ;
+                })
+            },
+            emotion_analysis:function(emotions){
+                let emotions_new = []
+                for( let i = 0; i < emotions.length; i++ ){
+                    let emotion = emotions[i]
+                    if( emotion === "sad" ){
+                        emotions_new.push("伤心")
+                    }else if( emotion === "happy"){
+                        emotions_new.push("快乐")
+                    }else if( emotion === "surprise" ){
+                        emotions_new.push("惊讶")
+                    }else if( emotion === "fear" ){
+                        emotions_new.push("害怕")
+                    }else if( emotion === "neutral"){
+                        emotions_new.push("常态")
+                    }else if( emotion === "angry" ){
+                        emotions_new.push("生气")
+                    }else if( emotion === "disgust"){
+                        emotions_new.push("嫌弃")
+                    }
+                }
+                return emotions_new.join(',')
+            },
+            beforeRouteLeave(to, from, next) {
+                if( to.path === "/facepath" && this.$store.state.is_search_data ){
+                    to.meta.keepAlive = false; 
+                }
+                next()
+            }
         },
         mounted:function(){
-            // 初始化默认数据
-            for ( let i = 0; i < 13; i++){
-                this.show_data.push(JSON.parse(JSON.stringify(this.default_data)))
-                this.show_data[i].id = i+1
+            if( this.first_flag ){
+                this.get_init_data()
+                this.get_init_data2()
 
-                this.show_data[i].move_pix = 0
-                this.show_data[i].translatetime = 0.5
+                this.init_video()
+                this.initSocket()
+                this.myID = this.guid()
+
+                this.first_flag = false
             }
-            for ( let i = 0; i < 6;i++ ){
-                this.alarm_showdata.push( JSON.parse(JSON.stringify(this.default_data1)) )
-                this.alarm_showdata[i].uuid = i
-                // this.alarm_showdata[i].confidence =  20+i
-
-                this.alarm_showdata[i].move_pix = 0
-                this.alarm_showdata[i].translatetime = 0.5
-            }
-
-            this.init_video()
-            // this.initWebSocket()
-            this.initSocket()
-            this.myID = this.guid()
-
-            // let temp_data = this.$store.state.realtime_data.sdkId_temp
-            
-            // 启动页面跳转摄像头
-            setTimeout(() => {
-                this.$store.state.realtime_data.sdkId = this.$store.state.realtime_data.sdkId_temp
-            }, 500)
         },
         watch:{
             '$store.state.realtime_data.sdkId':function(newVal,old){
                 // console.log(this.$store.state.realtime_data.sdkId)
                 this.active_box_num = 1
-                this.choose_this_url(this.$store.state.realtime_data.sdkId)
+                this.$store.state.is_search_data = false
+                // console.log(this.$store.state.realtime_data.sdkId)
+                this.choose_this_url(this.$store.state.realtime_data.sdkId,this.$store.state.realtime_data.name)
             },
             '$store.state.realtime_data.groupNames':function(newVal,old){
                 this.groupNames = this.$store.state.realtime_data.groupNames
@@ -611,6 +773,38 @@
             //     this.rolling_picture(newVal[-1])
             // },
 
+        },
+        beforeRouteEnter(to, from, next){
+            // console.log(from.path)
+            if( from.path === "/mmanage4"){
+                next(vm => {
+                    if( vm.first_flag ){
+                        vm.get_init_data()
+                        vm.get_init_data2()
+
+                        vm.init_video()
+                        vm.initSocket()
+                        vm.myID = vm.guid()
+
+                        vm.first_flag = false
+
+                        setTimeout(() => {
+                            vm.active_box_num = 1
+                            vm.$store.state.is_search_data = false
+                            vm.choose_this_url(vm.$store.state.realtime_data.sdkId,vm.$store.state.realtime_data.name)
+                        }, 500)
+                    }else{
+                        console.log(vm.$store.state.is_search_data)
+                        vm.active_box_num = 1
+                        vm.$store.state.is_search_data = false
+                        vm.choose_this_url(vm.$store.state.realtime_data.sdkId,vm.$store.state.realtime_data.name)
+                    }
+                    
+                })
+            }else{
+                next()
+            }
+            
         }
     }
 </script>
@@ -635,6 +829,10 @@
         border: 1px solid #00ffff;
         background-color: rgba(72,69,89,0.3);
         border-radius: 5px;
+    }
+    .add_state{
+        float: right;
+        margin-right:20px;
     }
 
     /* 滚动条 */

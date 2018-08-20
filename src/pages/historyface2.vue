@@ -265,6 +265,7 @@
                     	return ;
                     }
                 }).catch((error) => {
+                	console.log(error)
                 	this.error_info('网络连接出错')
                     return ;
                 })
@@ -275,8 +276,15 @@
             			for( let i = 0; i < this.tabledata.length; i++){
 		                	this.tabledata[i].uuid = i
 		                	this.tabledata[i].ischecked = false
-		                	this.tabledata[i].emotions = this.emotion_analysis(this.tabledata[i].emotions)
-		                	console.log(this.tabledata[i].emotions)
+		                	if( this.tabledata[i].emotions ){
+		                		this.tabledata[i].emotions = this.emotion_analysis(this.tabledata[i].emotions)
+		                	}
+		                	if( this.tabledata[i].gender === "female" ){
+		                		this.tabledata[i].gender = "女"
+		                	}else if( this.tabledata[i].gender === "male" ){
+		                		this.tabledata[i].gender = "男"
+		                	}
+		                	// console.log(this.tabledata[i].emotions)
 		                }
                     }else if( res.data.status === 1 ){
 	                    this.error_info('请求失败 ' + res.msg)
@@ -289,6 +297,7 @@
                     	return ;
                     }
                 }).catch((error) => {
+                	console.log(error)
                 	this.error_info('网络连接出错')
                     return ;
                 })
@@ -323,7 +332,14 @@
             			for( let i = 0; i < this.tabledata.length; i++){
 		                	this.tabledata[i].uuid = i
 		                	this.tabledata[i].ischecked = false
-							this.tabledata[i].emotions = this.emotion_analysis(this.tabledata[i].emotions)
+							if( this.tabledata[i].emotions ){
+		                		this.tabledata[i].emotions = this.emotion_analysis(this.tabledata[i].emotions)
+		                	}
+		                	if( this.tabledata[i].gender === "female" ){
+		                		this.tabledata[i].gender = "女"
+		                	}else if( this.tabledata[i].gender === "male" ){
+		                		this.tabledata[i].gender = "男"
+		                	}
 		                }
                     }else if( res.data.status === 1 ){
 	                    this.error_info('请求失败 ' + res.msg)
@@ -336,6 +352,7 @@
                     	return ;
                     }
                 }).catch((error) => {
+                	console.log(error)
                 	this.error_info('网络连接出错')
                     return ;
                 })
@@ -384,6 +401,12 @@
 		mounted:function(){
 			this.get_init_data()
 		},
+		beforeRouteLeave(to, from, next) {
+			if( to.path === "/facepath" && this.$store.state.is_search_data ){
+				to.meta.keepAlive = false; 
+			}  
+			next()
+	    }
 	}
 	
 </script>
