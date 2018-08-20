@@ -86,7 +86,7 @@
         <div class="face_rightbox2">
             <div class="results_listbox">
                 <div class="results_list" :style="{'border-left': item.mystyle}" v-for="item in tabledata">
-                    <div class="digital_bg" @click="change_map_center(item.location)">{{item.uuid+1}}</div>
+                    <div class="digital_bg" @click="change_map_center(item.location)">{{init_data.allnum - item.uuid}}</div>
                     <div class="results_right">
                         <div class="results_conter1">{{item.cameraName}}</div>
                         <div class="re_conterbox1">
@@ -310,7 +310,7 @@
             add_markers_icon:function(num){
                 return '<div class="map_maxbox">\
                             <div class="map_iconbg">\
-                                <div class="map_icontext">'+ num +'</div>\
+                                <div class="map_icontext">'+ (this.init_data.allnum - num) +'</div>\
                             </div>\
                         </div>'
             },
@@ -392,6 +392,15 @@
                 this.$ajax.post("/main/identifySnap",params,{headers: {'Content-Type': 'multipart/form-data'}}).then((res) => {
                 // this.$ajax.post("",params).then((res) => {
                     if( res.data.status === 0){
+                        if( res.data === "" ){
+                            this.$message({
+                                type: 'warning',
+                                message: '无对应数据',
+                                showClose: true,
+                                center: true
+                            })
+                            return 
+                        }
                         this.init_data.allnum = res.data.data.total
                         this.tabledata = res.data.data.list
                         // console.log(this.tabledata)
@@ -447,28 +456,31 @@
             // 按钮事件
             // 搜索按钮
             click_to_search:function(search_data){
-                this.map.clearMap()
+                this.click_to_clear(false)
+                // console.log("ha")
                 this.post_to_get_facepath(search_data)
             },
             // 清空事件
-            click_to_clear:function(){
-                this.polyline.setMap(null)
+            click_to_clear:function(flag=true){
                 this.markers = []
                 this.locations = []
                 this.infomycontent = []
                 this.mycontent_marker = []
                 this.markers_list = []
-                this.dataUrl = ""
-                this.pic = ""
-                this.search_data = {
-                    photo: "",
-                    confidence: 0,
-                    startTime: "",
-                    endTime: "",
-                }
                 this.map.clearMap()
                 this.tabledata = null
-                this.add_markers_all(this.allcamera_list)
+                if( flag ){
+                    this.dataUrl = ""
+                    this.pic = ""
+                    this.search_data = {
+                        photo: "",
+                        confidence: 0,
+                        startTime: "",
+                        endTime: "",
+                    }
+                    this.polyline.setMap(null)
+                    this.add_markers_all(this.allcamera_list)
+                }
             },
             // 导出事件
             // 导出数据为excel
@@ -500,7 +512,7 @@
                     let contect = '<div class="conter_box">\
                                         <div class="conter_img"><img src='+ tempdata.snapshotUrl +'></div>\
                                         <div class="conter_textbox">\
-                                            <p>轨迹序号：'+ (tempdata.uuid+1) +'</p>\
+                                            <p>轨迹序号：'+ (this.init_data.allnum - tempdata.uuid) +'</p>\
                                             <p>'+ tempdata.nyr +'</p>\
                                             <p>'+ tempdata.sfm +'</p>\
                                         </div>\
@@ -516,11 +528,11 @@
                         if( !flag ){
                             location_remark.push( this.tabledata[i].location )
                             contects.push( contect )
-                            this.mycontent_marker.push( this.add_markers_icon(this.tabledata[i].uuid+1) )
+                            this.mycontent_marker.push( this.add_markers_icon(this.tabledata[i].uuid) )
                             this.markers_list.push( this.tabledata[i].uuid )
                         }
                     }else{
-                        this.mycontent_marker.push( this.add_markers_icon(this.tabledata[i].uuid+1) )
+                        this.mycontent_marker.push( this.add_markers_icon(this.tabledata[i].uuid) )
                         this.markers_list.push( this.tabledata[i].uuid )
                         location_remark.push( this.tabledata[i].location )
                         contects.push( contect )
@@ -567,14 +579,26 @@
                 this.search_data.confidence = parseInt(this.search_data.confidence)
             },
 
+            '$store.state.is_search_data':function(newVal,old){
+                if ( newVal ){
+                    this.search_data.photoUrl = this.$store.state.facepath_data.photo
+                    this.dataUrl = this.search_data.photoUrl
+                    this.map.clearMap()
+                    this.post_to_get_facepath(this.search_data,"skip")
+
+                    this.$store.state.is_search_data = false
+                    this.$store.state.facepath_data.photo = ""
+                }
+            },
+
             '$store.state.facepath_search_data.allcamera_list':function(newVal,old){
                 this.allcamera_list = this.$store.state.facepath_search_data.allcamera_list
                 if( this.allcamera_list.length ){
                     this.init( this.allcamera_list[0].location )
                 }else{
-                    console.log("haha")
                     this.init( this.center_xy )
                 }
+                // console.log(this.$store.state.is_search_data)
                 if ( this.$store.state.is_search_data ){
                     this.search_data.photoUrl = this.$store.state.facepath_data.photo
                     this.dataUrl = this.search_data.photoUrl

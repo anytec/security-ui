@@ -2,9 +2,7 @@
 	<div class="left_mainBox">
 		<left-nav></left-nav>
 		<transition :name="transitionName">
-      <keep-alive>
 			 <router-view></router-view>
-      </keep-alive>
 		</transition>
 	</div>
 </template>

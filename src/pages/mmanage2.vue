@@ -21,7 +21,7 @@
 							<option>男</option>
 							<option>女</option>
 						</select>
-						<input class="center_input id_card input_right" type="text" v-model="search_data.idNumber" placeholder="身份证号码"/>
+						<input class="center_input id_card input_right" type="text" v-model="search_data.idNumber" placeholder="标识编码"/>
 					</div>
 				</div>
 				<div class="table_box h2_table_box">
@@ -283,8 +283,16 @@
 					}
 				}
 				if( this.delete_data ){
-					this.require_to_delete(this.delete_data)
-					this.delete_data = ""
+					this.$confirm('是否删除该数据？','提示',{
+						confirmButtonText: '是',
+			            cancelButtonText: '否',
+			            type: 'warning'
+					}).then(() => {
+						this.require_to_delete(this.delete_data)
+						this.delete_data = ""
+					}).catch(() => {
+						;
+					})
 				}else{
 					this.error_info("请选择删除项")
 				}
@@ -341,8 +349,8 @@
                     	return ;
                     }
                 }).catch((error) => {
-                	// console.log(error)
-                	this.error_info('网络连接出错1')
+                	console.log(error)
+                	this.error_info('网络连接出错')
                     return ;
                 })
 			},
@@ -393,7 +401,8 @@
                     	return ;
                     }
                 }).catch((error) => {
-                	this.error_info('网络连接出错2')
+                	console.log(error)
+                	this.error_info('网络连接出错')
                     return ;
                 })
 			},
@@ -439,7 +448,8 @@
                     	return ;
                     }
                 }).catch((error) => {
-                	this.error_info('网络连接出错3')
+                	console.log(error)
+                	this.error_info('网络连接出错')
                     return ;
                 })
 			},
@@ -465,7 +475,7 @@
                     }
                 }).catch((error) => {
                 	console.log(error)
-                    this.error_info('网络连接出错4')
+                    this.error_info('网络连接出错')
                     return ;
                 })
                 
@@ -527,7 +537,8 @@
                     	return ;
                     }
                 }).catch((error) => {
-                	this.error_info('网络连接出错5')
+                	console.log(error)
+                	this.error_info('网络连接出错')
                     return ;
                 })
 			},
@@ -564,7 +575,8 @@
                     	return ;
                     }
                 }).catch((error) => {
-                	this.error_info('网络连接出错5')
+                	console.log(error)
+                	this.error_info('网络连接出错')
                     return ;
                 })
 			},
@@ -661,6 +673,12 @@
 				}
 			}
 		},
+		beforeRouteLeave(to, from, next) {
+			if( to.path === "/facepath" && this.$store.state.is_search_data ){
+				to.meta.keepAlive = false; 
+			}
+	        next()
+	    }
 	}
 </script>
 

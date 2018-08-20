@@ -21,7 +21,7 @@
 				</select>
 			</div>
 			<div class="input_box">
-				<input class="center_input id_card" type="text" v-model="search_data.idNumber" placeholder="身份证号码"/>
+				<input class="center_input id_card" type="text" v-model="search_data.idNumber" placeholder="标识编码"/>
 				<input class="center_input" type="text" v-model="search_data.cameraName" placeholder="设备名称或设备ID"/>
 				<div class="h1_right">
 					<div class="time_box">时间范围</div>
@@ -478,6 +478,13 @@
 				this.get_init_data2()
 			}
 		},
+		beforeRouteLeave(to, from, next) {
+			// console.log(to.path)
+			if( to.path === "/facepath" && this.$store.state.is_search_data ){
+				to.meta.keepAlive = false; 
+			}
+			next()
+	    }
 	}
 </script>
 

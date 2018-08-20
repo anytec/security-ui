@@ -111,7 +111,7 @@
 								<td class="td td4">
 									<div class="td_icon">
 										<div class="td_icon">
-											<img src="../assets/historyface/icon7.png" @click="skip_to_realtimem(item.sdkId)"/>
+											<img src="../assets/historyface/icon7.png" @click="skip_to_realtimem(item.sdkId,item.name)"/>
 											<img src="../assets/historyface/icon6.png" @click="skip_to_historyface1(item.uuid)"/>
 											<img src="../assets/historyface/icon2.png" @click="click_to_change_gallery(item.uuid)"/>
 										</div>
@@ -286,7 +286,7 @@
 			// 开关判断
 			isreal_change:function(uuid){
 				if( this.tabledata[uuid].cameraStatus ){
-					this.$confirm('确定打开该区域摄像头？','提示',{
+					this.$confirm('确定打开该摄像头？','提示',{
 						confirmButtonText: '确定',
 			            cancelButtonText: '取消',
 			            type: 'warning'
@@ -296,7 +296,7 @@
 						this.tabledata[uuid].cameraStatus = false
 					})
 				}else{
-					this.$confirm('确定关闭该区域摄像头？','提示',{
+					this.$confirm('确定关闭该摄像头？','提示',{
 						confirmButtonText: '确定',
 			            cancelButtonText: '取消',
 			            type: 'warning'
@@ -316,8 +316,16 @@
 					}
 				}
 				if( this.delete_data ){
-					this.require_to_delete(this.delete_data)
-					this.delete_data = ""
+					this.$confirm('是否删除该数据？','提示',{
+						confirmButtonText: '是',
+			            cancelButtonText: '否',
+			            type: 'warning'
+					}).then(() => {
+						this.require_to_delete(this.delete_data)
+						this.delete_data = ""
+					}).catch(() => {
+						;
+					})
 					// for( let i = 0; i < this.tabledata.length; i++ ){
 					// 	this.tabledata[i].ischecked = false
 					// }
@@ -437,6 +445,7 @@
 					}
 				}
 				if( JSON.stringify(temp_data) != "{}"){
+					temp_data.id = this.tabledata[this.add_data.uuid].id
 					this.require_to_change(temp_data)
 					this.clear_show_data()
 				}else{
@@ -453,9 +462,11 @@
 			},
 
 			// 页面跳转
-			skip_to_realtimem:function(sdkId){
+			skip_to_realtimem:function(sdkId,name){
 				// 实时监控
-				this.$store.state.realtime_data.sdkId_temp = sdkId
+				this.$store.state.realtime_data.sdkId = sdkId
+				this.$store.state.realtime_data.name = name
+				this.$store.state.is_search_data = true
 				this.$router.push('/realtimem')
 			},
 			skip_to_historyface1:function(num){
@@ -725,6 +736,13 @@
 				}
 			}
 		},
+		// beforeRouteLeave(to, from, next) {
+		// 	if( to.path === "/realtimem" && this.$store.state.is_search_data ){
+		// 		to.meta.keepAlive = false
+		// 		// next() 
+		// 	}
+	 //        next()
+	 //    }
 	}
 </script>
 

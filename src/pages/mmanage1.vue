@@ -280,8 +280,16 @@
 					}
 				}
 				if( this.delete_data ){
-					this.require_to_delete(this.delete_data)
-					this.delete_data = ""
+					this.$confirm('是否删除该数据？','提示',{
+						confirmButtonText: '是',
+			            cancelButtonText: '否',
+			            type: 'warning'
+					}).then(() => {
+						this.require_to_delete(this.delete_data)
+						this.delete_data = ""
+					}).catch(() => {
+						;
+					})
 				}else{
 					this.error_info("请选择删除项")
 				}
@@ -424,6 +432,7 @@
                     	return ;
                     }
                 }).catch((error) => {
+                	console.log(error)
                 	this.error_info('网络连接出错')
                     return ;
                 })
@@ -456,6 +465,7 @@
                     	return ;
                     }
                 }).catch((error) => {
+                	console.log(error)
                 	this.error_info('网络连接出错')
                     return ;
                 })
@@ -516,6 +526,7 @@
                     	return ;
                     }
                 }).catch((error) => {
+                	console.log(error)
                 	this.error_info('网络连接出错5')
                     return ;
                 })

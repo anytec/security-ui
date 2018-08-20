@@ -4,9 +4,12 @@
 		<my-nav></my-nav>
 		
 		<transition :name="transitionName">
-			<!-- <keep-alive> -->
-				<router-view></router-view>
-			<!-- </keep-alive> -->
+			<keep-alive>
+				<router-view v-if="$route.meta.keep_alive"></router-view>
+			</keep-alive>
+		</transition>
+		<transition :name="transitionName">
+			<router-view v-if="!$route.meta.keep_alive"></router-view>
 		</transition>
 
 	</div>

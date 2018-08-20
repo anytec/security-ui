@@ -70,6 +70,7 @@ const  routes=[
 			title: 'homepage',
 			index: 2,
 			requireAuth: true,
+			keep_alive: true, // 是否缓存
 		},
 		children:[
 		{
@@ -80,6 +81,7 @@ const  routes=[
 				title: 'dataview',
 				index: 3,
 				requireAuth: true,
+				keep_alive: true,
 			},
 		},
 		{
@@ -90,6 +92,7 @@ const  routes=[
 				title: 'facepath',
 				index: 3,
 				requireAuth: true,
+				keep_alive: true,
 			},
 		},
 		{
@@ -100,6 +103,7 @@ const  routes=[
 				title: 'realtimem',
 				index: 3,
 				requireAuth: true,
+				keep_alive: true,
 			},
 		},
 		{
@@ -110,6 +114,7 @@ const  routes=[
 				title: 'historyface',
 				index: 3,
 				requireAuth: true,
+				keep_alive: false,
 			},
 			redirect: '/historyface1',
 			children:[{
@@ -120,6 +125,7 @@ const  routes=[
 					title: 'historyface1',
 					index: 4,
 					requireAuth: true,
+					keep_alive: false,
 				},
 			},{
 				path: '/historyface2',
@@ -129,6 +135,7 @@ const  routes=[
 					title: 'historyface2',
 					index: 5,
 					requireAuth: true,
+					keep_alive: false,
 				},
 			}]
 		},
@@ -140,6 +147,7 @@ const  routes=[
 				title: 'mmanage',
 				index: 3,
 				requireAuth: true,
+				keep_alive: false,
 			},
 			redirect: '/mmanage1',
 			children:[{
@@ -150,6 +158,7 @@ const  routes=[
 					title: 'mmanage1',
 					index: 4,
 					requireAuth: true,
+					keep_alive: false,
 				},
 			},{
 				path: '/mmanage2',
@@ -159,6 +168,7 @@ const  routes=[
 					title: 'mmanage2',
 					index: 4,
 					requireAuth: true,
+					keep_alive: false,
 				},
 			},{
 				path: '/mmanage3',
@@ -168,6 +178,7 @@ const  routes=[
 					title: 'mmanage3',
 					index: 4,
 					requireAuth: true,
+					keep_alive: false,
 				},
 			},{
 				path: '/mmanage4',
@@ -177,6 +188,7 @@ const  routes=[
 					title: 'mmanage4',
 					index: 4,
 					requireAuth: true,
+					keep_alive: false,
 				},
 			},]
 		},
@@ -188,6 +200,7 @@ const  routes=[
 				title: 'systemm',
 				index: 3,
 				requireAuth: true,
+				keep_alive: true,
 			},
 		},
 		]
