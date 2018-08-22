@@ -9,6 +9,7 @@ const store = new Vuex.Store({
         token: true,
         user: undefined,
         is_search_data: false,
+        is_search_data_facepath: false,
         search_data: {},
         is_add_data: false,
         add_data: null,
@@ -28,6 +29,7 @@ const store = new Vuex.Store({
         },
         dataview_data:{
             choose_day: null,
+            update_flag1: false,
         }
     },
     // 修改全局变量必须通过mutations中的方法

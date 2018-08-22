@@ -42,23 +42,15 @@
                     <div class="active_div" :style="{ left: 192*listnum + 'px' }"></div>
                 </div>
                 <div class="index_rightbtn">
-                    <div class="index_btn" @click="test">数据生成</div>
+                    <div class="index_btn">数据生成</div>
                     <div class="index_btn" @click="is_show_info = true">设备选择</div>
                 </div>
             </div>
-            <div class="chart">
-                <div class="view_box">
-                    <div class="item one" @click="clickChart('1')" style="transform: translate(-26%,-26%) scale(0.48)">
-                        <v-line :dayTime="day_time" :showData="showData_hour" :fname="name" :flag="update_flag"></v-line>
-                    </div>
-                    <div class="item two" @click="clickChart('2')" style="transform: translate(-26%,26%) scale(0.48)">
-                        <v-pie :dayTime="day_time" :showData="showData_day" :fname="name" :flag="update_flag"></v-pie>
-                    </div>
-                    <div class="item three active" @click="clickChart('3')" style="transform: translate(50%,0%) scale(1)">
-                        <v-bar :dayTime="day_time" :showData="showData_day" :fname="name" :flag="update_flag"></v-bar>
-                    </div>
-                </div>
-            </div>
+            <transition :name="transitionName">
+                <!-- <keep-alive> -->
+                    <router-view :searchData="search_data"></router-view>
+                <!-- </keep-alive> -->
+            </transition>
         </div>
         <!--弹出框-->
         <div class="alert_Box" id="alert_Box" v-show="is_show_info">
@@ -134,19 +126,13 @@
     </div>
 </template>
 
-<script>
-    import line from "./dataview/line"
-    import pie from "./dataview/pie"
-    import bar from "./dataview/bar"
-    
+<script> 
     export default {
-        components:{
-            'v-line': line,
-            'v-pie' : pie,
-            'v-bar' : bar,
-        },
         data() {
                 return {
+                    // 页面切换
+                    transitionName: '',
+
                     items: [],
 
                     // 弹窗加切换栏
@@ -187,70 +173,10 @@
                     video_names: [],
                     cameraSdkIds: "",
                     cameraGroupIds: "",
-                    
 
-                    // 数据传递
-                    // chooseDay: null,
-                    // name: ['设备1','设备2','设备3','设备4','设备5'],
-                    // showData_hour:[
-                    //     [
-                    //         [10, 20, 100, 50, 20, 120, 135, 70, 40, 5, 10, 20, 50],
-                    //         [15, 25, 110, 60, 10, 100, 155, 60, 50, 15, 20, 25, 40],
-                    //         [5, 15, 120, 50, 15, 130, 105, 40, 60, 5, 10, 35, 60],
-                    //         [25, 35, 100, 50, 25, 150, 125, 30, 80, 15, 15, 25, 30],
-                    //         [5, 25, 120, 40, 15, 135, 145, 20, 70, 25, 10, 20, 35]
-                    //     ],
-                    //     [
-                    //         [10, 20, 100, 50, 20, 120, 135, 70, 40, 5, 10, 20, 50],
-                    //         [15, 25, 110, 60, 10, 100, 155, 60, 50, 15, 20, 25, 40],
-                    //         [5, 15, 120, 50, 15, 130, 105, 40, 60, 5, 10, 35, 60],
-                    //         [25, 35, 100, 50, 25, 150, 125, 30, 80, 15, 15, 25, 30],
-                    //         [5, 25, 120, 40, 15, 135, 145, 20, 70, 25, 10, 20, 35]
-                    //     ],
-                    //     [
-                    //         [10, 20, 100, 50, 20, 120, 135, 70, 40, 5, 10, 20, 50],
-                    //         [15, 25, 110, 60, 10, 100, 155, 60, 50, 15, 20, 25, 40],
-                    //         [5, 15, 120, 50, 15, 130, 105, 40, 60, 5, 10, 35, 60],
-                    //         [25, 35, 100, 50, 25, 150, 125, 30, 80, 15, 15, 25, 30],
-                    //         [5, 25, 120, 40, 15, 135, 145, 20, 70, 25, 10, 20, 35]
-                    //     ],
-                    //     [
-                    //         [10, 20, 100, 50, 20, 120, 135, 70, 40, 5, 10, 20, 50],
-                    //         [15, 25, 110, 60, 10, 100, 155, 60, 50, 15, 20, 25, 40],
-                    //         [5, 15, 120, 50, 15, 130, 105, 40, 60, 5, 10, 35, 60],
-                    //         [25, 35, 100, 50, 25, 150, 125, 30, 80, 15, 15, 25, 30],
-                    //         [5, 25, 120, 40, 15, 135, 145, 20, 70, 25, 10, 20, 35]
-                    //     ],
-                    //     [
-                    //         [10, 20, 100, 50, 20, 120, 135, 70, 40, 5, 10, 20, 50],
-                    //         [15, 25, 110, 60, 10, 100, 155, 60, 50, 15, 20, 25, 40],
-                    //         [5, 15, 120, 50, 15, 130, 105, 40, 60, 5, 10, 35, 60],
-                    //         [25, 35, 100, 50, 25, 150, 125, 30, 80, 15, 15, 25, 30],
-                    //         [5, 25, 120, 40, 15, 135, 145, 20, 70, 25, 10, 20, 35]
-                    //     ],
-                    //     [
-                    //         [10, 20, 100, 50, 20, 120, 135, 70, 40, 5, 10, 20, 50],
-                    //         [15, 25, 110, 60, 10, 100, 155, 60, 50, 15, 20, 25, 40],
-                    //         [5, 15, 120, 50, 15, 130, 105, 40, 60, 5, 10, 35, 60],
-                    //         [25, 35, 100, 50, 25, 150, 125, 30, 80, 15, 15, 25, 30],
-                    //         [5, 25, 120, 40, 15, 135, 145, 20, 70, 25, 10, 20, 35]
-                    //     ],
-                    //     [
-                    //         [10, 20, 100, 50, 20, 120, 135, 70, 40, 5, 10, 20, 50],
-                    //         [15, 25, 110, 60, 10, 100, 155, 60, 50, 15, 20, 25, 40],
-                    //         [5, 15, 120, 50, 15, 130, 105, 40, 60, 5, 10, 35, 60],
-                    //         [25, 35, 100, 50, 25, 150, 125, 30, 80, 15, 15, 25, 30],
-                    //         [5, 25, 120, 40, 15, 135, 145, 20, 70, 25, 10, 20, 35]
-                    //     ],
-                    // ],
-                    // day_time: ['08-10','08-11','08-12','08-13','08-14','08-15','08-16'],
-                    // showData_day:[
-                    //     [10, 20, 100, 50, 20, 120, 135],
-                    //     [15, 25, 110, 60, 10, 100, 155],
-                    //     [5, 15, 120, 50, 15, 130, 105],
-                    //     [25, 35, 100, 50, 25, 150,10],
-                    //     [5, 25, 120, 40, 20, 100,50]
-                    // ],
+                    // 子组件传递参数
+                    search_data: {},
+                    
                     name: [],
                     day_time: [],
                     showData_hour: [],
@@ -260,21 +186,19 @@
                 }
             },
             mounted() {
-                // this.chooseDay = this.day_time[0]
-                this._myinit()
-
-                this.get_init_data()
-                this.post_to_change_page( {} )
-
                 setInterval(() => {
                     this.show_date = this.real_time()
                 }, 1000);
+                // this.chooseDay = this.day_time[0]
+                this.get_init_data()
+                // this.post_to_change_page( {} )
+                this.search_data = {}
             },
             methods: {
-                test:function(){
-                    // console.log("hah")
-                    this.day_time = ['08-11','08-12','08-13','08-14','08-15','08-16','08-17']
-                },
+                // test:function(){
+                //     // console.log("hah")
+                //     this.day_time = ['08-11','08-12','08-13','08-14','08-15','08-16','08-17']
+                // },
 
                 real_time:function(){
                     let date = new Date();
@@ -290,6 +214,14 @@
                             this.listnum = num //将参数num赋值给listnum
                             this.active_num=num //保存点击选中的num值
                         }
+                    }
+
+                    if( num === 0 ){
+                        this.$router.push('/dataview1')
+                    }else if( num === 1 ){
+                        this.$router.push('/dataview2')
+                    }else if( num === 2 ){
+                        this.$router.push('/dataview3')
                     }
                 },
                 enter:function(num){//鼠标移入时调用该函数
@@ -350,8 +282,6 @@
                             this.warning_info("最多选择五个设备组")
                         }
                     }
-                    
-                    
                 },
                 // 将设备从搜索中删除
                 delete_search_data:function(index,model){
@@ -371,9 +301,7 @@
                         for( let i = 0; i < this.info_search_data.length; i++ ){
                             search_data.cameraSdkIds.push(this.info_search_data[i].sdkId)
                         }
-                        search_data.cameraSdkIds.join(",")
-                        // console.log(search_data)
-                        this.post_to_change_page( search_data )
+                        this.search_data = search_data
                     }else{
                         let search_data = {
                             cameraGroupIds: [],
@@ -381,11 +309,8 @@
                         for( let i = 0; i < this.info_search_data_group.length; i++ ){
                             search_data.cameraGroupIds.push(this.info_search_data_group[i].sdkId)
                         }
-                        search_data.cameraGroupIds.join(",")
-                        // console.log(search_data)
-                        this.post_to_change_page( search_data )
+                        this.search_data = search_data
                     }
-                    
                 },
 
                 // 请求数据
@@ -423,137 +348,17 @@
                         return ;
                     })
                 },
-                post_to_change_page:function( search_data ){
-                    var params = new URLSearchParams()
-
-                    for( let item in search_data ){
-                        params.append(item,search_data[item])
-                    }
-
-                    this.$ajax.post("/data/getPersonCount",params).then((res) => {
-                        if( res.data.status === 0){
-                            this.clear_show_data()
-                            let all_show_data = {}
-                            for( let item_day in res.data.data ){
-                                this.day_time.push(item_day)
-                                let temp_data = []
-                                for( let camera_num = 0; camera_num < res.data.data[item_day].length; camera_num++){
-                                    if( item_day === this.day_time[0] ){
-                                        for( let item_camera in res.data.data[item_day][camera_num]){
-                                            this.name.push( item_camera )
-                                        }
-                                    }
-                                    for( let item_camera in res.data.data[item_day][camera_num] ){
-                                        temp_data.push(res.data.data[item_day][camera_num][item_camera])
-                                    }
-                                    
-                                }
-                                all_show_data[item_day] = temp_data
-                            }
-                            // console.log(all_show_data)
-
-                            // 排序
-                            this.day_time.sort()
-                            if( this.showData_day.length < this.name.length ){
-                                for( let num = 0; num < this.name.length; num++ ){
-                                    this.showData_day.push([])
-                                }
-                                for( let num = 0; num <  this.day_time.length; num++ ){
-                                    this.showData_hour.push([])
-                                }
-                            }
-                            for( let i = 0; i < this.day_time.length; i++ ){
-                                let temp_data = all_show_data[this.day_time[i]]
-                                for( let j = 0; j < this.name.length; j++ ){
-                                    this.showData_day[j].push(temp_data[j].pop())
-                                    this.showData_hour[i].push(temp_data[j])
-                                }
-                            }
-
-                            this.update_flag = !this.update_flag
-                            this.clear_search_data()
-                            // console.log(this.showData_day)
-                            // console.log(this.showData_hour)
-                            // console.log(this.day_time)
-                            // console.log(this.name)
-                        }else if( res.data.status === 1 ){
-                            this.error_info('请求失败 ' + res.msg)
-                            return ;
-                        }else if( res.data.status === 2 ){
-                            this.error_info('参数错误 ' + res.msg)
-                            return ;
-                        }else if( res.data.status === 10 ){
-                            this.error_info('请先登录')
-                            return ;
-                        }
-                    }).catch((error) => {
-                        console.log(error)
-                        this.error_info('网络连接出错')
-                        return ;
-                    })
-                },
+                
+                // 弹窗关闭清除
                 clear_search_data:function(){
                     this.info_search_data = []
                     this.is_show_info = false
                 },
-                clear_show_data:function(){
-                    this.name = []
-                    this.day_time = []
-                    this.showData_hour = []
-                    this.showData_day = []
-                },
-                // 消息窗口
-                error_info:function(mes){
-                    this.$message({
-                        type: 'error',
-                        message: mes,
-                        showClose: true,
-                        center: true
-                    })
-                },
-                success_info:function(mes){
-                    this.$message({
-                        type: 'success',
-                        message: mes,
-                        showClose: true,
-                        center: true
-                    })
-                },
-                warning_info:function(mes){
-                    this.$message({
-                        message: mes,
-                        type: 'warning',
-                        showClose: true,
-                        center: true
-                    });
-                },
-
-                // 图表切换动态效果
-                _myinit() {
-                    this.items = document.querySelectorAll('.view_box .item')
-                    for (let i = 0; i < this.items.length; i++) {
-                        this.items[i].dataset.order = i + 1;
-                    }
-                },
-                clickChart(clickIndex) {
-                    let activeItem = document.querySelector('.view_box .active')
-                    let activeIndex = activeItem.dataset.order
-                    let clickItem = this.items[clickIndex - 1]
-                    if (activeIndex === clickIndex) {
-                        return
-                    }
-                    activeItem.classList.remove('active')
-                    clickItem.classList.add('active')
-                    this._setStyle(clickItem, activeItem)
-                },
-                _setStyle(el1, el2) {
-                    let transform1 = el1.style.transform
-                    let transform2 = el2.style.transform
-                    el1.style.transform = transform2
-                    el2.style.transform = transform1
-                }
             },
             watch:{
+                $route(to,from){
+                    this.transitionName = 'slide-left';
+                },
                 'choose_groupName':function(newVal,old){
                     for( let i = 1; i < this.groupNames.length; i++ ){
                         if( this.groupNames[i].name === newVal ){
@@ -570,6 +375,9 @@
                         }
                     }
                 },
+                '$store.state.dataview_data.update_flag1':function(newVal,old){
+                    this.clear_search_data()
+                },
             }
     }
 </script>
@@ -583,31 +391,38 @@
         height: 100%;
         position: absolute;
     }
-    .view_box{
-        position: relative;
-        width: 100%;
-        height: 100%;
+
+    /*界面切换样式*/
+    .slide-right-enter-active,
+    .slide-right-leave-active,
+    .slide-left-enter-active{
+        will-change: transform;
+        transition: all 1000ms ease;
+        /*position: absolute;*/
+        /*float: left;*/
     }
-    .item{
-        padding: 0px;
-        margin: 0px;
-        position: absolute;
-        width: 66.6%;
-        height: 100%;
-        transform: scale(0.48);
-        transition: all 0.8s;
+    .slide-left-leave-active {
+        will-change: transform;
+        transition: all 1000ms ease;
+        /*position: absolute;*/
+        float: left;
     }
-    .one{
-        /*background: rgba(255,0,255,0.5);*/
+    .slide-right-enter {
+        opacity: 0;
+        transform: translate3d(-100%, 0, 0);
     }
-    .two{
-        /*background: rgba(255,0,0,0.5);*/
+    .slide-right-leave-active {
+        opacity: 0;
+        transform: translate3d(100%, 0, 0);
     }
-    .three{
-        /*background: rgba(0,255,0,0.5);*/
+    .slide-left-enter {
+        opacity: 0;
+        /*-webkit-transform: translate3d(100%,0, 0);*/
+        transform: translate3d(100%, 0, 0);
     }
-    .active{
-        height: 100%;
-        width: 66.6%;
+    .slide-left-leave-active {
+        opacity: 0;
+        /*-webkit-transform: translate3d(-100%,0, 0);*/
+        transform: translate3d(-100%, 0, 0);
     }
 </style>

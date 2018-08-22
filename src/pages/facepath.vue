@@ -143,8 +143,8 @@
                     startTime: "",
                     endTime: "",
                 },
-                input_confidence: 0,
-                same_confidence: 0,
+                // input_confidence: 0,
+                // same_confidence: 0,
                 datevalue: [(new Date() - 3600 * 1000 * 24 * 1),new Date()-1],
                 pickeroptions:{
                     shortcuts: [{
@@ -182,14 +182,14 @@
                     }]
                 },
 
-                default_data:{
-                    id: 1,
-                    cameraName: "camera 12##########",
-                    nyr: "2018-08-01",
-                    sfm: "11:11:11",
-                    confidence: 89,
-                    mystyle: "2px solid white"
-                },
+                // default_data:{
+                //     id: 1,
+                //     cameraName: "camera 12##########",
+                //     nyr: "2018-08-01",
+                //     sfm: "11:11:11",
+                //     confidence: 89,
+                //     mystyle: "2px solid white"
+                // },
                 // 初始化数据
                 tabledata:[
                    
@@ -383,6 +383,7 @@
                         params.append("photoUrl","")
                     }
                 }else{
+                    // console.log(search_data)
                     this.error_info("请添加图片")
                     return ;
                 }
@@ -474,7 +475,7 @@
                     this.pic = ""
                     this.search_data = {
                         photo: "",
-                        confidence: 0,
+                        confidence: 75,
                         startTime: "",
                         endTime: "",
                     }
@@ -579,14 +580,14 @@
                 this.search_data.confidence = parseInt(this.search_data.confidence)
             },
 
-            '$store.state.is_search_data':function(newVal,old){
+            '$store.state.is_search_data_facepath':function(newVal,old){
                 if ( newVal ){
                     this.search_data.photoUrl = this.$store.state.facepath_data.photo
                     this.dataUrl = this.search_data.photoUrl
-                    this.map.clearMap()
+                    this.click_to_clear(false)
                     this.post_to_get_facepath(this.search_data,"skip")
 
-                    this.$store.state.is_search_data = false
+                    this.$store.state.is_search_data_facepath = false
                     this.$store.state.facepath_data.photo = ""
                 }
             },
@@ -598,14 +599,15 @@
                 }else{
                     this.init( this.center_xy )
                 }
-                // console.log(this.$store.state.is_search_data)
-                if ( this.$store.state.is_search_data ){
+                // console.log(this.$store.state.is_search_data_facepath)
+                if ( this.$store.state.is_search_data_facepath ){
                     this.search_data.photoUrl = this.$store.state.facepath_data.photo
                     this.dataUrl = this.search_data.photoUrl
                     this.map.clearMap()
+                    console.log("haha")
                     this.post_to_get_facepath(this.search_data,"skip")
 
-                    this.$store.state.is_search_data = false
+                    this.$store.state.is_search_data_facepath = false
                     this.$store.state.facepath_data.photo = ""
                 }else{
                     this.get_init_data()

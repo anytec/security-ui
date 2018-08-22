@@ -306,7 +306,7 @@
 			skip_to_facepath:function(img){
 				// this.$store.state.search_data
 				this.$store.state.facepath_data.photo = img
-                this.$store.state.is_search_data = true
+                this.$store.state.is_search_data_facepath = true
 				this.$router.push('/facepath')
 			},
 			skip_to_historyface1:function(num){
@@ -504,6 +504,7 @@
             	}else if( add_data.dataUrl){
             		params.append( "photoUrl", add_data.dataUrl )
             	}else{
+            		console.log(add_data)
             		this.error_info("请添加图片")
                     return ;
             	}
@@ -674,7 +675,7 @@
 			}
 		},
 		beforeRouteLeave(to, from, next) {
-			if( to.path === "/facepath" && this.$store.state.is_search_data ){
+			if( to.path === "/facepath" && this.$store.state.is_search_data_facepath ){
 				to.meta.keepAlive = false; 
 			}
 	        next()

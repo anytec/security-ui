@@ -1844,6 +1844,7 @@ to {height: 373px;opacity: 1;}
 .chart{
 	width: 100%;
 	height: calc(90% - 40px);
+	position: relative;
 }
 .index_navbox{
 	position: relative;

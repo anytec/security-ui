@@ -214,7 +214,7 @@
 			skip_to_facepath:function(img){
 				// this.$store.state.search_data
 				this.$store.state.facepath_data.photo = img
-                this.$store.state.is_search_data = true
+                this.$store.state.is_search_data_facepath = true
 				this.$router.push('/facepath')
 			},
 			click_to_addface:function(num){
@@ -402,7 +402,7 @@
 			this.get_init_data()
 		},
 		beforeRouteLeave(to, from, next) {
-			if( to.path === "/facepath" && this.$store.state.is_search_data ){
+			if( to.path === "/facepath" && this.$store.state.is_search_data_facepath ){
 				to.meta.keepAlive = false; 
 			}  
 			next()

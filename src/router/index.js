@@ -8,6 +8,9 @@ const homepage = r => require.ensure([], () => r(require('@/pages/homepage')), '
 
 // 数据可视化
 const dataview = r => require.ensure([], () => r(require('@/pages/dataview')), 'dataview');
+const dataview1 = r => require.ensure([], () => r(require('@/pages/dataview/dataview1')), 'dataview1');
+const dataview2 = r => require.ensure([], () => r(require('@/pages/dataview/dataview2')), 'dataview2');
+const dataview3 = r => require.ensure([], () => r(require('@/pages/dataview/dataview3')), 'dataview3');
 
 // 人脸检索
 const facepath = r => require.ensure([], () => r(require('@/pages/facepath')), 'facepath');
@@ -70,7 +73,7 @@ const  routes=[
 			title: 'homepage',
 			index: 2,
 			requireAuth: true,
-			keep_alive: true, // 是否缓存
+			keep_alive: false, // 是否缓存
 		},
 		children:[
 		{
@@ -81,8 +84,44 @@ const  routes=[
 				title: 'dataview',
 				index: 3,
 				requireAuth: true,
-				keep_alive: true,
+				keep_alive: false,
 			},
+			redirect: '/dataview1',
+			children:[
+				{
+					path: '/dataview1',
+					name: 'dataview1',
+					component: dataview1,
+					meta:{
+						title: 'dataview1',
+						index: 2,
+						requireAuth: true,
+						keep_alive: false,
+					},
+				},
+				{
+					path: '/dataview2',
+					name: 'dataview2',
+					component: dataview2,
+					meta:{
+						title: 'dataview2',
+						index: 3,
+						requireAuth: true,
+						keep_alive: false,
+					},
+				},
+				{
+					path: '/dataview3',
+					name: 'dataview3',
+					component: dataview3,
+					meta:{
+						title: 'dataview3',
+						index: 4,
+						requireAuth: true,
+						keep_alive: false,
+					},
+				},
+			]
 		},
 		{
 			path: '/facepath',
