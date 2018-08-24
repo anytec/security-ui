@@ -32,6 +32,8 @@ const mmanage4 = r => require.ensure([], () => r(require('@/pages/mmanage4')), '
 
 // 系统管理
 const systemm = r => require.ensure([], () => r(require('@/pages/systemm')), 'systemm');
+const systemm1 = r => require.ensure([], () => r(require('@/pages/systemm1')), 'systemm1');
+const systemm2 = r => require.ensure([], () => r(require('@/pages/systemm2')), 'systemm2');
 
 // const history2 = r => require.ensure([], () => r(require('@/pages/history2')), 'history2');
 
@@ -40,11 +42,17 @@ Vue.use(Router)
 const  routes=[
 	{
 		path: '/',
+		redirect: '/login',
+	},
+	{
+		path: '/login',
 		name: 'login',
 		component: login,
 		meta:{
 			title: '登录',
 			index: 1,
+			requireAuth: false,
+			keep_alive: false, // 是否缓存
 		},
 	},
 	// {
@@ -81,7 +89,7 @@ const  routes=[
 			name: 'dataview',
 			component: dataview,
 			meta:{
-				title: 'dataview',
+				title: '数据可视化',
 				index: 3,
 				requireAuth: true,
 				keep_alive: false,
@@ -93,7 +101,7 @@ const  routes=[
 					name: 'dataview1',
 					component: dataview1,
 					meta:{
-						title: 'dataview1',
+						title: '数据可视化',
 						index: 2,
 						requireAuth: true,
 						keep_alive: false,
@@ -104,7 +112,7 @@ const  routes=[
 					name: 'dataview2',
 					component: dataview2,
 					meta:{
-						title: 'dataview2',
+						title: '数据可视化',
 						index: 3,
 						requireAuth: true,
 						keep_alive: false,
@@ -115,7 +123,7 @@ const  routes=[
 					name: 'dataview3',
 					component: dataview3,
 					meta:{
-						title: 'dataview3',
+						title: '数据可视化',
 						index: 4,
 						requireAuth: true,
 						keep_alive: false,
@@ -128,7 +136,7 @@ const  routes=[
 			name: 'facepath',
 			component: facepath,
 			meta:{
-				title: 'facepath',
+				title: '人脸检索',
 				index: 3,
 				requireAuth: true,
 				keep_alive: true,
@@ -139,7 +147,7 @@ const  routes=[
 			name: 'realtimem',
 			component: realtimem,
 			meta:{
-				title: 'realtimem',
+				title: '实时监控',
 				index: 3,
 				requireAuth: true,
 				keep_alive: true,
@@ -150,7 +158,7 @@ const  routes=[
 			name: 'historyface',
 			component: historyface,
 			meta:{
-				title: 'historyface',
+				title: '历史人脸',
 				index: 3,
 				requireAuth: true,
 				keep_alive: false,
@@ -161,7 +169,7 @@ const  routes=[
 				name: 'historyface1',
 				component: historyface1,
 				meta:{
-					title: 'historyface1',
+					title: '历史人脸-历史报警',
 					index: 4,
 					requireAuth: true,
 					keep_alive: false,
@@ -171,7 +179,7 @@ const  routes=[
 				name: 'historyface2',
 				component: historyface2,
 				meta:{
-					title: 'historyface2',
+					title: '历史人脸-历史抓拍',
 					index: 5,
 					requireAuth: true,
 					keep_alive: false,
@@ -183,7 +191,7 @@ const  routes=[
 			name: 'mmanage',
 			component: mmanage,
 			meta:{
-				title: 'mmanage',
+				title: '布控管理',
 				index: 3,
 				requireAuth: true,
 				keep_alive: false,
@@ -194,7 +202,7 @@ const  routes=[
 				name: 'mmanage1',
 				component: mmanage1,
 				meta:{
-					title: 'mmanage1',
+					title: '布控管理-底库管理',
 					index: 4,
 					requireAuth: true,
 					keep_alive: false,
@@ -204,7 +212,7 @@ const  routes=[
 				name: 'mmanage2',
 				component: mmanage2,
 				meta:{
-					title: 'mmanage2',
+					title: '布控管理-底库人员配置',
 					index: 4,
 					requireAuth: true,
 					keep_alive: false,
@@ -214,7 +222,7 @@ const  routes=[
 				name: 'mmanage3',
 				component: mmanage3,
 				meta:{
-					title: 'mmanage3',
+					title: '布控管理-设备组配置',
 					index: 4,
 					requireAuth: true,
 					keep_alive: false,
@@ -224,7 +232,7 @@ const  routes=[
 				name: 'mmanage4',
 				component: mmanage4,
 				meta:{
-					title: 'mmanage4',
+					title: '布控管理-设备配置',
 					index: 4,
 					requireAuth: true,
 					keep_alive: false,
@@ -241,6 +249,28 @@ const  routes=[
 				requireAuth: true,
 				keep_alive: true,
 			},
+			redirect: '/systemm1',
+			children:[{
+				path: '/systemm1',
+				name: 'systemm1',
+				component: systemm1,
+				meta:{
+					title: '系统管理-用户列表',
+					index: 4,
+					requireAuth: true,
+					keep_alive: false,
+				},
+			},{
+				path: '/systemm2',
+				name: 'systemm2',
+				component: systemm2,
+				meta:{
+					title: '系统管理-操作记录',
+					index: 4,
+					requireAuth: true,
+					keep_alive: false,
+				},
+			}]
 		},
 		]
 	},

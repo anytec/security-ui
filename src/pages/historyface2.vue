@@ -73,10 +73,10 @@
 								</div>
 							</td>
 							<td class="td td10">
-								<div class="td_icon1">
+								<div class="td_icon1" title="跳转到人脸检索">
 									<img src="../assets/historyface/icon1.png" @click="skip_to_facepath(item.snapshotUrl)"/>
 								</div>
-								<div class="td_icon2">
+								<div class="td_icon2" title="跳转添加该人脸">
 									<img src="../assets/historyface/icon8.png" @click="click_to_addface(item.uuid)"/>
 								</div>
 							</td>

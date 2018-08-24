@@ -1,6 +1,5 @@
 <template>
 	<!--html,不用head和body-->
-	<!-- <div class="main_box"> -->
 		<div class="nav">
 			<div class="left_logo">
 				<img src="../assets/logo.png" />
@@ -21,12 +20,11 @@
 				<div class="user_box">
 					<div class="user_icon"><img src="../assets/user_icon.png"/></div>
 					<!-- <div class="user_text">{{user.name}}</div> -->
-					<div class="user_text">admin</div>
+					<div class="user_text" :title="username" >{{username}}</div>
 				</div>
 				<div class="cancellation" @click="logout">注销</div>
 			</div>
 		</div>
-	<!-- </div> -->
 </template>
 
 <script>
@@ -42,7 +40,9 @@
 				isactive6 : false,
 				listnum : 0,
 				active_num: 0,
-				user: {},
+				// user: {},
+
+				username: "",
 			}
 		},
 		created:function(){
@@ -81,8 +81,39 @@
 				this.listnum = this.active_num
 			},
 			logout:function(){
-				this.$store.dispatch('logout').then(() => {
-                    this.$router.replace('/')
+				this.$ajax.post("/user/logout").then((res) => {
+                    if( res.data.status === 0){
+                    	this.success_info("注销成功")
+                        this.$store.dispatch('logout').then(() => {
+		                    this.$router.replace('/')
+		                })
+                    }else{
+                        this.error_info('注销失败')
+                    }
+                }).catch((error) => {
+                    console.log(error)
+                    this.error_info('网络连接出错')
+                    return ;
+                })
+				
+			},
+			// 消息窗口
+			error_info:function(mes){
+				this.$message({
+                    type: 'error',
+                    message: mes,
+                    showClose: true,
+                    center: true,
+
+                })
+			},
+			success_info:function(mes){
+				this.$message({
+                    type: 'success',
+                    message: mes,
+                    showClose: true,
+                    center: true,
+                    duration: 1500,
                 })
 			},
 
@@ -126,11 +157,17 @@
             //     return this.$store.state.user
             // }
         },
+        mounted(){
+        	this.username = sessionStorage.username
+        },
         watch:{
+        	'$store.state.user.uname':function(newval,old){
+				this.username = sessionStorage.username
+			},
         	$route(to,from){
 				// console.log(this.$route.path)
 				this.change_mynav_active()
-			}
+			},
         }
 	}
 </script>

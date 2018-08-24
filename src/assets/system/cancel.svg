@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: rgba(32,32,32,0.9);
+      }
+
+      .cls-2 {
+        fill: rgba(255,255,255,0.7);
+      }
+    </style>
+  </defs>
+  <g id="组_40" data-name="组 40" transform="translate(-1493.756 -328)">
+    <path id="路径_33" data-name="路径 33" class="cls-1" d="M0,0H40V40H0Z" transform="translate(1533.756 328) rotate(90)"/>
+    <g id="组_39" data-name="组 39" transform="translate(689.513 -968.633) rotate(45)">
+      <rect id="矩形_43" data-name="矩形 43" class="cls-2" width="30" height="2" rx="1" transform="translate(1499 347)"/>
+      <rect id="矩形_44" data-name="矩形 44" class="cls-2" width="30" height="2" rx="1" transform="translate(1515 333) rotate(90)"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: rgba(99,99,99,0.9);
+      }
+
+      .cls-2 {
+        fill: rgba(255,255,255,0.8);
+      }
+    </style>
+  </defs>
+  <g id="删除" transform="translate(-1230 -563)">
+    <path id="路径_71" data-name="路径 71" class="cls-1" d="M0,0H40V40H0Z" transform="translate(1270 563) rotate(90)"/>
+    <rect id="矩形_81" data-name="矩形 81" class="cls-2" width="30" height="2" rx="1" transform="translate(1265.244 584) rotate(180)"/>
+  </g>
+</svg>

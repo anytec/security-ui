@@ -40,10 +40,14 @@
                                     <!-- <div class="re_lefttext">{{item.personName}}  {{item.gender}}  {{item.age}}岁  {{item.personGroupName}}</div> -->
                                     <div class="re_lefttext">{{item.personName}}  {{item.gender}}  {{item.personGroupName}}</div>
                                     <div class="icon_bg">
-                                        <div class="re_lefticon"><img src="../assets/historyface/icon1.png"  @click="skip_to_facepath(item.snapshotUrl)"/></div>
+                                        <div class="re_lefticon" title="跳转到人脸检索">
+                                            <img src="../assets/historyface/icon1.png"  @click="skip_to_facepath(item.snapshotUrl)"/>
+                                        </div>
                                     </div>
                                     <div class="re_icon">
-                                        <div class="re_righticon"><img src="../assets/historyface/icon5.png"  @click="skip_to_mmanage2(item.uuid)"/></div>
+                                        <div class="re_righticon" title="跳转到底库人员">
+                                            <img src="../assets/historyface/icon5.png"  @click="skip_to_mmanage2(item.uuid)"/>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="re_infotext">
@@ -86,8 +90,12 @@
                                     <div class="new_photo_text">{{item.gender}}</div>
                                 </div>
                                 <div class="photo_text" v-show="!is_trans">
-                                    <div class="small_icon" ><img style="width:100%" src="../assets/historyface/icon1.png"  @click="skip_to_facepath(item.img)"/></div>
-                                    <div class="small_icon1"><img style="width:100%" src="../assets/historyface/icon6.png"  @click="skip_to_historyface2(item)"/></div>
+                                    <div class="small_icon" title="跳转到人脸检索">
+                                        <img style="width:100%" src="../assets/historyface/icon1.png"  @click="skip_to_facepath(item.img)"/>
+                                    </div>
+                                    <div class="small_icon1" title="跳转到历史抓拍">
+                                        <img style="width:100%" src="../assets/historyface/icon6.png"  @click="skip_to_historyface2(item)"/>
+                                    </div>
                                 </div>
                             </div>
                         </div>

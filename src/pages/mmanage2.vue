@@ -90,9 +90,9 @@
 								<td class="td td4">
 									<div class="td_icon">
 										<div class="td_icon">
-											<img src="../assets/historyface/icon1.png" @click="skip_to_facepath(item.thumbnail)"/>
-											<img src="../assets/historyface/icon6.png" @click="skip_to_historyface1(item.uuid)"/>
-											<img src="../assets/historyface/icon2.png" @click="click_to_change_gallery(item.uuid)"/>
+											<img src="../assets/historyface/icon1.png" @click="skip_to_facepath(item.thumbnail)" title="跳转到人脸检索"/>
+											<img src="../assets/historyface/icon6.png" @click="skip_to_historyface1(item.uuid)" title="跳转到历史报警"/>
+											<img src="../assets/historyface/icon2.png" @click="click_to_change_gallery(item.uuid)" title="修改该人员信息"/>
 										</div>
 									</div>
 								</td>

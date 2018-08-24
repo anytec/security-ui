@@ -44,6 +44,18 @@
 				        trigger: 'axis',
 				        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
 				            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+				        },
+				        formatter:function(data){
+				        	// console.log(data)
+				        	let show_data = data[0].name + "<br/>"
+				        	for( let i = 0; i < data.length; i++ ){
+				        		if( i === 1 ){
+				        			show_data = show_data + data[i].marker + data[i].seriesName + ": " + data[i].data*-1 + "人"
+				        		}else{
+				        			show_data = show_data + data[i].marker + data[i].seriesName + ": " + data[i].data + "人<br/>"
+				        		}
+				        	}
+				        	return show_data
 				        }
 				    },
 				    legend: {
@@ -124,7 +136,7 @@
 				        }
 				    ],
 				    backgroundColor: 'rgba(0,0,0,0.4)', // 修改背景颜色
-				    color: ['#60C4A8','#85D3DD','#189A75','#54CCCA','#056160'], // 线条颜色
+				    color: ['#60C4A8','#189A75','#85D3DD','#54CCCA','#056160'], // 线条颜色
 				    series : [
 				        {
 				            name:'男',
@@ -133,13 +145,21 @@
 				            itemStyle: {normal: {
 				                label : {show: true}
 				            }},
+				            barWidth: '30',
 				            data: mydata.maleNum,
 				            label: {
 				                normal: {
 				                    show: true,
 				                    position: 'right',
+				                    formatter: function(params) {
+				                    	// console.log(params)
+				                    	if( params.data === 0 ){
+			            					// return ""
+			            				}
+				                        return params.data
+				                    },
 				                    textStyle:{
-				                		fontSize: 20,
+				                		fontSize: 16,
 				                	},
 				                },
 				                emphasis: {
@@ -156,16 +176,20 @@
 				            itemStyle: {normal: {
 				                label : {show: true, position: 'left'}
 				            }},
+				            barWidth: '30',
 				            data: mydata.femaleNum,
 				            label: {
 				                normal: {
 				                    show: true,
 				                    position: 'left',
 				                    formatter: function(params) {
+				                    	if( params.data === 0 ){
+			            					// return ""
+			            				}
 				                        return params.data * -1;
 				                    },
 				                    textStyle:{
-				                		fontSize: 20,
+				                		fontSize: 16,
 				                	},
 				                },
 				                emphasis: {
@@ -189,9 +213,19 @@
 			// console.log(this.genderAgeData)
 		},
 		watch:{
-			'ageGroupList':function(newval,old){
+			'maleNum':function(newval,old){
+				// let ageGroupList = []
+				// let maleNum = []
+				// let femaleNum = []
+				// for( let i = 0; i < this.maleNum.length; i++ ){
+				// 	if( this.maleNum[i] != 0 || this.femaleNum[i] != 0 ){
+				// 		ageGroupList.push( this.ageGroupList[i] )
+				// 		maleNum.push( this.maleNum[i] )
+				// 		femaleNum.push( this.femaleNum[i] )
+				// 	}
+				// }
 				let mydata = {
-					yAxis: newval,
+					yAxis: this.ageGroupList,
 					maleNum: this.maleNum,
 					femaleNum: this.femaleNum,
 				}

@@ -149,9 +149,12 @@
 			font-family: "微软雅黑";
 			color: white;
 			height: 60px;
+			width: 60px;
 			line-height: 60px;
 			float: left;
 			margin-left: 10px;
+			text-align: center;
+			overflow:hidden;
 		}
 		.cancellation{
 		    font-size: 16px;
@@ -161,4 +164,5 @@
 			line-height: 60px;
 			float: left;
 			margin-left: 20px;
+			cursor: pointer;
 		}

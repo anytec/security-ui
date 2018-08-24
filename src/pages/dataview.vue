@@ -193,6 +193,8 @@
                 this.get_init_data()
                 // this.post_to_change_page( {} )
                 this.search_data = {}
+
+                this.change_mynav_active()
             },
             methods: {
                 // test:function(){
@@ -354,10 +356,31 @@
                     this.info_search_data = []
                     this.is_show_info = false
                 },
+
+                // 页面跳转
+                change_mynav_active:function(){
+                    if( this.$route.path.indexOf("dataview1") === 1 ){
+                        this["isactive"+(this.active_num+1)] = false
+                        this.isactive1 = true
+                        this.listnum = 0
+                        this.active_num = 0
+                    }else if( this.$route.path.indexOf("dataview2") === 1 ){
+                        this["isactive"+(this.active_num+1)] = false
+                        this.isactive2 = true
+                        this.listnum = 1
+                        this.active_num = 1
+                    }else if( this.$route.path.indexOf("dataview3") === 1 ){
+                        this["isactive"+(this.active_num+1)] = false
+                        this.isactive3 = true
+                        this.listnum = 2
+                        this.active_num = 2
+                    }
+                }
             },
             watch:{
                 $route(to,from){
                     this.transitionName = 'slide-left';
+                    this.change_mynav_active()
                 },
                 'choose_groupName':function(newVal,old){
                     for( let i = 1; i < this.groupNames.length; i++ ){
@@ -376,6 +399,12 @@
                     }
                 },
                 '$store.state.dataview_data.update_flag1':function(newVal,old){
+                    this.clear_search_data()
+                },
+                '$store.state.dataview_data.update_flag2':function(newVal,old){
+                    this.clear_search_data()
+                },
+                '$store.state.dataview_data.update_flag3':function(newVal,old){
                     this.clear_search_data()
                 },
             }

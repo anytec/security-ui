@@ -7,7 +7,9 @@ const store = new Vuex.Store({
     // 全局变量
     state: {
         token: true,
-        user: undefined,
+        user: {
+            username: "",
+        },
         is_search_data: false,
         is_search_data_facepath: false,
         search_data: {},
@@ -30,6 +32,8 @@ const store = new Vuex.Store({
         dataview_data:{
             choose_day: null,
             update_flag1: false,
+            update_flag2: false,
+            update_flag3: false,
         }
     },
     // 修改全局变量必须通过mutations中的方法
@@ -39,7 +43,8 @@ const store = new Vuex.Store({
             state.user = payload
         },
         logout (state) {
-            state.user = undefined
+            sessionStorage.setItem("username","");
+            state.user = {username:""}
         },
         page1_change(state,change_num){
             console.log("state = " + change_num)

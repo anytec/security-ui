@@ -178,7 +178,7 @@
 				                emphasis : {
 				                    label : {
 				                        show : true,
-				                        position : 'center',
+				                        position : 'outside',
 				                        formatter: function(a){
 				                        	return '{white_hide|' + a.data.value + '}\n{hr|}\n{yellow_hide|' + a.percent + '%}'
 				                        },

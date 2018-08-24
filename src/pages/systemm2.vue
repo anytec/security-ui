@@ -1,0 +1,423 @@
+<template>
+	<div class="syslist_box1">
+		<div class="mask_box">
+			<div class="top_title">
+				<div class="sys_lefttext">操作记录</div>
+				<div class="sys_input">
+					<input type="text" placeholder="搜索用户名" v-model="search_data.uname"/>
+					<div class="sysSearch_box" @click="click_to_search">
+						<img :src="alert_src" @mouseover="alert_src=ale_imgsrc2" @mouseout="alert_src=ale_imgsrc1"/>
+					</div>
+				</div>
+				<select v-model="search_data.operand">
+					<option v-for="item in operands">{{item}}</option>
+				</select>
+				<select v-model="search_data.optype">
+					<option v-for="item in optypes">{{item}}</option>
+				</select>
+			</div>
+			<div class="systable_box">
+				<div class="table_thbox systable_thbox">
+					<table>
+						<tr>
+							<td class="td td1">用户名</td>
+							<td class="td td1">ID</td>
+							<td class="td td1">操作类型</td>
+							<td class="td td1">操作对象</td>
+							<td class="td td1">对象ID</td>
+							<td class="td td1">操作结果</td>
+						</tr>
+					</table>
+				</div>
+				<div class="table_thbox2 systable_thbox2">
+					<table>
+						<tr class="tr" v-for="item in tabledata">
+							<td class="td td1">
+								<div class="table_text">
+									<div class="cell_text">
+										{{item.username}}
+									</div>
+								</div>
+							</td>
+							<td class="td td1">
+								<div class="table_text">
+									<div class="cell_text">
+										{{item.userID}}
+									</div>
+								</div>
+							</td>
+							<td class="td td1">
+								<div class="table_text">
+									<div class="cell_text">
+										{{item.type}}
+									</div>
+								</div>
+							</td>
+							<td class="td td1">
+								<div class="table_text">
+									<div class="cell_text">
+										{{item.object1}}
+									</div>
+								</div>
+							</td>
+							<td class="td td1">
+								<div class="td_icon2 sys2_tdtext">
+									{{item.object_ID}}
+								</div>
+							</td>
+							<td class="td td1">
+								<div class="td_icon2 sys2_tdtext">
+									{{item.object_ID}}
+								</div>
+							</td>
+						</tr>
+					</table>
+					
+				</div>
+				<div class="pag system_pag">
+					<el-pagination
+				      @size-change="handleSizeChange"
+				      @current-change="handleCurrentChange"
+				      :current-page="init_data.pageNum"
+				      :page-sizes="[10, 20, 30, 50]"
+				      :page-size="init_data.pageSize"
+				      layout="total, sizes, prev, pager, next, jumper"
+				      :total="init_data.allnum">
+				    </el-pagination>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+
+<script>
+	import MyNav from "./mynav"
+	import LeftNav from "./left_nav7"
+	
+	//js
+	export default {
+		data(){
+			return {
+				alert_src:require('../assets/system/sys_search.svg'),
+				ale_imgsrc1:require('../assets/system/sys_search.svg'),
+				ale_imgsrc2:require('../assets/system/sys_search_1.svg'),
+				pickeroptions:{
+					shortcuts: [{
+						// text: '最近一天',
+						// onClick(picker) {
+						// 	const end = new Date();
+						// 	const start = new Date();
+						// 	start.setTime(start.getTime() - 3600 * 1000 * 24 * 1);
+						// 	picker.$emit('pick', [start, end]);
+						// }
+						// },{
+						text: '最近三天',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 3);
+							picker.$emit('pick', [start, end]);
+						}
+						},{
+						text: '最近一周',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+							picker.$emit('pick', [start, end]);
+						}
+						}, {
+						text: '最近一个月',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+							picker.$emit('pick', [start, end]);
+						}
+						}, {
+						text: '最近三个月',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+							picker.$emit('pick', [start, end]);
+						}
+					}]
+				},
+				value:[(new Date() - 3600 * 1000 * 24 * 1),new Date()],
+				init_data: {
+					pageNum: 1,
+					pageSize: 10,
+					allnum: 0,
+				},
+				tabledata: [{
+					id: 1,
+					username: 'admin',
+					userID: '000001',
+					type: '删除',
+					object1: '人员底库',
+					object_ID:'----------',
+				},
+				{
+					id: 2,
+					username: 'admin',
+					userID: '000001',
+					type: '删除',
+					object1: '人员底库',
+					object_ID:'----------',
+				},
+				{
+					id: 3,
+					username: 'admin',
+					userID: '000001',
+					type: '删除',
+					object1: '人员底库',
+					object_ID:'----------',
+				},
+				{
+					id: 4,
+					username: 'admin',
+					userID: '000001',
+					type: '删除',
+					object1: '人员底库',
+					object_ID:'----------',
+				},
+				{
+					id: 5,
+					username: 'admin',
+					userID: '000001',
+					type: '删除',
+					object1: '人员底库',
+					object_ID:'----------',
+				},
+				{
+					id: 2,
+					username: 'admin',
+					userID: '000001',
+					type: '删除',
+					object1: '人员底库',
+					object_ID:'----------',
+				},
+				{
+					id: 3,
+					username: 'admin',
+					userID: '000001',
+					type: '删除',
+					object1: '人员底库',
+					object_ID:'----------',
+				},
+				{
+					id: 4,
+					username: 'admin',
+					userID: '000001',
+					type: '删除',
+					object1: '人员底库',
+					object_ID:'----------',
+				},
+				{
+					id: 5,
+					username: 'admin',
+					userID: '000001',
+					type: '删除',
+					object1: '人员底库',
+					object_ID:'----------',
+				},
+				{
+					id: 2,
+					username: 'admin',
+					userID: '000001',
+					type: '删除',
+					object1: '人员底库',
+					object_ID:'----------',
+				},
+				{
+					id: 3,
+					username: 'admin',
+					userID: '000001',
+					type: '删除',
+					object1: '人员底库',
+					object_ID:'----------',
+				},
+				{
+					id: 4,
+					username: 'admin',
+					userID: '000001',
+					type: '删除',
+					object1: '人员底库',
+					object_ID:'----------',
+				},
+				{
+					id: 5,
+					username: 'admin',
+					userID: '000001',
+					type: '删除',
+					object1: '人员底库',
+					object_ID:'----------',
+				}],
+
+				operands: [ "操作对象/全部","底库","底库人员","设备组","设备" ],
+				optypes: [ "操作类型/全部","添加","删除","查找","修改" ],
+				search_data: {
+					operand: "操作对象/全部",
+					optype: "操作类型/全部",
+					uname: "",
+				},
+				save_search_data: {},
+
+				isallchecked: false,
+			}//返回数据最外围
+		},
+		components:{
+			MyNav,
+			LeftNav
+		},
+		methods: {
+			handleSizeChange:function(val) {
+				this.init_data.pageSize = val
+				this.get_init_data( this.save_search_data )
+			},
+			handleCurrentChange:function(val) {
+				this.init_data.pageNum = val
+				this.get_init_data( this.save_search_data )
+			},
+			click_to_checkedall:function(){
+				if(!this.isallchecked){
+					this.isallchecked = true
+					for( let i = 0; i < this.tabledata.length; i++){
+						this.tabledata[i].ischecked = true
+					}
+				}else{
+					this.isallchecked = false
+					for( let i = 0; i < this.tabledata.length; i++){
+						this.tabledata[i].ischecked = false
+					}
+				}
+			},
+
+			// 搜索事件
+			click_to_search:function(){
+				this.save_search_data = this.search_data
+				let search_data = {}
+				for( let item in this.search_data ){
+					search_data[item] = this.search_data[item]
+				}
+				this.get_init_data( search_data )
+			},
+
+			// 请求
+			get_init_data:function( search_data = {} ){
+				// 请求库名
+				var params = new URLSearchParams()
+				for( let item in search_data ){
+					params.append( item,search_data[item] )
+				}
+				params.append("pageNum",this.init_data.pageNum)
+                params.append("pageSize",this.init_data.pageSize)
+				this.$ajax.post("/user/operand",params).then((res) => {
+                    if( res.data.status === 0){
+                    	this.init_data.allnum = res.data.data.total
+                		// this.tabledata = res.data.data.list
+                    }else if( res.data.status === 1 ){
+	                    this.error_info('请求失败 ' + res.msg)
+                    	return ;
+                    }else if( res.data.status === 2 ){
+	                    this.error_info('参数错误 ' + res.msg)
+                    	return ;
+                    }else if( res.data.status === 10 ){
+	                    this.error_info('请先登录')
+                    	return ;
+                    }
+                }).catch((error) => {
+                	console.log(error)
+                	this.error_info('网络连接出错')
+                    return ;
+                })
+			},
+		},
+		mounted(){
+			this.get_init_data()
+		},
+	}
+	
+</script>
+
+<style>
+	.el-date-editor .el-range-input{
+		width: 50%;
+	}
+	.el-date-editor>.el-range__icon,
+	.el-date-editor .el-range-separator,
+	.el-date-editor .el-range__close-icon{
+	    line-height: 21px;
+	}
+	.el-input__inner{
+		border: 1px solid #015758; 
+	    background-color: rgba(0,0,0,0);
+	}
+	.el-pagination button:disabled,
+	.el-pagination .btn-next, 
+	.el-pagination .btn-prev,
+	.el-pager li{
+		background-color: rgba(0,0,0,0);
+	}
+	.el-icon-arrow-left:before,
+	.el-icon-arrow-right:before{
+		color: #00fcff;
+	}
+	.el-pager li{
+		color:#017576;
+		font-size: 16px;
+	}
+	.el-pager li.active{
+		color: #06fafd;
+	}
+	.el-pagination__total,
+	.el-pagination .el-select .el-input .el-input__inner,
+	.el-icon-arrow-up:before,
+	.el-select-dropdown__item.selected,
+	.el-pagination__jump,
+	.el-pagination__editor.el-input .el-input__inner{
+		color:#02d0d3;
+	}
+	.el-pagination{
+		width: 660px;
+		margin: 0 auto;
+		margin-top: 5px;
+	}
+	::-webkit-scrollbar {
+	  width: 14px;
+	  height: 14px;
+	}
+	 
+	::-webkit-scrollbar-track,
+	::-webkit-scrollbar-thumb {
+	  border-radius: 999px;
+	  border: 5px solid transparent;
+	}
+	 
+	::-webkit-scrollbar-track {
+	  box-shadow: 1px 1px 5px (200,203,206,0.5) inset;
+	}
+	 
+	::-webkit-scrollbar-thumb {
+	  min-height: 20px;
+	  background-clip: content-box;
+	  box-shadow: 0 0 0 5px rgba(200,203,206,0.5) inset;
+	}
+	 
+	::-webkit-scrollbar-corner {
+	  background: transparent;
+	}
+	.el-range-editor.el-input__inner{
+		width: 100%;
+		height: 100%;
+		background-color: white;
+	}
+	.el-date-editor .el-range-input{
+		width: 50% !important;
+	}
+
+</style>
+<style scoped>
+	@import "../css/historyface.css";
+</style>

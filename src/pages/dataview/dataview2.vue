@@ -5,10 +5,9 @@
                 <v-bar :maleNum="gender_age_data.maleNum" :femaleNum="gender_age_data.femaleNum" :ageGroupList="gender_age_data.ageGroupList" ></v-bar>
             </div>
             <div class="item two" @click="clickChart('2')" style="transform: translate(-26%,26%) scale(0.48)">
-                <v-pie :dayTime="day_time" :showData="showData_day" :fname="name" :flag="update_flag"></v-pie>
+                <v-pie :ageGroupList="gender_age_data.ageGroupList" :genderData="genderData" :AgeGengerData="AgeGenderTotal"></v-pie>
             </div>
             <div class="item three active" @click="clickChart('3')" style="transform: translate(50%,0%) scale(1)">
-                <!-- <v-radar :dayTime="day_time" :showData="showData_day" :fname="name" :flag="update_flag"></v-radar> -->
                 <v-radar :emotionsData="emotions_data"></v-radar>
             </div>
         </div>
@@ -43,12 +42,9 @@
                     maleNum: [],
                     femaleNum: [],
                 },
-                genderTotal: [],
+                AgeGenderTotal: [],
+                genderData:[],
 
-                name: [],
-                day_time: [],
-                showData_hour: [],
-                showData_day: [],
                 // 更改标志
                 update_flag: false,
             }
@@ -65,7 +61,7 @@
                     params.append(item,search_data[item])
                 }
 
-                this.$ajax.post("/data/getPersonCount",params).then((res) => {
+                this.$ajax.post("/data/peopleAnalysis",params).then((res) => {
                     if( res.data.status === 0){
                         this.clear_show_data()
 
@@ -89,10 +85,15 @@
                             // console.log(res.data.data.age[this.gender_age_data.ageGroupList[i]])
                             this.gender_age_data.maleNum.push(res.data.data.age[this.gender_age_data.ageGroupList[i]][0])
                             this.gender_age_data.femaleNum.push(res.data.data.age[this.gender_age_data.ageGroupList[i]][1]*-1)
-                            this.genderTotal.push(res.data.data.age[this.gender_age_data.ageGroupList[i]][2])
+                            this.AgeGenderTotal.push(res.data.data.age[this.gender_age_data.ageGroupList[i]][2])
                         }
+                        let temp_data_gender = []
+                        temp_data_gender.push(res.data.data.gender.male)
+                        temp_data_gender.push(res.data.data.gender.female)
+                        this.genderData = temp_data_gender
                         // console.log(this.gender_age_data)
 
+                        this.$store.state.dataview_data.update_flag2 = !this.$store.state.dataview_data.update_flag2
                     }else if( res.data.status === 1 ){
                         this.error_info('请求失败 ' + res.msg)
                         return ;
@@ -110,10 +111,14 @@
                 })
             },
             clear_show_data:function(){
-                this.name = []
-                this.day_time = []
-                this.showData_hour = []
-                this.showData_day = []
+                this.emotions_data = null
+                this.gender_age_data = {
+                    ageGroupList:[],
+                    maleNum: [],
+                    femaleNum: [],
+                },
+                this.AgeGenderTotal = []
+                this.genderData = []
             },
             // 消息窗口
             error_info:function(mes){

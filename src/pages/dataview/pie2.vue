@@ -1,10 +1,6 @@
 <template>
 	<div class="pie2">
-		<div class="line_head">
-			<select class="pie_select" v-model="choose_day">
-                <option v-for="item in dayTime" class="pie_option">{{item}}</option>
-            </select>
-		</div>
+		<div class="line_head"></div>
 		<div class="main"></div>
 	</div>
 </template>
@@ -14,11 +10,10 @@
 	import echarts from 'echarts'
 
 	export default{
-		props: {
-			showData:Array,
-			fname: Array,
-			dayTime: Array,
-			flag: Boolean,
+		props:{
+			ageGroupList: Array,
+			genderData: Array,
+			AgeGengerData: Array,
 		},
 		data(){
 			return {
@@ -26,14 +21,25 @@
 				myChart: {},
 				name: '环形图',
 
-				choose_day: "",
+				// genderData:[
+	   //              {value:335, name:'男'},
+	   //              {value:679, name:'女'},
+	   //          ],
+	   //          AgeGengerData:[
+	   //              {value:0, name:'0 ~ 10'},
+	   //              {value:310, name:'10 ~ 20'},
+	   //              {value:234, name:'20 ~ 30'},
+	   //              {value:135, name:'30 ~ 40'},
+	   //              {value:104, name:'40 ~ 50'},
+	   //              {value:251, name:'50 ~ 60'},
+	   //              {value:147, name:'60 ~ 70'},
+	   //              {value:102, name:'70 ~ 80'},
+	   //              {value:0, name:'80 ~ 90'},
+	   //          ],
+	            // ageGroupList:[ "0 ~ 10","10 ~ 20","20 ~ 30","30 ~ 40","40 ~ 50","50 ~ 60","60 ~ 70","70 ~ 80","80 ~ 90" ],
 			}
 		},
 		methods:{
-			init_pie:function(){
-				this.choose_day = this.dayTime[0]
-			},
-
 			my_init() {
 				this.legendArr = this.myChart.getOption().series
 				this.legendArr.forEach((data) => {
@@ -44,7 +50,7 @@
 					this.myChart.resize()
 				}.bind(this))
 			},
-			line_echart_init_test:function( total,data ){
+			line_echart_init:function( mydata ){
 				let rich =  {
 				    yellow: {
 				        color: "auto",
@@ -73,99 +79,101 @@
 				        padding: [0,1]
 				    },
 				    hr: {
-				        borderColor: '#0b5263',
+				        borderColor: 'auto',
 				        width: '100%',
 				        borderWidth: 1,
 				        height: 0,
 				    }
 				}
 				let option = {
-					title: {
-				        text: total,
-				        subtext: '总人流量',
-				        left:'center',
-				        top:'43%',
-				        // padding:[24,0],
-				        textStyle:{
-				            color:'#ffffff',
-				            fontSize:40,
-				            align:'center'
-				        },
-				        subtextStyle:{
-				        	color:'#ffffff',
-				        	fontSize:24,
-				        	align:'center',
-				        },
-				    },
-					tooltip : {
+				    tooltip : {
 				        trigger: 'item',
-				        formatter: "{a} <br/>{b} : {c} ({d}%)"
+				        formatter: "{a} <br/>{b}岁 : {c}人 ({d}%)",
+				        textStyle:{	
+				        	fontSize: 20,
+				        }
 				    },
-				    // 图例
 				    legend: {
-				        data: this.fname,
-				        textStyle:{
-				        	color: '#02BF73',
-				        	fontSize: 16,
-				        },
-				        orient: 'vertical',// 'horizontal' | 'vertical' 水平布局|垂直布局
-
+				        orient : 'vertical',
+				        x : 'left',
+				        data: mydata.yAxis,
 				        // 图例位置
 				        x: 20,
 				        y: 'center',
 				        itemWidth: 25,
 				        itemHeight: 10,
 				        itemGap: 20,
-
-				        // backgroundColor: 'rgba(0,0,0,0.3)',
-
 				        // 内边距
 				        padding: 10,
 
-				        icon:'pie',
-				    },
+				        textStyle:{
+				        	color: 'auto',
+				        	fontSize: 20,
+				        },
+				    }, 
 				    toolbox: {
 				        show : true,
-				        orient : 'vertical', // 垂直显示
-		                x: 'right', 
-		                // y: 'center',
 				        feature : {
 				            mark : {show: true},
 				            dataView : {show: false, readOnly: false},
-				            // 图形切换无法生效
-				            magicType : { 
-				                show: true, 
-				                type: ['pie', 'funnel'],
-				                option: {
-				                    funnel: {
-				                        x: '25%',
-				                        width: '50%',
-				                        funnelAlign: 'center',
-				                        max: 1548
-				                    }
-				                }
-				            },
 				            restore : {show: true},
 				            saveAsImage : {show: true}
 				        }
 				    },
-				    calculable : false, // 拖拽重计算特性
+				    calculable : false,
 				    backgroundColor: 'rgba(0,0,0,0.4)', // 修改背景颜色
-				    color: ['#60C4A8','#85D3DD','#189A75','#54CCCA','#056160'], // 线条颜色
-
-					series : [
+				    color: ['#60C4A8','#189A75','#85D3DD','#54CCCA','#056160'], // 线条颜色
+				    series : [
 				        {
-				            name:'人流量统计',
+				            name:'性别',
 				            type:'pie',
-				            radius : ['50%', '65%'],
-				            animation: false,
+				            selectedMode: 'single',
+				            radius : [0, 70],
+				            
+				            // for funnel
+				            x: '20%',
+				            width: '40%',
+				            funnelAlign: 'right',
+				            max: 1548,
+				            
+				            itemStyle : {
+				                normal : {
+				                    label : {
+				                        position : 'inner',
+				                        textStyle:{
+				                        	fontSize: 20,
+				                        	fontWeight: 'bold',
+				                        }
+				                    },
+				                    labelLine : {
+				                        show : false
+				                    }
+				                }
+				            },
+				            data: mydata.genderData,
+				        },
+				        {
+				            name:'年龄段',
+				            type:'pie',
+				            radius : [100, 140],
+				            
+				            // for funnel
+				            x: '60%',
+				            width: '35%',
+				            funnelAlign: 'left',
+				            // max: 1048,
+				            
 				            itemStyle : {
 				                normal : {
 				                    label : {
 				                        show : true,
 				                        position: 'outside',
 				                        formatter: function(a){
-				                        	return '{white|' + a.data.value + '}\n{hr|}\n{yellow|' + a.percent + '%}'
+				                        	if( a.data.value != 0 ){
+				                        		return '{white|' + a.name + '岁}'
+				                        	}else{
+				                        		return a.name + '岁'
+				                        	}
 				                        },
 				                        rich: rich,
 				                    },
@@ -178,17 +186,18 @@
 				                emphasis : {
 				                    label : {
 				                        show : true,
-				                        position : 'center',
+				                        position : 'outside',
 				                        formatter: function(a){
-				                        	return '{white_hide|' + a.data.value + '}\n{hr|}\n{yellow_hide|' + a.percent + '%}'
+				                        	return '{white_hide|' + a.percent + '%}\n{hr|}\n{yellow_hide|' + a.name + '岁}'
 				                        },
 				                        rich: rich,
 				                    }
 				                }
 				            },
-				            data: data,
+
+				            data: mydata.AgeGengerData
 				        }
-				    ],
+				    ]
 				}
                     
 				this.myChart.setOption(option,true)
@@ -196,52 +205,26 @@
 		},
 		mounted(){
 			this.myChart = echarts.init(document.querySelector('.pie2 .main'))
-
-			// console.log(this.dayTime)
-			this.init_pie()
-
-			// this.line_echart_init()
-			// this.line_echart_init_test()
 		},
 		watch:{
-			'choose_day':function(newval,old){
-				let index = this.dayTime.indexOf(newval)
-				let data = [], total = 0
-				// console.log(this.showData.length)
-				for( let i = 0; i < this.showData.length; i++){
-					data.push(
-						{
-							value : this.showData[i][index],
-							name : this.fname[i]
-						}
-					)
-					total = total + data[i].value
+			'genderData':function(newval,old){
+				let mydata = {}
+				let yAxis = []
+				mydata.genderData = [
+					{value:this.genderData[0], name:'男'},
+	                {value:this.genderData[1], name:'女'},
+				]
+				mydata.AgeGengerData = []
+				for( let i = 0; i < this.AgeGengerData.length; i++ ){
+					if( this.AgeGengerData[i] != 0 ){
+						mydata.AgeGengerData.push( {value:this.AgeGengerData[i], name:this.ageGroupList[i]} )
+						yAxis.push(this.ageGroupList[i])
+					}
 				}
-				this.line_echart_init_test(total,data)
+				mydata.yAxis = yAxis
+				this.line_echart_init( mydata )
 				this.my_init()
-
-				this.$store.state.dataview_data.choose_day = newval
 			},
-			'$store.state.dataview_data.choose_day':function(newval,old){
-				this.choose_day = newval
-			},
-			'flag':function(newval,old){
-				this.choose_day = this.dayTime[this.dayTime.length-1]
-
-				let index = this.dayTime.indexOf(this.choose_day)
-				let data = [], total = 0
-				// console.log(this.showData.length)
-				for( let i = 0; i < this.showData.length; i++){
-					data.push(
-						{
-							value : this.showData[i][index],
-							name : this.fname[i]
-						}
-					)
-					total = total + data[i].value
-				}
-				this.line_echart_init_test(total,data)
-			}
 		},
 	}
 	

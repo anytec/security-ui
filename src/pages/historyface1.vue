@@ -113,10 +113,10 @@
 								</div>
 							</td>
 							<td class="td td10">
-								<div class="td_icon1">
+								<div class="td_icon1" title="跳转到人脸检索">
 									<img src="../assets/historyface/icon1.png" @click="skip_to_facepath(item.faceUrl)"/>
 								</div>
-								<div class="td_icon2">
+								<div class="td_icon2" title="跳转到底库人员">
 									<img src="../assets/historyface/icon5.png" @click="skip_to_mmanage2(item.uuid)"/>
 								</div>
 							</td>
@@ -150,7 +150,7 @@
 					video_groups: null,
 					pageNum: 1,
 					pageSize: 10,
-					allnum: 50,
+					allnum: 0,
 				},
 				// 搜索数据
 				search_data:{
