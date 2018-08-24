@@ -73,7 +73,7 @@
 							<td class="td td4">
 								<div class="table_text">
 									<div class="cell_text">
-										{{item.confidence}}
+										{{item.confidence}}%
 									</div>
 								</div>
 							</td>
@@ -113,10 +113,10 @@
 								</div>
 							</td>
 							<td class="td td10">
-								<div class="td_icon1">
+								<div class="td_icon1" title="跳转到人脸检索">
 									<img src="../assets/historyface/icon1.png" @click="skip_to_facepath(item.faceUrl)"/>
 								</div>
-								<div class="td_icon2">
+								<div class="td_icon2" title="跳转到底库人员">
 									<img src="../assets/historyface/icon5.png" @click="skip_to_mmanage2(item.uuid)"/>
 								</div>
 							</td>
@@ -150,7 +150,7 @@
 					video_groups: null,
 					pageNum: 1,
 					pageSize: 10,
-					allnum: 50,
+					allnum: 0,
 				},
 				// 搜索数据
 				search_data:{
@@ -265,7 +265,7 @@
 			skip_to_facepath:function(img){
 				// this.$store.state.search_data
 				this.$store.state.facepath_data.photo = img
-                this.$store.state.is_search_data = true
+                this.$store.state.is_search_data_facepath = true
 				this.$router.push('/facepath')
 			},
 			skip_to_mmanage2:function(num){
@@ -357,6 +357,7 @@
             			for( let i = 0; i < this.tabledata.length; i++){
 		                	this.tabledata[i].uuid = i
 		                	this.tabledata[i].ischecked = false
+		                	this.tabledata[i].confidence = Math.round(this.tabledata[i].confidence * 100)
 		                }
                     }else if( res.data.status === 1 ){
 	                    this.error_info('请求失败 ' + res.msg)
@@ -421,6 +422,7 @@
             			for( let i = 0; i < this.tabledata.length; i++){
 		                	this.tabledata[i].uuid = i
 		                	this.tabledata[i].ischecked = false
+		                	this.tabledata[i].confidence = Math.round(this.tabledata[i].confidence *100)
 		                }
                     }else if( res.data.status === 1 ){
 	                    this.error_info('请求失败 ' + res.msg)
@@ -480,7 +482,7 @@
 		},
 		beforeRouteLeave(to, from, next) {
 			// console.log(to.path)
-			if( to.path === "/facepath" && this.$store.state.is_search_data ){
+			if( to.path === "/facepath" && this.$store.state.is_search_data_facepath ){
 				to.meta.keepAlive = false; 
 			}
 			next()

@@ -2,9 +2,9 @@
   <div id="app" class="fillcontain">
     <!-- <img src="./assets/logo.png"> -->
     <transition :name="transitionName">
-      <keep-alive>
+      <!-- <keep-alive> -->
         <router-view/>
-      </keep-alive>
+      <!-- </keep-alive> -->
     </transition>
   </div>
 </template>

@@ -40,10 +40,14 @@
                                     <!-- <div class="re_lefttext">{{item.personName}}  {{item.gender}}  {{item.age}}岁  {{item.personGroupName}}</div> -->
                                     <div class="re_lefttext">{{item.personName}}  {{item.gender}}  {{item.personGroupName}}</div>
                                     <div class="icon_bg">
-                                        <div class="re_lefticon"><img src="../assets/historyface/icon1.png"  @click="skip_to_facepath(item.faceUrl)"/></div>
+                                        <div class="re_lefticon" title="跳转到人脸检索">
+                                            <img src="../assets/historyface/icon1.png"  @click="skip_to_facepath(item.snapshotUrl)"/>
+                                        </div>
                                     </div>
                                     <div class="re_icon">
-                                        <div class="re_righticon"><img src="../assets/historyface/icon5.png"  @click="skip_to_mmanage2(item.uuid)"/></div>
+                                        <div class="re_righticon" title="跳转到底库人员">
+                                            <img src="../assets/historyface/icon5.png"  @click="skip_to_mmanage2(item.uuid)"/>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="re_infotext">
@@ -57,8 +61,8 @@
                                         <img :src="item.snapshotUrl" style="width:100px;height:100px"/>
                                         <div class="re_icontext">{{item.confidence}}%</div>
                                     </div>
-                                    <div class="re_photobox" style="width:100px;height:100px">
-                                        <img :src="item.faceUrl" />
+                                    <div class="re_photobox" >
+                                        <img :src="item.faceUrl" style="width:100px;height:100px"/>
                                         <div class="re_icontext">目标</div>
                                     </div>
                                 </div>
@@ -86,8 +90,12 @@
                                     <div class="new_photo_text">{{item.gender}}</div>
                                 </div>
                                 <div class="photo_text" v-show="!is_trans">
-                                    <div class="small_icon" ><img style="width:100%" src="../assets/historyface/icon1.png"  @click="skip_to_facepath(item.img)"/></div>
-                                    <div class="small_icon1"><img style="width:100%" src="../assets/historyface/icon6.png"  @click="skip_to_mmanage2()"/></div>
+                                    <div class="small_icon" title="跳转到人脸检索">
+                                        <img style="width:100%" src="../assets/historyface/icon1.png"  @click="skip_to_facepath(item.img)"/>
+                                    </div>
+                                    <div class="small_icon1" title="跳转到历史抓拍">
+                                        <img style="width:100%" src="../assets/historyface/icon6.png"  @click="skip_to_historyface2(item)"/>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -183,21 +191,21 @@
 
                 default_data:{
                     img: "",
-                    time: "",
-                    emotion: "",
-                    age: "",
-                    gender: "",
+                    time: "--:--:--",
+                    emotion: "无",
+                    age: "无",
+                    gender: "无",
                 },
                 default_data1:{
-                    cameraGroupName: '',
-                    cameraName: '',
-                    time_ymd: '',
-                    time_hms: '',
-                    confidence: '',
-                    name: '',
-                    gender: '',
-                    age: '',
-                    personGroupName: '',
+                    cameraGroupName: '无',
+                    cameraName: '无',
+                    time_ymd: 'xx-xx-xx',
+                    time_hms: '--:--:--',
+                    confidence: '无',
+                    name: '无',
+                    gender: '无',
+                    age: '无',
+                    personGroupName: '无',
                     snapshotUrl: '',
                     faceUrl: '',
                 },
@@ -322,7 +330,7 @@
             skip_to_facepath:function(img){
                 // 人脸轨迹
                 this.$store.state.facepath_data.photo = img
-                this.$store.state.is_search_data = true
+                this.$store.state.is_search_data_facepath = true
                 this.$router.push('/facepath')
             },
             skip_to_mmanage2:function(num){
@@ -332,6 +340,10 @@
                 this.$store.state.search_data.groupId = this.alarm_showdata[num].personGroupId
                 this.$store.state.is_search_data = true
                 this.$router.push('/mmanage2')
+            },
+            skip_to_historyface2:function(num){
+                // 请求数据先不管
+                this.$router.push('/historyface2')
             },
 
             // 初始化播放窗口
@@ -559,9 +571,9 @@
             // 请求初始化
             initSocket:function(){
                 // let socket = new SockJS('http://192.168.10.158:9999/gee');
-                let socket = new SockJS('http://192.168.10.126:9990/gee');
+                // let socket = new SockJS('http://192.168.10.126:9990/gee');
                 // let socket = new SockJS('http://192.168.10.132:9999/gee');
-                // let socket = new SockJS('gee');
+                let socket = new SockJS('gee');
                 this.stompClient = Stomp.over(socket);
                 this.stompClient.connect({}, (frame) =>{
                     this.stompClient.subscribe('/topic/camera/warning', (data) => {
@@ -619,7 +631,7 @@
                             }else if( this.default_show_data[i].gender === "male" ){
                                 this.default_show_data[i].gender = "男"
                             }
-                            this.default_show_data[i].confidence = Math.round(this.default_show_data[i].confidence)
+                            // this.default_show_data[i].confidence = Math.round(this.default_show_data[i].confidence)
                         }
                         for ( let i = 0; i < 13; i++){
                             if( i === 0 || i === 12 ){
@@ -671,6 +683,7 @@
                                     this.alarm_showdata.push( JSON.parse(JSON.stringify(this.default_data_alarm[i-1])) )
                                     this.alarm_showdata[i].time_ymd = this.default_data_alarm[i-1].catchTime.split(" ")[0]
                                     this.alarm_showdata[i].time_hms = this.default_data_alarm[i-1].catchTime.split(" ")[1]
+                                    this.alarm_showdata[i].confidence = Math.round(this.default_data_alarm[i-1].confidence * 100)
                                 }else{
                                     this.alarm_showdata.push( JSON.parse(JSON.stringify(this.default_data1)) )
                                 }
@@ -722,7 +735,7 @@
                 return emotions_new.join(',')
             },
             beforeRouteLeave(to, from, next) {
-                if( to.path === "/facepath" && this.$store.state.is_search_data ){
+                if( to.path === "/facepath" && this.$store.state.is_search_data_facepath ){
                     to.meta.keepAlive = false; 
                 }
                 next()

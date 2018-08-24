@@ -90,9 +90,9 @@
 								<td class="td td4">
 									<div class="td_icon">
 										<div class="td_icon">
-											<img src="../assets/historyface/icon1.png" @click="skip_to_facepath(item.thumbnail)"/>
-											<img src="../assets/historyface/icon6.png" @click="skip_to_historyface1(item.uuid)"/>
-											<img src="../assets/historyface/icon2.png" @click="click_to_change_gallery(item.uuid)"/>
+											<img src="../assets/historyface/icon1.png" @click="skip_to_facepath(item.thumbnail)" title="跳转到人脸检索"/>
+											<img src="../assets/historyface/icon6.png" @click="skip_to_historyface1(item.uuid)" title="跳转到历史报警"/>
+											<img src="../assets/historyface/icon2.png" @click="click_to_change_gallery(item.uuid)" title="修改该人员信息"/>
 										</div>
 									</div>
 								</td>
@@ -306,7 +306,7 @@
 			skip_to_facepath:function(img){
 				// this.$store.state.search_data
 				this.$store.state.facepath_data.photo = img
-                this.$store.state.is_search_data = true
+                this.$store.state.is_search_data_facepath = true
 				this.$router.push('/facepath')
 			},
 			skip_to_historyface1:function(num){
@@ -504,6 +504,7 @@
             	}else if( add_data.dataUrl){
             		params.append( "photoUrl", add_data.dataUrl )
             	}else{
+            		console.log(add_data)
             		this.error_info("请添加图片")
                     return ;
             	}
@@ -674,7 +675,7 @@
 			}
 		},
 		beforeRouteLeave(to, from, next) {
-			if( to.path === "/facepath" && this.$store.state.is_search_data ){
+			if( to.path === "/facepath" && this.$store.state.is_search_data_facepath ){
 				to.meta.keepAlive = false; 
 			}
 	        next()

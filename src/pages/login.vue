@@ -1,5 +1,4 @@
 <template>
-
    <div class="main_box">
        <div class="main_content">
            <div class="content_box">
@@ -74,27 +73,9 @@
                         showClose: true,
                         center: true
                     })
-                    // console.log("账号密码不能为空")
                     return false
                 }
-                // this.post_to_login()
-                if( true ){
-                    this.$store.dispatch('login', this.user).then(() => {
-                        this.$notify({
-                            type: 'success',
-                            title: '欢迎你,' + this.user.name + '!',
-                            duration: 3000
-                        })
-                        this.$router.push('/dataview')
-                    })
-                }else{
-                    this.$message({
-                        type: 'error',
-                        message: '网络连接出错',
-                        showClose: true,
-                        center: true
-                    })
-                }
+                this.post_to_login()
             },
             change_view:function(){
                 if( this.imgurl == require("../assets/login/eyes.png") ){
@@ -107,55 +88,81 @@
             },
             post_to_login:function(){
                 var params = new URLSearchParams()
-                params.append("name",this.user.name)
-                params.append("password",this.user.password)
-                params.append("isrem_password",this.isrem_password)
-                this.$ajax.post("login",params).then((res) => {
-                    if(res.data.error){
-                        this.$message({
-                            type: 'error',
-                            message: '用户名或密码错误',
-                            showClose: true,
-                            center: true
+                params.append("uname",this.user.name)
+                params.append("upass",this.user.password)
+                this.$ajax.post("/user/login",params).then((res) => {
+                    if( res.data.status === 0){
+                        sessionStorage.setItem("username", res.data.data.uname)
+                        this.$store.dispatch('login', res.data.data)
+                        // console.log(this.$store.state.user.role)
+                        this.$notify({
+                            type: 'success',
+                            message: '欢迎你' + res.data.data.uname + '!',
+                            duration: 3000
                         })
-                        return false
+                        if( this.isrem_password ){
+                            this.setCookie( this.user.name,this.user.password,7 )
+                        }else{
+                            this.clearCookie()
+                        }
+                        this.$router.replace('/dataview')
                     }else{
-                        this.$store.dispatch('login', this.user).then(() => {
-                            this.$notify({
-                                type: 'success',
-                                title: '欢迎你,' + this.user.name + '!',
-                                duration: 3000
-                            })
-                            this.$router.push('/list')
-                        })
-                        return true
+                        this.error_info(res.data.msg)
                     }
                 }).catch((error) => {
-                    this.$message({
-                        type: 'error',
-                        message: '网络连接出错',
-                        showClose: true,
-                        center: true
-                    })
-                    return false
+                    console.log(error)
+                    this.error_info('网络连接出错')
+                    return ;
                 })
             },
-            get_login_data:function(){
-                this.$ajax.get("login").then((res) => {
-                    if( res.data["isrem_password"]){
-                        this.user.name = res.data["rem_name"]
-                        this.user.password = res.data["rem_password"]
-                        this.isrem_password = true
-                        // console.log("get success!")
-                    }
+            // 消息窗口
+            error_info:function(mes){
+                this.$message({
+                    type: 'error',
+                    message: mes,
+                    showClose: true,
+                    center: true
                 })
+            },
+
+            //设置cookie
+            setCookie(c_name, c_pwd, exdays) {
+                // this.clearCookie()
+                let exdate = new Date(); //获取时间
+                exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * exdays); //保存的天数
+                //字符串拼接cookie
+                window.document.cookie = "uname" + "=" + c_name + ";path=/;expires=" + exdate.toGMTString();
+                window.document.cookie = "upass" + "=" + c_pwd + ";path=/;expires=" + exdate.toGMTString();
+            },
+            //读取cookie
+            getCookie: function() {
+                if (document.cookie.length > 0) {
+                    let arr = document.cookie.split('; '); //这里显示的格式需要切割一下自己可输出看下
+                    for (let i = 0; i < arr.length; i++) {
+                        let arr2 = arr[i].split('='); //再次切割
+                        //判断查找相对应的值
+                        if (arr2[0] == 'uname') {
+                            this.user.name = arr2[1]; //保存到保存数据的地方
+                        } else if (arr2[0] == 'upass') {
+                            this.user.password = arr2[1];
+                        }
+                        this.isrem_password = true
+                    }
+                }
+            },
+            //清除cookie
+            clearCookie: function() {
+                this.setCookie("", "", -1); //修改2值都为空，天数为负1天就好了
             }
         },
-        created:function(){
-            // window.document.title = "登录"
-            // this.get_login_data()
-        }
+        mounted(){
+            if( this.$store.state.user.username === "" ){
+                this.user = {}
+            }
+            this.getCookie()
+        },
     }
+
 </script>
 
 <style scoped>

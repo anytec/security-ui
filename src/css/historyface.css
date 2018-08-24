@@ -1838,12 +1838,13 @@ to {height: 373px;opacity: 1;}
 }
 .min_nav{
 	width: 100%;
-	height: 10%;
+	height: 70px;
 	margin-bottom:40px;
 }
 .chart{
 	width: 100%;
-	height: calc(90% - 40px);
+	height: calc(100% - 130px);
+	position: relative;
 }
 .index_navbox{
 	position: relative;
@@ -2056,3 +2057,235 @@ to {height: 373px;opacity: 1;}
 	width: 100%;
 }
 /*dataview end*/
+
+/*system1 start*/
+.syslist_box1{
+	position: absolute;
+	top: 90px;
+	left: 265px;
+	height:-webkit-calc(100% - 150px); 
+	height:-moz-calc(100% - 150px); 
+	height:calc(100% - 150px);
+	width:-webkit-calc(100% - 325px); 
+	width:-moz-calc(100% - 325px); 
+	width:calc(100% - 325px);
+	background-color: rgba(72,69,89,0.3);
+}
+.sys_lefttext,.sys_righttext{
+	height: 40px;
+	line-height: 50px;
+	color:white;
+	font-size: 20px;
+	margin-left: 20px;
+	float: left;
+}
+.top_title select{
+	border: none;
+	width: 150px;
+	height: 35px;
+	font-size:17px;
+	margin-top: 7px;
+	float: right;
+	margin-right: 20px;
+	color:white;
+	padding: 0px 5px;
+	outline: none;
+	background-color:rgba(9,30,56,0.5);
+}
+.top_title option{
+	background-color:#0A2644;
+}
+.sys_input{
+	width: 260px;
+	height: 35px;
+	margin-top: 7px;
+	float: right;
+	margin-right: 10px;
+}
+.sys_input input{
+	font-size: 16px;
+	background-color: rgba(0,0,0,0.2);
+	width: calc(100% - 55px);
+	height:35px;
+	padding: 0 5px;
+	border: none;
+	float: left;
+	color: white;
+	outline: none;
+}
+.sysSearch_box{
+	float: left;
+	width: 35px;
+	height: 35px;
+}
+.sysSearch_box img{
+	cursor: pointer;
+	height: 100%;
+}
+ input::-webkit-input-placeholder{
+        color:#5E7587;
+    }
+    input::-moz-placeholder{   /* Mozilla Firefox 19+ */
+        color:#5E7587;
+    }
+    input:-moz-placeholder{    /* Mozilla Firefox 4 to 18 */
+        color:#5E7587;
+    }
+    input:-ms-input-placeholder{  /* Internet Explorer 10-11 */ 
+        color:#5E7587;
+    }
+.systable_box{
+    height: 94%;
+    width: 100%;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    position: absolute;
+    top: 6%;
+} 
+.systable_thbox{
+	height: 32px;
+}
+.systable_thbox .td{
+	line-height:inherit;
+}
+.systable_thbox2{
+	height: calc(100% - 80px);
+	background-color:rgba(0,0,0,0) !important;
+}
+.system_pag{
+	padding-top: 5px;
+	padding-bottom: 6px;
+	background-color: rgba(0,0,0,0.3);
+}
+.icon_fa{
+	width: 100px;
+	height: 100%;
+	margin:0 auto;
+}
+.systd_icon2{
+	margin-right: 0;
+	float: inherit;
+	width: 40px;
+	float: left;
+	margin-left: 10px;
+	margin-right: 0px !important;
+}
+.systd_icon2 img{
+	width: 22px;
+	height: 22px;
+}
+.sys2_tdtext{
+    width: 30%;
+    height: 100%;
+    float: none;
+    margin: 0 auto;
+}
+.sys_addicon{
+	width:18px;
+	height: 18px;
+	float: left;
+	margin-top: 17px;
+	margin-left: 25px;
+
+}
+.sys_addicon img{
+	cursor: pointer;
+	width: 100%;
+	height: 100%;
+}
+/*弹窗*/
+.sysadd_user{
+	position: absolute;
+	top: 35%;
+	left: 38%;
+	width:570px;
+	height: 180px;
+	z-index: 999;
+	background-color: rgba(31,112,183,1);
+}
+.systitle_user{
+	position: relative;
+	color: white;
+	width: 100%;
+	height: 40px;
+	background-color: rgba(0,0,0,0.2);
+}
+.systitle_text{
+	font-size: 18px;
+	color: white;
+	height: 40px;
+	line-height: 40px;
+	margin-left: 20px;
+}
+.sysconter_box{
+	width: 100%;
+	height: 170px;
+}
+.sys_maxbox{
+	width: 100%;
+	height: 32px;
+	margin-top: 20px;
+}
+.sysleft_text{
+	text-align: right;
+	width: 17%;
+	height: 30px;
+	line-height: 30px;
+	float: left;
+}
+.sysleft_input{
+	width: 30%;
+	height: 30px;
+	float: left;
+}
+.sysleft_input input{
+	width:calc(100% - 10px);
+	height: 30px;
+	border-radius:5px;
+	border: none;
+	outline: none;
+	padding: 0 5px;
+	color: white;
+	background-color: rgba(0,0,0,0.2);
+}
+.sysleft_input2{
+	width: 77%;
+}
+.sysleft_input select{
+	width: 100%;
+	height: 100%;
+	color: white;
+	border: none;
+	background-color: rgba(0,0,0,0.2);
+	border-radius: 5px;
+}
+.sysleft_input select option{
+	background-color:#3A6993;
+}
+.sys_cancelbtn{
+	position: absolute;
+	right: -55px;
+	top: 0;
+	width: 40px;
+	height: 40px;
+}
+.sys_addbtn{
+	position: absolute;
+	right: -55px;
+	top: 55px;
+	width: 40px;
+	height: 40px;
+}
+.delete_box{
+	position: absolute;
+	right: -55px;
+	top: 140px;
+	width: 40px;
+	height: 40px;
+}
+.sys_cancelbtn img,.sys_addbtn img,.delete_box img{
+	cursor: pointer;
+	width: 100%;
+	height: 100%;
+}
+/*system1 end*/

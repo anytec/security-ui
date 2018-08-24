@@ -111,9 +111,9 @@
 								<td class="td td4">
 									<div class="td_icon">
 										<div class="td_icon">
-											<img src="../assets/historyface/icon7.png" @click="skip_to_realtimem(item.sdkId,item.name)"/>
-											<img src="../assets/historyface/icon6.png" @click="skip_to_historyface1(item.uuid)"/>
-											<img src="../assets/historyface/icon2.png" @click="click_to_change_gallery(item.uuid)"/>
+											<img src="../assets/historyface/icon7.png" @click="skip_to_realtimem(item.sdkId,item.name)" title="跳转到实时监控"/>
+											<img src="../assets/historyface/icon6.png" @click="skip_to_historyface1(item.uuid)" title="跳转到历史报警"/>
+											<img src="../assets/historyface/icon2.png" @click="click_to_change_gallery(item.uuid)" title="修改该设备信息"/>
 										</div>
 									</div>
 								</td>
@@ -736,13 +736,6 @@
 				}
 			}
 		},
-		// beforeRouteLeave(to, from, next) {
-		// 	if( to.path === "/realtimem" && this.$store.state.is_search_data ){
-		// 		to.meta.keepAlive = false
-		// 		// next() 
-		// 	}
-	 //        next()
-	 //    }
 	}
 </script>
 

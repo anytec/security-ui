@@ -1,7 +1,9 @@
 <template>
-	<div class="bar">
+	<div class="line1">
 		<div class="line_head">
-			<div class="pie_title">南山区流量统计图</div>
+			<select class="pie_select" v-model="choose_day">
+                <option v-for="item in dayTime" class="pie_option">{{item}}</option>
+            </select>
 		</div>
 		<div class="main"></div>
 	</div>
@@ -14,9 +16,8 @@
 	export default{
 		props: {
 			showData:Array,
-			dayTime: Array,
-			
 			fname: Array,
+			dayTime:Array,
 			flag: Boolean,
 		},
 		data(){
@@ -24,10 +25,15 @@
 				legendArr: [],
 				// color: this.$store.state.color,
 				myChart: {},
-				name: '柱形图'
+				name: '折线图',
+
+				choose_day: null,
 			}
 		},
 		methods:{
+			init_line:function(){
+				this.choose_day = this.dayTime[0]
+			},
 			my_init() {
 				this.legendArr = this.myChart.getOption().series
 				this.legendArr.forEach((data) => {
@@ -39,7 +45,7 @@
 				}.bind(this))
 			},
 			line_echart_init:function(){
-				this.myChart = echarts.init(document.querySelector('.line .main'))
+				this.myChart = echarts.init(document.querySelector('.line1 .main'))
 				this.myChart.setOption(
 					{
 						baseOption:{
@@ -156,31 +162,31 @@
 								series : [
 							        {
 							            name:'设备设备设备设备设备',
-							            type:'bar',
+							            type:'line',
 							            stack: '总量',
 							            data:[10, 20, 100, 50, 20, 120, 135, 70, 40, 5, 10, 20, 50]
 							        },
 							        {
 							            name:'设备2',
-							            type:'bar',
+							            type:'line',
 							            stack: '总量',
 							            data:[15, 25, 110, 60, 10, 100, 155, 60, 50, 15, 20, 25, 40]
 							        },
 							        {
 							            name:'设备3',
-							            type:'bar',
+							            type:'line',
 							            stack: '总量',
 							            data:[5, 15, 120, 50, 15, 130, 105, 40, 60, 5, 10, 35, 60]
 							        },
 							        {
 							            name:'设备4',
-							            type:'bar',
+							            type:'line',
 							            stack: '总量',
 							            data:[25, 35, 100, 50, 25, 150, 125, 30, 80, 15, 15, 25, 30]
 							        },
 							        {
 							            name:'设备5',
-							            type:'bar',
+							            type:'line',
 							            stack: '总量',
 							            data:[5, 25, 120, 40, 15, 135, 145, 20, 70, 25, 10, 20, 35]
 							        }
@@ -225,7 +231,7 @@
 					}
 				)
 				this.myChart.on('click', (params) => {
-				    // console.log(params.componentType)
+				    console.log(params.componentType)
 				    if( params.componentType === 'timeline' ){
 				    	this.myChart.dispatchAction({
 						    type: 'timelinePlayChange',
@@ -236,9 +242,9 @@
 				    
 				});
 			},
-			line_echart_init_test:function( data ){
+			line_echart_init_test:function(  data ){
 				let option = {
-					grid:{
+	                grid:{
 	                	y: 100,
 	                    y2: 100,
 	                },
@@ -260,6 +266,8 @@
 				        itemWidth: 25,
 				        itemHeight: 10,
 				        itemGap: 20,
+
+				        // backgroundColor: 'rgba(0,0,0,0.3)',
 
 				        // 内边距
 				        padding: 10,
@@ -287,7 +295,8 @@
 				        {
 				        	name : '时间', 
 				            type : 'category',
-				            data : this.dayTime,
+				            boundaryGap : false,
+				            data : ['00:00','2:00','4:00','6:00','08:00','10:00','12:00','14:00','16:00','18:00','20:00','22:00','24:00'],
 				            axisLine:{
 				            	lineStyle: {
 				            		color: '#02BF73',
@@ -338,19 +347,22 @@
 				    series: this.series_data( data )
 				}
 
+				// this.myChart = echarts.init(document.querySelector('.line .main'))
 				this.myChart.setOption(option,true)
 			},
+
 			// 数据组装
-			series_data:function( showdata ){
+			series_data:function( mydata ){
 				let data = []
-				for( let i = 0; i < showdata.length; i++ ){
+				// console.log(mydata)
+				for( let i = 0; i < mydata.length; i++ ){
 					data.push(
 						{
-				            name: this.fname[i],
-				            type: 'bar',
-				            stack: this.fname[i],
-				            data: showdata[i],
-				        }
+						    name: this.fname[i],
+						    type:'line',
+						    stack: this.fname[i],
+						    data: mydata[i],
+						},
 					)
 				}
 				// console.log(data)
@@ -358,17 +370,38 @@
 			}
 		},
 		mounted(){
-			this.myChart = echarts.init(document.querySelector('.bar .main'))
+			this.myChart = echarts.init(document.querySelector('.line1 .main'))
+			this.init_line()
 			// this.line_echart_init()
-			this.line_echart_init_test( this.showData )
-			this.my_init()
+			// this.line_echart_init_test()
+			// this.my_init()
+
+			// console.log(this.fname)
 		},
 		watch:{
+			'choose_day':function(newval,old){
+				let index = this.dayTime.indexOf(newval)
+				if( index != -1 ){
+					this.line_echart_init_test(this.showData[index])
+					this.my_init()
+				}
+				
+				this.$store.state.dataview_data.choose_day = newval
+			},
+			'$store.state.dataview_data.choose_day':function(newval,old){
+				this.choose_day = newval
+			},
 			'flag':function(newval,old){
-				// console.log(newval)
-				this.line_echart_init_test( this.showData )
+				this.choose_day = this.dayTime[this.dayTime.length-1]
+				let index = this.dayTime.indexOf(this.choose_day)
+				if( index != -1 ){
+					this.line_echart_init_test(this.showData[index])
+					this.my_init()
+				}
+				
+				// this.$store.state.dataview_data.choose_day = newval
 			}
-		},
+		}
 
 	}
 	
@@ -376,7 +409,7 @@
 
 
 <style scoped>
-	.bar{
+	.line1{
 		width: 100%;
 		height: 100%;
 	}
@@ -390,12 +423,25 @@
 		/*margin-bottom: 10px;*/
 		background-color: rgba(0,0,0,0.5);
 	}
-	.pie_title{
-         width: 300px;
-         height: 60px;
-         line-height: 60px;
-         color: #cccccc;
-         font-size: 20px;
-         margin-left: 20px;
+	.pie_select{
+		border-top-left-radius: 5px;
+		border-top-right-radius: 5px;
+		margin-right: 20px;
+		width: 170px;
+		height: 32px;
+		font-size: 16px;
+		float: right;
+ 		margin-top: 14px;
+		padding: 0px 8px;
+		background-color: rgba(225,225,225,0.1);
+		border: none;
+		color: #cccccc;
+		outline: none;
+	}
+	.pie_option{
+		background-color: #34465a ;
+  		color: #cccccc;
+  		border: none;
+  		outline: none;
 	}
 </style>

@@ -6,6 +6,7 @@ import router from './router'
 import './element'
 import './axios'
 import store from './vuex'
+// import echarts from 'echarts'
 
 Vue.config.productionTip = false
 

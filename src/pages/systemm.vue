@@ -1,28 +1,67 @@
 <template>
-	<div class="list_box">
-    <h1>系统管理页面(未设计)</h1>
-	</div>
+    <div class="left_mainBox">
+        <left-nav></left-nav>
+        <transition :name="transitionName">
+            <router-view></router-view>
+        </transition>
+    </div>
 </template>
 
 <script>
+    import LeftNav from "./left_nav7"
+
 	export default {
-		
+		components:{
+            LeftNav,
+        },
+        data(){
+            return {
+                transitionName: '',
+            }
+        },
+        watch:{
+            $route(to,from){
+                this.transitionName = 'slide-left';
+            }
+        }
 	}
 </script>
 
 <style scoped>
-.list_box{
-  position: absolute;
-  top: 90px;
-  left: 265px;
-  height:-webkit-calc(100% - 150px); 
-  height:-moz-calc(100% - 150px); 
-  height:calc(100% - 150px);
-  width:-webkit-calc(100% - 325px); 
-  width:-moz-calc(100% - 325px); 
-  width:calc(100% - 325px);
-  border: 1px solid #00ffff;
-  background-color: rgba(72,69,89,0.3);
-  border-radius: 5px;
-}
+    .left_mainBox{
+        width: 100%;
+        height: 100%;
+    }
+
+    /*界面切换样式*/
+    .slide-right-enter-active,
+    .slide-right-leave-active,
+    .slide-left-enter-active{
+        will-change: transform;
+        transition: all 1000ms ease;
+        position: absolute;
+    }
+    .slide-left-leave-active {
+        will-change: transform;
+        transition: all 1000ms ease;
+        position: absolute;
+    }
+    .slide-right-enter {
+        opacity: 0;
+        transform: translate3d(-100%, 0, 0);
+    }
+    .slide-right-leave-active {
+        opacity: 0;
+        transform: translate3d(100%, 0, 0);
+    }
+    .slide-left-enter {
+        opacity: 0;
+        /*-webkit-transform: translate3d(100%,0, 0);*/
+        transform: translate3d(100%, 0, 0);
+    }
+    .slide-left-leave-active {
+        opacity: 0;
+        /*-webkit-transform: translate3d(-100%,0, 0);*/
+        transform: translate3d(-100%, 0, 0);
+    }
 </style>
