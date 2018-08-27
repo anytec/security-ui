@@ -34,7 +34,8 @@ const store = new Vuex.Store({
             update_flag1: false,
             update_flag2: false,
             update_flag3: false,
-        }
+        },
+        timer_num: null,
     },
     // 修改全局变量必须通过mutations中的方法
     // mutations只能采用同步方法

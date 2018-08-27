@@ -201,7 +201,7 @@
 				add_data:{
 					gender:"男",
 					idNumber:"",
-					remarks:"--",
+					remarks:"",
 					name:"",
 					photo: "",
 					groupName: "",

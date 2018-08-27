@@ -10,7 +10,7 @@
 					<option selected="selected">设备组/不限</option>
 					<option v-for="item in init_data.cameraGroupNames">{{ item.name }}</option>
 				</select>
-				<input class="center_input" type="text" v-model="search_data.cameraName" placeholder="设备名称"/>
+				<!-- <input class="center_input" type="text" v-model="search_data.cameraName" placeholder="设备名称"/> -->
 				<div class="right_btn h2_right_btn">
 					<div class="time_box">时间范围</div>
 					<div class="time_input">

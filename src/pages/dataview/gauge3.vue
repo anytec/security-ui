@@ -13,6 +13,8 @@
 	export default{
 		props: {
 			cpuData: Number,
+			hardDisk: Number,
+			ROM: Number,
 		},
 		data(){
 			return {
@@ -32,7 +34,7 @@
 				}.bind(this))
 			},
 
-			line_echart_init:function( cpuData ){
+			line_echart_init:function( ){
                 let option = {
 				    backgroundColor: 'rgba(0,0,0,0.4)',
 				    series: [
@@ -94,7 +96,7 @@
 				                }
 				            },
 				            data: [{
-				                value: cpuData,
+				                value: this.cpuData,
 				                name: 'CPU'
 				            }]
 				        },
@@ -157,7 +159,7 @@
 				                }
 				            },
 				            data: [{
-				                value: 30.35,
+				                value: this.ROM,
 				                name: '内存'
 				            }]
 				        },
@@ -222,21 +224,30 @@
 				                }
 				            },
 				            data: [{
-				                value: 60.12,
+				                value: this.hardDisk,
 				                name: '硬盘'
 				            }]
 				        }
 				    ]
                 }
+                this.myChart = echarts.init(document.querySelector('.gauge3 .main'))
 				this.myChart.setOption(option,true)
 			},
 		},
 		mounted(){
-			this.myChart = echarts.init(document.querySelector('.gauge3 .main'))
+			// this.myChart = echarts.init(document.querySelector('.gauge3 .main'))
 		},
 		watch:{
+			'hardDisk':function(newval,old){
+				this.line_echart_init()
+				this.my_init()
+			},
 			'cpuData':function(newval,old){
-				this.line_echart_init(newval)
+				this.line_echart_init()
+				this.my_init()
+			},
+			'ROM':function(newval,old){
+				this.line_echart_init()
 				this.my_init()
 			}
 		},

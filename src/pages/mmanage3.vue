@@ -151,7 +151,7 @@
 				delete_data: [],
 				add_data:{
 					name: "",
-					remarks: "--",
+					remarks: "",
 				},
 				change_data: {},
 
@@ -276,6 +276,9 @@
 
 			// 页面跳转
 			skip_to_camera:function(num){
+				// 此处groupId 为设备组名
+				this.$store.state.search_data.groupId = this.tabledata[num].name
+				this.$store.state.is_search_data = true
 				this.$router.push('/mmanage4')
 			},
 			skip_to_facepath:function(num){

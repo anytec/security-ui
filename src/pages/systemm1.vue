@@ -268,6 +268,7 @@
 						update_date[items[i]] = this.showData[items[i]]
 					}
 				}
+				update_date.id = this.tabledata[this.showData.uuid].id
 				this.require_to_update( update_date )
 
 				this.is_click_to_set = false
@@ -379,7 +380,7 @@
                 	params.append(item,update_date[item])
                 }
 
-				this.$ajax.post("/user/register",params).then((res) => {
+				this.$ajax.post("/user/update",params).then((res) => {
                     if( res.data.status === 0){
                     	this.success_info("修改用户信息成功")
                     	this.close_add_info()

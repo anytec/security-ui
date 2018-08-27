@@ -4,9 +4,9 @@
         <div class="top_information">
             <div class="index_topbox">
                 <div class="index_time" >{{show_date}}</div>
-                <div class="index_snap index_snap1">抓拍    <span>95631</span>   次</div>
-                <div class="index_snap">报警    <span>5</span>   次</div>
-                <div class="index_personnel">底库人员总量    <span>1000000</span>   张</div>
+                <div class="index_snap index_snap1">抓拍    <span>{{ snapCount }}</span>   次</div>
+                <div class="index_snap">报警    <span>{{ warningCount }}</span>   次</div>
+                <div class="index_personnel">底库人员总量    <span>{{ person_total }}</span>   张</div>
             </div>
         </div>
         <div class="index_bottombox">
@@ -42,13 +42,25 @@
                     <div class="active_div" :style="{ left: 192*listnum + 'px' }"></div>
                 </div>
                 <div class="index_rightbtn">
-                    <div class="index_btn">数据生成</div>
-                    <div class="index_btn" @click="is_show_info = true">设备选择</div>
+                    <div class="data_timebox" v-show="is_show_date">
+                        <el-date-picker
+                          v-model="dateValue"
+                          type="daterange"
+                          align="right"
+                          unlink-panels
+                          range-separator="至"
+                          start-placeholder="开始日期"
+                          end-placeholder="结束日期"
+                          :picker-options="pickerOptions">
+                        </el-date-picker>
+                    </div>
+                    <div class="index_btn" v-show="false">数据生成</div>
+                    <div class="index_btn" @click="is_show_info = true" v-show="is_show_choose">设备选择</div>
                 </div>
             </div>
             <transition :name="transitionName">
                 <!-- <keep-alive> -->
-                    <router-view :searchData="search_data"></router-view>
+                    <router-view :searchData="search_data" :dateValue="dateValue"></router-view>
                 <!-- </keep-alive> -->
             </transition>
         </div>
@@ -133,6 +145,11 @@
                     // 页面切换
                     transitionName: '',
 
+                    // 顶栏数据显示
+                    snapCount: 0,
+                    warningCount: 0,
+                    person_total: 0,
+
                     items: [],
 
                     // 弹窗加切换栏
@@ -157,6 +174,8 @@
                     confirm_src1:require('../assets/index/refresh_icon.svg'),
                     confirm_src2:require('../assets/index/refresh_icon_1.svg'),
                     is_show_info: false,
+                    is_show_date: false,
+                    is_show_choose: true,
 
                     // 弹窗
                     cameraName: "",
@@ -173,6 +192,42 @@
                     video_names: [],
                     cameraSdkIds: "",
                     cameraGroupIds: "",
+                    dateValue: [(new Date() - 3600 * 1000 * 24 * 1),new Date()-1],
+                    pickerOptions: {
+                      shortcuts: [{
+                        text: '最近三天',
+                        onClick(picker) {
+                          const end = new Date();
+                          const start = new Date();
+                          start.setTime(start.getTime() - 3600 * 1000 * 24 * 3);
+                          picker.$emit('pick', [start, end]);
+                        }
+                      },{
+                        text: '最近一周',
+                        onClick(picker) {
+                          const end = new Date();
+                          const start = new Date();
+                          start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                          picker.$emit('pick', [start, end]);
+                        }
+                      }, {
+                        text: '最近一个月',
+                        onClick(picker) {
+                          const end = new Date();
+                          const start = new Date();
+                          start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                          picker.$emit('pick', [start, end]);
+                        }
+                      }, {
+                        text: '最近三个月',
+                        onClick(picker) {
+                          const end = new Date();
+                          const start = new Date();
+                          start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                          picker.$emit('pick', [start, end]);
+                        }
+                      }]
+                    },
 
                     // 子组件传递参数
                     search_data: {},
@@ -183,15 +238,23 @@
                     showData_day: [],
                     // 更改标志
                     update_flag: false,
+
+                    // 定时器
+                    timer_num: null,
                 }
             },
             mounted() {
-                setInterval(() => {
+                this.get_snapCounting()
+                this.get_mmanage_people_num()
+                this.timer_num = setInterval(() => {
                     this.show_date = this.real_time()
+                    this.get_snapCounting()
                 }, 1000);
-                // this.chooseDay = this.day_time[0]
+                // setInterval(() => {
+                //     this.get_mmanage_people_num()
+                // }, 10000);
+
                 this.get_init_data()
-                // this.post_to_change_page( {} )
                 this.search_data = {}
 
                 this.change_mynav_active()
@@ -350,6 +413,53 @@
                         return ;
                     })
                 },
+                get_snapCounting:function(){
+                    var params = new URLSearchParams()
+                    this.$ajax.post("/data/snapCounting",params).then((res) => {
+                        if( res.data.status === 0){
+                            if( res.data.data.snapCount ){
+                                this.snapCount = res.data.data.snapCount
+                            }
+                            if( res.data.data.warningCount ){
+                                this.warningCount = res.data.data.warningCount
+                            }                    
+                        }else if( res.data.status === 1 ){
+                            // this.error_info('请求失败 ' + res.msg)
+                            return ;
+                        }else if( res.data.status === 2 ){
+                            // this.error_info('参数错误 ' + res.msg)
+                            return ;
+                        }else if( res.data.status === 10 ){
+                            // this.error_info('请先登录')
+                            return ;
+                        }
+                    }).catch((error) => {
+                        console.log(error)
+                        // this.error_info('网络连接出错')
+                        return ;
+                    })
+                },
+                get_mmanage_people_num:function(){
+                    // 请求人员数据
+                    this.$ajax.post("/person/list").then((res) => {
+                        if( res.data.status === 0){
+                            this.person_total = res.data.data.total
+                        }else if( res.data.status === 1 ){
+                            // this.error_info('请求失败 ' + res.msg)
+                            return ;
+                        }else if( res.data.status === 2 ){
+                            // this.error_info('参数错误 ' + res.msg)
+                            return ;
+                        }else if( res.data.status === 10 ){
+                            // this.error_info('请先登录')
+                            return ;
+                        }
+                    }).catch((error) => {
+                        console.log(error)
+                        // this.error_info('网络连接出错')
+                        return ;
+                    })
+                },
                 
                 // 弹窗关闭清除
                 clear_search_data:function(){
@@ -364,16 +474,22 @@
                         this.isactive1 = true
                         this.listnum = 0
                         this.active_num = 0
+                        this.is_show_date = false
+                        this.is_show_choose = true
                     }else if( this.$route.path.indexOf("dataview2") === 1 ){
                         this["isactive"+(this.active_num+1)] = false
                         this.isactive2 = true
                         this.listnum = 1
                         this.active_num = 1
+                        this.is_show_date = true
+                        this.is_show_choose = true
                     }else if( this.$route.path.indexOf("dataview3") === 1 ){
                         this["isactive"+(this.active_num+1)] = false
                         this.isactive3 = true
                         this.listnum = 2
                         this.active_num = 2
+                        this.is_show_date = false
+                        this.is_show_choose = false
                     }
                 }
             },
@@ -407,6 +523,10 @@
                 '$store.state.dataview_data.update_flag3':function(newVal,old){
                     this.clear_search_data()
                 },
+            },
+            beforeRouteLeave(to, from, next){
+                clearInterval(this.timer_num)
+                next()
             }
     }
 </script>

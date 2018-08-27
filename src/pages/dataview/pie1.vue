@@ -1,6 +1,7 @@
 <template>
 	<div class="pie1">
 		<div class="line_head">
+			<div class="pie_title">日人流量占比图</div>
 			<select class="pie_select" v-model="choose_day">
                 <option v-for="item in dayTime" class="pie_option">{{item}}</option>
             </select>
@@ -190,12 +191,13 @@
 				        }
 				    ],
 				}
-                    
+                
+                this.myChart = echarts.init(document.querySelector('.pie1 .main'))
 				this.myChart.setOption(option,true)
 			},
 		},
 		mounted(){
-			this.myChart = echarts.init(document.querySelector('.pie1 .main'))
+			
 
 			// console.log(this.dayTime)
 			this.init_pie()
@@ -215,8 +217,9 @@
 							name : this.fname[i]
 						}
 					)
-					total = total + data[i].value
+					total = total + Number(data[i].value)
 				}
+				this.myChart = echarts.init(document.querySelector('.pie1 .main'))
 				this.line_echart_init_test(total,data)
 				this.my_init()
 
@@ -238,8 +241,9 @@
 							name : this.fname[i]
 						}
 					)
-					total = total + data[i].value
+					total = total + Number(data[i].value)
 				}
+				this.myChart = echarts.init(document.querySelector('.pie1 .main'))
 				this.line_echart_init_test(total,data)
 			}
 		},
@@ -283,5 +287,14 @@
   		color: #cccccc;
   		border: none;
   		outline: none;
+	}
+	.pie_title{
+        width: 300px;
+        height: 60px;
+        line-height: 60px;
+        color: #cccccc;
+        font-size: 20px;
+        margin-left: 20px;
+        float: left;
 	}
 </style>

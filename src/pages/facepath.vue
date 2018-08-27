@@ -145,7 +145,7 @@
                 },
                 // input_confidence: 0,
                 // same_confidence: 0,
-                datevalue: [(new Date() - 3600 * 1000 * 24 * 1),new Date()-1],
+                datevalue: [(new Date() - 3600 * 1000 * 24 * 15),new Date()-1],
                 pickeroptions:{
                     shortcuts: [{
                         text: '最近三天',
@@ -393,7 +393,7 @@
                 this.$ajax.post("/main/identifySnap",params,{headers: {'Content-Type': 'multipart/form-data'}}).then((res) => {
                 // this.$ajax.post("",params).then((res) => {
                     if( res.data.status === 0){
-                        if( res.data === "" ){
+                        if( !res.data.data ){
                             this.$message({
                                 type: 'warning',
                                 message: '无对应数据',
@@ -420,7 +420,7 @@
                         this.add_markers() // 添加标记
                         this.add_line() // 添加轨迹
                     }else if( res.data.status === 1 ){
-                        this.error_info('请求失败 ' + res.msg)
+                        this.error_info('图片未检测到人脸或格式错误')
                         return ;
                     }else if( res.data.status === 2 ){
                         this.error_info('参数错误 ' + res.msg)
@@ -428,6 +428,8 @@
                     }else if( res.data.status === 10 ){
                         this.error_info('请先登录')
                         return ;
+                    }else{
+                        this.error_info(res.data.status)
                     }
                 }).catch((error) => {
                     console.log(error)
@@ -471,6 +473,7 @@
                 this.map.clearMap()
                 this.tabledata = null
                 if( flag ){
+                    this.datevalue = [(new Date() - 3600 * 1000 * 24 * 15),new Date()-1],
                     this.dataUrl = ""
                     this.pic = ""
                     this.search_data = {
@@ -542,15 +545,26 @@
                 // console.log(contects.length)
                 
                 for( let i = 0; i < contects.length; i++ ){
+                    // this.infomycontent.push(
+                    //     '<div class="face_infobox">\
+                    //         <div class="face_title">\
+                    //             <div class="snap">抓拍：3214</div>\
+                    //             <div class="state">正常</div>\
+                    //             <div class="face_icon1"><img src="'+this.icon_eye+'" onclick="test()"/></div>\
+                    //             <div class="face_icon2"><img src="'+this.icon_setting+'"/></div>\
+                    //         </div>\
+                    //         <div class="face_camera">camera:################</div>\
+                    //         <div class="face_conter">'
+                    //         + contects[i] +
+                    //         '</div>\
+                    //     </div>'
+                    // )
                     this.infomycontent.push(
                         '<div class="face_infobox">\
                             <div class="face_title">\
-                                <div class="snap">抓拍：3214</div>\
                                 <div class="state">正常</div>\
-                                <div class="face_icon1"><img src="'+this.icon_eye+'" onclick="test()"/></div>\
-                                <div class="face_icon2"><img src="'+this.icon_setting+'"/></div>\
                             </div>\
-                            <div class="face_camera">camera:################</div>\
+                            <div class="face_camera">'+ this.tabledata[this.markers_list[i]].cameraName +'</div>\
                             <div class="face_conter">'
                             + contects[i] +
                             '</div>\

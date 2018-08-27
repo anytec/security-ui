@@ -1,7 +1,8 @@
 <template>
 	<div class="bar1">
 		<div class="line_head">
-			<div class="pie_title">南山区流量统计图</div>
+			<div class="pie_title">日人流量统计图</div>
+			<div class="pie_title"></div>
 		</div>
 		<div class="main"></div>
 	</div>
@@ -75,10 +76,10 @@
 				            mark : {show: true}, // 
 				            dataView : {show: false, readOnly: false},
 				            magicType : {
-				            	show: true, 
+				            	show: false, 
 				            	type: ['line', 'bar', 'stack', 'tiled'],
 				            },
-				            restore : {show: true},
+				            restore : {show: false},
 				            saveAsImage : {show: true}
 				        }
 				    },
@@ -140,6 +141,7 @@
 				    series: this.series_data( data )
 				}
 
+				this.myChart = echarts.init(document.querySelector('.bar1 .main'))
 				this.myChart.setOption(option,true)
 			},
 			// 数据组装
@@ -160,7 +162,7 @@
 			}
 		},
 		mounted(){
-			this.myChart = echarts.init(document.querySelector('.bar1 .main'))
+			// this.myChart = echarts.init(document.querySelector('.bar1 .main'))
 			// this.line_echart_init()
 			this.line_echart_init_test( this.showData )
 			this.my_init()
@@ -199,5 +201,14 @@
          color: #cccccc;
          font-size: 20px;
          margin-left: 20px;
+	}
+	.pie_title{
+        width: 300px;
+        height: 60px;
+        line-height: 60px;
+        color: #cccccc;
+        font-size: 20px;
+        margin-left: 20px;
+        float: left;
 	}
 </style>

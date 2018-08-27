@@ -204,6 +204,7 @@
 					type:["抓拍机","视频流"],
 					pageNum: 1,
 					pageSize: 10,
+					is_get_init_data : false,
 				},
 				// 搜索数据
 				search_data:{
@@ -238,6 +239,8 @@
 				is_add_serverLabels:false,
 				add_serverLabel: null,
 				map_serverLabels_list:[],
+
+				
 			} //返回数据最外围
 		},
 		methods: {
@@ -507,35 +510,7 @@
 				this.$ajax.post("/groupCamera/list",params).then((res) => {
                     if( res.data.status === 0){
             			this.init_data.video_groups = res.data.data.list
-                    }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
-                    }
-                }).catch((error) => {
-                	this.error_info('网络连接出错')
-                    return ;
-                })
-				// 请求设备列表
-				this.$ajax.post("/camera/list",params).then((res) => {
-                    if( res.data.status === 0){
-                		this.init_data.allnum = res.data.data.total
-            			this.tabledata = res.data.data.list
-            			// console.log(this.tabledata)
-            			for( let i = 0; i < this.tabledata.length; i++){
-            				if( this.tabledata[i].cameraStatus === 0 ){
-            					this.tabledata[i].cameraStatus = false
-            				}else{
-            					this.tabledata[i].cameraStatus = true
-            				}
-		                	this.tabledata[i].uuid = i
-		                	this.tabledata[i].ischecked = false
-		                }
+            			this.init_data.is_get_init_data = !this.init_data.is_get_init_data
                     }else if( res.data.status === 1 ){
 	                    this.error_info('请求失败 ' + res.msg)
                     	return ;
@@ -556,6 +531,7 @@
                 var params = new URLSearchParams()
                 for( let item in search_data ){
                 	if( search_data[item].indexOf("不限") == -1 &&  search_data[item] != ""){
+                		// 此处 groupId 为设备组名
                 		if( item === "groupId" ){
 	                		for(let i = 0; i < this.init_data.video_groups.length; i++){
 	                			if( search_data[item] === this.init_data.video_groups[i].name ){
@@ -733,6 +709,23 @@
 			'add_data.serverLabel':function(newVal,old){
 				if( newVal === "新建地址标志" ){
 					this.is_add_serverLabels = true
+				}
+			},
+			'init_data.is_get_init_data':function(newval,old){
+				if(	newval ){
+					if( this.$store.state.is_search_data ){
+						this.search_data.groupId = this.$store.state.search_data.groupId
+						this.save_search_data = this.$store.state.search_data
+
+						let search_data = this.$store.state.search_data
+						// console.log(search_data)
+						this.post_to_change_page( search_data )
+						this.$store.state.is_search_data = false
+						this.$store.state.search_data = {}
+					}else{
+						this.post_to_change_page({})
+					}
+					
 				}
 			}
 		},

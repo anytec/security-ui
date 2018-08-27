@@ -80,6 +80,7 @@
 	float: left;
 	font-size: 16px;
 	padding: 0px 8px;
+	cursor: pointer; /*2018-08-24 LZT增*/
 }
 .time_box{
 	margin-right: 20px;
@@ -438,6 +439,7 @@
 	width: 16px;
 	height: 16px;
 	margin-top: 2px;
+	cursor: pointer;
 }
 .small_icon1{
 	position: absolute;
@@ -445,6 +447,7 @@
 	width: 16px;
 	height: 16px;
 	margin-top: 2px;
+	cursor: pointer;
 }
 /* LZT 08-08新增or修改 end */
 
@@ -1524,11 +1527,13 @@ to {height: 373px;opacity: 1;}
 	height: 32px;
 	float: left;
 	text-align: center;
+	cursor: pointer;
 }
 .face_icon1 img{
 	width: 25px;
 	margin: 0 auto;
 	margin-top: 3px;
+	cursor: pointer;
 }
 .face_icon2 img{
 	margin: 0 auto;
@@ -1858,6 +1863,14 @@ to {height: 373px;opacity: 1;}
 	height: 100%;
 	background-color: rgba(0,0,0,0.3);
 	float:right;
+}
+.data_timebox{
+	width: 300px;
+	height: 30px;
+	margin-top: 20px;
+	float: left;
+	margin-left: 10px;
+	/*border: 1px solid red;*/
 }
 .index_nav1{
 	width:33.3%;

@@ -89,7 +89,7 @@
 		<div class="bounced_add mm1_bounced" v-show="is_request2add">
 			<div class="bounced_box">
 				<div class="bounced_top">
-					<div class="bounced_title">新建人员库</div>
+					<div class="bounced_title">新建底库</div>
 				</div>
 				<div class="mm1_addbox1">
 					<div class="addbox1_text">标记色设置</div>
@@ -173,7 +173,7 @@
 				delete_data:[],
 				add_data:{
 					name: "",
-					remarks: "--",
+					remarks: "",
 				},
 				change_data:{
 				},

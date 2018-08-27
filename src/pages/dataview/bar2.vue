@@ -1,7 +1,7 @@
 <template>
 	<div class="bar2">
 		<div class="line_head">
-			<div class="pie_title">年龄段男女统计图</div>
+			<div class="pie_title">性别比重图</div>
 		</div>
 		<div class="main"></div>
 	</div>
@@ -121,6 +121,7 @@
 				            axisLabel:{
 				            	textStyle:{
 		            				color: '#02BF73',
+		            				fontSize: 16,
 		            			},
 				            },
 				            splitLine:{
@@ -202,11 +203,12 @@
 				    ]
 				}
 
+				this.myChart = echarts.init(document.querySelector('.bar2 .main'))
 				this.myChart.setOption(option,true)
 			},
 		},
 		mounted(){
-			this.myChart = echarts.init(document.querySelector('.bar2 .main'))
+			// this.myChart = echarts.init(document.querySelector('.bar2 .main'))
 			// this.line_echart_init( this.data )
 			// this.line_echart_init( this.genderAgeData )
 			// this.my_init()
@@ -225,7 +227,7 @@
 				// 	}
 				// }
 				let mydata = {
-					yAxis: this.ageGroupList,
+					yAxis: ["儿童","青年","中年","老年"],
 					maleNum: this.maleNum,
 					femaleNum: this.femaleNum,
 				}

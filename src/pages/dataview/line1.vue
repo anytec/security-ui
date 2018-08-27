@@ -1,6 +1,7 @@
 <template>
 	<div class="line1">
 		<div class="line_head">
+			<div class="pie_title">时段人流量统计图</div>
 			<select class="pie_select" v-model="choose_day">
                 <option v-for="item in dayTime" class="pie_option">{{item}}</option>
             </select>
@@ -347,7 +348,7 @@
 				    series: this.series_data( data )
 				}
 
-				// this.myChart = echarts.init(document.querySelector('.line .main'))
+				this.myChart = echarts.init(document.querySelector('.line1 .main'))
 				this.myChart.setOption(option,true)
 			},
 
@@ -370,11 +371,10 @@
 			}
 		},
 		mounted(){
-			this.myChart = echarts.init(document.querySelector('.line1 .main'))
+			// this.myChart = echarts.init(document.querySelector('.line1 .main'))
 			this.init_line()
 			// this.line_echart_init()
 			// this.line_echart_init_test()
-			// this.my_init()
 
 			// console.log(this.fname)
 		},
@@ -443,5 +443,14 @@
   		color: #cccccc;
   		border: none;
   		outline: none;
+	}
+	.pie_title{
+        width: 300px;
+        height: 60px;
+        line-height: 60px;
+        color: #cccccc;
+        font-size: 20px;
+        margin-left: 20px;
+        float: left;
 	}
 </style>

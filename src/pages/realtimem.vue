@@ -24,7 +24,11 @@
                             <div class="choose_box" :class="{'choose_box1':isactive[item-2],'choose_box2':!isactive[item-2]}" @click="change_video(item)">
                                   选择设备
                             </div>
-                            <div class="refresh_icon" :class="{'choose_box1':isactive[item-2],'choose_box2':!isactive[item-2]}" @mouseover="refresh_icon = refresh_icon2" @mouseout="refresh_icon = refresh_icon1">
+                            <div class="refresh_icon" 
+                                 :class="{'choose_box1':isactive[item-2],'choose_box2':!isactive[item-2]}" 
+                                 @mouseover="refresh_icon = refresh_icon2" 
+                                 @mouseout="refresh_icon = refresh_icon1"
+                                 @click="repaly_video(item)">
                                 <img :src="refresh_icon" />
                             </div>
                             <object class="player" :id="'player'+item">
@@ -121,8 +125,8 @@
         <!--弹框-->
         <div class="face_infobox real_faceInfobox" v-show="open_flag">
             <div class="face_title">
-                <div class="snap real_snap">抓拍：3214</div>
-                <div class="snap real_anap">报警：0</div>
+                <!-- <div class="snap real_snap">抓拍：3214</div>
+                <div class="snap real_anap">报警：0</div> -->
                 <div class="state add_state">正常</div>
             </div>
             <div class="real_camera">
@@ -134,8 +138,12 @@
             <div class="real_conter">
                 <div class="real_ConterText" v-for="item in info_show_data" @dblclick="choose_this_url(item.sdkId,item.name)" v-show="item.isshow">
                     <div class="real_text">{{ item.name }}</div>
-                    <div class="face_icon1" @click="choose_this_url(item.sdkId,item.name)"><img src="../assets/historyface/icon7.png"/></div>
-                    <div class="face_icon2"><img src="../assets/historyface/icon2.png"/></div>
+                    <div class="face_icon1" @click="choose_this_url(item.sdkId,item.name)" title="选择该设备显示">
+                        <img src="../assets/historyface/icon7.png"/>
+                    </div>
+                    <div class="face_icon2" @click="skip_to_mmanage4(item)" title="跳转到设备配置">
+                        <img src="../assets/historyface/icon2.png"/>
+                    </div>
                 </div>
             </div>
             <div class="bottom_bg">
@@ -217,22 +225,22 @@
                 // 视频数据
                 video_srcs:[
                     {
-                        name: "1",
+                        name: "",
                         playAddress: "",
                         sdkId: "",
                     },
                     {
-                        name: "2",
+                        name: "",
                         playAddress: "",
                         sdkId: "",
                     },
                     {
-                        name: "3",
+                        name: "",
                         playAddress: "",
                         sdkId: "",
                     },
                     {
-                        name: "4",
+                        name: "",
                         playAddress: "",
                         sdkId: "",
                     },
@@ -334,12 +342,19 @@
                 this.$router.push('/facepath')
             },
             skip_to_mmanage2:function(num){
-                // this.$store.state.search_data.groupName = "底库2"
-                // this.$store.state.search_data.groupId = 2
                 this.$store.state.search_data.groupName = this.alarm_showdata[num].personGroupName
                 this.$store.state.search_data.groupId = this.alarm_showdata[num].personGroupId
                 this.$store.state.is_search_data = true
                 this.$router.push('/mmanage2')
+            },
+            skip_to_mmanage4(item){
+                // 请求数据暂时不管
+                console.log(item.sdkId)
+                this.open_flag = false
+                this.$store.state.search_data.groupId = item.groupName
+                this.$store.state.search_data.sdkId = item.sdkId
+                this.$store.state.is_search_data = true
+                this.$router.push('/mmanage4')
             },
             skip_to_historyface2:function(num){
                 // 请求数据先不管
@@ -557,6 +572,12 @@
                 // console.log(this.video_srcs)
                 this.flashvars.src = video_url
                 swfobject.embedSWF("/static/grindPlayer/GrindPlayer.swf", "player"+player_num, "612px", "344px", "10.2", null, this.flashvars, this.params, this.attrs);
+            },
+            // 刷新视频
+            repaly_video:function(num){
+                // console.log(this.video_srcs[num])
+                this.flashvars.src = this.video_srcs[num-1].playAddress
+                swfobject.embedSWF("/static/grindPlayer/GrindPlayer.swf", "player"+num, "612px", "344px", "10.2", null, this.flashvars, this.params, this.attrs);
             },
             // 生成唯一ID
             S4:function(){

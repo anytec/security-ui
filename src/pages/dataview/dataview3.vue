@@ -1,7 +1,7 @@
 <template>
 	<div class="chart">
         <div class="view_box3">
-            <v-gauge :cpuData="cpuData"></v-gauge>
+            <v-gauge :cpuData="cpuData" :hardDisk="hardDisk" :ROM="ROM"></v-gauge>
         </div>
     </div>
 </template>
@@ -21,23 +21,71 @@
                 // 页面切换
                 transitionName: '',
                 cpuData: 0,
+                hardDisk: 0,
+                ROM: 0,
             }
         },
         mounted() {
-            this.post_to_change_page()
-            setInterval(() => {
-                // this.cpuData = this.cpuData + 1
-            }, 1000);
+            this.post_to_change_cpu()
+            this.post_to_change_hard()
+            this.post_to_change_rom()
+            // setInterval(() => {
+            //     this.cpuData = this.cpuData + 1
+            // }, 1000);
         },
         methods: {
-            post_to_change_page:function( search_data ){
+            post_to_change_cpu:function(  ){
+                this.$ajax.get("/actuator/metrics/system.cpu.usage").then((res) => {
+                    if( res.data){
+                        let percent = res.data.measurements[0].value
 
+                        this.cpuData = (percent.toFixed(4)*100).toFixed(2)
+                    }else if( res.data.status === 1 ){
+                        this.error_info('请求失败 ' + res.msg)
+                        return ;
+                    }else if( res.data.status === 2 ){
+                        this.error_info('参数错误 ' + res.msg)
+                        return ;
+                    }else if( res.data.status === 10 ){
+                        this.error_info('请先登录')
+                        return ;
+                    }
+                }).catch((error) => {
+                    console.log(error)
+                    this.error_info('网络连接出错')
+                    return ;
+                })
+            },
+            post_to_change_hard:function(  ){
                 this.$ajax.get("/actuator/health").then((res) => {
                     if( res.data){
                         let total = res.data.details.diskSpace.details.total
                         let free = res.data.details.diskSpace.details.free
                         let percent = (total - free)/total
-                        this.cpuData = percent.toFixed(4)*100
+
+                        this.hardDisk = (percent.toFixed(4)*100).toFixed(2)
+                    }else if( res.data.status === 1 ){
+                        this.error_info('请求失败 ' + res.msg)
+                        return ;
+                    }else if( res.data.status === 2 ){
+                        this.error_info('参数错误 ' + res.msg)
+                        return ;
+                    }else if( res.data.status === 10 ){
+                        this.error_info('请先登录')
+                        return ;
+                    }
+                }).catch((error) => {
+                    console.log(error)
+                    this.error_info('网络连接出错')
+                    return ;
+                })
+            },
+            post_to_change_rom:function(  ){
+                this.$ajax.get("/data/serverStatus").then((res) => {
+                    if( res.data.status === 0){
+                        let percent = res.data.data.split("%")[0]
+
+                        this.ROM = percent
                     }else if( res.data.status === 1 ){
                         this.error_info('请求失败 ' + res.msg)
                         return ;

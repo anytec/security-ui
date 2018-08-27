@@ -22,6 +22,7 @@
 	export default {
 		props: {
 			searchData: Object,
+            dateValue: Array,
 		},
         components:{
             'v-bar': bar,
@@ -60,7 +61,10 @@
                 for( let item in search_data ){
                     params.append(item,search_data[item])
                 }
-
+                if( search_data.cameraSdkIds || search_data.cameraGroupIds ){
+                    params.append( "startTime", this.dateValue[0]-1)
+                    params.append( "endTime", this.dateValue[1]-1)
+                }
                 this.$ajax.post("/data/peopleAnalysis",params).then((res) => {
                     if( res.data.status === 0){
                         this.clear_show_data()
