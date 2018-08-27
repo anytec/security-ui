@@ -23,22 +23,8 @@
 				myChart: {},
 				name: '环形图',
 
-				// genderData:[
-	   //              {value:335, name:'男'},
-	   //              {value:679, name:'女'},
-	   //          ],
-	   //          AgeGengerData:[
-	   //              {value:0, name:'0 ~ 10'},
-	   //              {value:310, name:'10 ~ 20'},
-	   //              {value:234, name:'20 ~ 30'},
-	   //              {value:135, name:'30 ~ 40'},
-	   //              {value:104, name:'40 ~ 50'},
-	   //              {value:251, name:'50 ~ 60'},
-	   //              {value:147, name:'60 ~ 70'},
-	   //              {value:102, name:'70 ~ 80'},
-	   //              {value:0, name:'80 ~ 90'},
-	   //          ],
-	            // ageGroupList:[ "0 ~ 10","10 ~ 20","20 ~ 30","30 ~ 40","40 ~ 50","50 ~ 60","60 ~ 70","70 ~ 80","80 ~ 90" ],
+				color: this.$store.state.color2,
+				text_color: this.$store.state.text_color,
 			}
 		},
 		methods:{
@@ -124,7 +110,7 @@
 				    },
 				    calculable : false,
 				    backgroundColor: 'rgba(0,0,0,0.4)', // 修改背景颜色
-				    color: ['#60C4A8','#189A75','#85D3DD','#54CCCA','#056160'], // 线条颜色
+				    color: this.color, // 线条颜色
 				    series : [
 				        {
 				            name:'性别',

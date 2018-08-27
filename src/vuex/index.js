@@ -15,20 +15,29 @@ const store = new Vuex.Store({
         search_data: {},
         is_add_data: false,
         add_data: null,
+
         // facepath: [[114.05791,22.543526],[114.059648,22.543665],[114.063725,22.541297]],
         facepath_search_data:{ 
             cameraGroupIds: [],
             cameraIds: [],
             allcamera_list:[],
         },
+
         realtime_data:{
             sdkId: null,
             video_names: null,
             groupNames: null,
         },
+
         facepath_data:{
             photo: "",
         },
+
+        
+        color: ['#1B68CC','#6383EE','#00E4EC','#005039','#189A75'],
+        color1: ['#54CCCA','#1CA5AF','#00585E','#1B68CC','#02BF73','#00E4EC','#005039','#189A75'],
+        color2: ['#60C4A8','#85D3DD','#189A75','#54CCCA','#056160'],
+        text_color: '#02BF73',
         dataview_data:{
             choose_day: null,
             update_flag1: false,

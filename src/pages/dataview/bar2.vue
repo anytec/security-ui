@@ -25,6 +25,9 @@
 				// 	maleNum: [320, 302, 341, 374, 390, 450, 420],
 				// 	femaleNum: [-120, -132, -101, -134, -190, -230, -210],
 				// },
+
+				color: this.$store.state.color1,
+				text_color: this.$store.state.text_color,
 			}
 		},
 		methods:{
@@ -80,13 +83,13 @@
 				            type : 'value',
 				            axisLine:{
 				            	lineStyle: {
-				            		color: '#02BF73',
+				            		color: this.text_color,
 				            		type: 'dashed',
 				            	},
 				            }, // 线条设置
 				            axisLabel:{
 				            	textStyle:{
-		            				color: '#02BF73',
+		            				color: this.text_color,
 		            			},
 		            			formatter:function(params){
 		            				if( params < 0 ){
@@ -115,12 +118,12 @@
 				            axisLine:{
 				            	show: false,
 				            	lineStyle: {
-				            		color: '#02BF73',
+				            		color: this.text_color,
 				            	},
 				            },
 				            axisLabel:{
 				            	textStyle:{
-		            				color: '#02BF73',
+		            				color: this.text_color,
 		            				fontSize: 16,
 		            			},
 				            },
@@ -137,7 +140,7 @@
 				        }
 				    ],
 				    backgroundColor: 'rgba(0,0,0,0.4)', // 修改背景颜色
-				    color: ['#60C4A8','#189A75','#85D3DD','#54CCCA','#056160'], // 线条颜色
+				    color: this.color, // 线条颜色
 				    series : [
 				        {
 				            name:'男',

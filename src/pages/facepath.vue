@@ -5,52 +5,13 @@
         <!--地图边框线-->
         <div class="left_xian"></div>
         <div class="top_xian"></div>
-        <!--弹框-->
-        <!-- <div class="face_infobox">
-            <div class="face_title">
-                <div class="snap">抓拍：3214</div>
-                <div class="state">正常</div>
-                <div class="face_icon1"><img src="../assets/historyface/icon7.png"/></div>
-                <div class="face_icon2"><img src="../assets/historyface/icon2.png"/></div>
-            </div>
-            <div class="face_camera">camera:################</div>
-            <div class="face_conter">
-                <div class="conter_box">
-                    <div class="conter_img"><img src="../assets/historyface/img1.jpg"/></div>
-                    <div class="conter_textbox">
-                        <p>记录_1</p>
-                        <p>序号_2</p>
-                        <p>2016/11/22</p>
-                        <p>12:12:12</p>
-                    </div>
-                </div>
-                <div class="conter_box">
-                    <div class="conter_img"><img src="../assets/historyface/img1.jpg"/></div>
-                    <div class="conter_textbox">
-                        <p>记录_1</p>
-                        <p>序号_2</p>
-                        <p>2016/11/22</p>
-                        <p>12:12:12</p>
-                    </div>
-                </div>
-                <div class="conter_box">
-                    <div class="conter_img"><img src="../assets/historyface/img1.jpg"/></div>
-                    <div class="conter_textbox">
-                        <p>记录_1</p>
-                        <p>序号_2</p>
-                        <p>2016/11/22</p>
-                        <p>12:12:12</p>
-                    </div>
-                </div>
-            </div>
-        </div> -->
         <!--右边上半部分-->
         <div class="face_rightbox1">
             <div class="faceleft_photo">
                 <div class="face_photoimg">
                     <div class="faceshow_img" v-show="dataUrl"><img :src="dataUrl" v-show="dataUrl"></div>
                     <img class="decoration_img" src="../assets/mmanage/add_file.png"  v-show="!dataUrl" />
-                    <input class="face_file" type="file" @change="handleFileChange" ref="inputer" :value="pic"/>
+                    <input class="face_file" type="file" @change="handleFileChange" ref="inputer" />
                 </div>
                 <div class="facephoto_text">检索对象</div>
             </div>
@@ -136,7 +97,7 @@
 
                 // 检索数据
                 dataUrl: "",
-                pic: "",
+                pic_value: "",
                 search_data:{
                     photo: "",
                     confidence: 75,
@@ -255,13 +216,23 @@
                                                 </div>\
                                             </div>'
                 for( let i = 0; i < add_data.length; i++)
-                {
+                {   
+                    // console.log(add_data[i].cameraStatus)
+                    let camerastatus = ''
+                    if( add_data[i].cameraStatus ){
+                        camerastatus = '<div class="state state1">正常</div>'
+                    }else{
+                        camerastatus = '<div class="state state2">闲置</div>'
+                    }
+
                     let infomycontent = '<div class="face_infobox">\
                                             <div class="face_title">\
-                                                <div class="snap">抓拍：3214</div>\
-                                                <div class="state">正常</div>\
-                                                <div class="face_icon1"><img src="'+this.icon_eye+'" onclick="test()"/></div>\
-                                                <div class="face_icon2"><img src="'+this.icon_setting+'"/></div>\
+                                                <div class="snap">抓拍：'+ add_data[i].snapCount +'</div>\
+                                                '+ camerastatus +'\
+                                                <div class="face_icon1"><img src="'+this.icon_eye+'" onclick="skip_to_realtimem(\''
+                                                + add_data[i].sdkId +'\',\'' + add_data[i].name + '\')"/></div>\
+                                                <div class="face_icon2"><img src="'+this.icon_setting+'" onclick="skip_to_mmanage4(\''
+                                                + add_data[i].groupName +'\',\'' + add_data[i].sdkId + '\')"/></div>\
                                             </div>\
                                             <div class="face_camera">'+add_data[i].name+'</div>\
                                             <div class="face_conter"></div>\
@@ -333,9 +304,18 @@
                 }
             },
             handleFileChange:function(e){
-                let inputDOM = this.$refs.inputer;
-                this.search_data.photo = inputDOM.files[0];
-                this.imgPreview(this.search_data.photo);
+                let inputDOM = this.$refs.inputer
+
+                // console.log(this.$refs.inputer.value)
+
+                let tempdata = inputDOM.files[0]
+                if( tempdata.size < 10*1024*1024 ){
+                    this.search_data.photo = inputDOM.files[0]
+                    this.imgPreview(this.search_data.photo)
+                }else{
+                    this.$refs.inputer.value = ""
+                    this.warning_info("图片大小不超过10M")
+                } 
             },
 
             // 初始化请求数据
@@ -393,6 +373,7 @@
                 this.$ajax.post("/main/identifySnap",params,{headers: {'Content-Type': 'multipart/form-data'}}).then((res) => {
                 // this.$ajax.post("",params).then((res) => {
                     if( res.data.status === 0){
+
                         if( !res.data.data ){
                             this.$message({
                                 type: 'warning',
@@ -447,6 +428,14 @@
                     center: true
                 })
             },
+            warning_info:function(mes){
+                this.$message({
+                    type: 'warning',
+                    message: mes,
+                    showClose: true,
+                    center: true
+                })
+            },
             success_info:function(mes){
                 this.$message({
                     type: 'success',
@@ -471,19 +460,22 @@
                 this.mycontent_marker = []
                 this.markers_list = []
                 this.map.clearMap()
-                this.tabledata = null
+                // this.tabledata = null
                 if( flag ){
                     this.datevalue = [(new Date() - 3600 * 1000 * 24 * 15),new Date()-1],
+                    this.tabledata = null
                     this.dataUrl = ""
-                    this.pic = ""
+                    this.$refs.inputer.value = ""
                     this.search_data = {
                         photo: "",
                         confidence: 75,
                         startTime: "",
                         endTime: "",
                     }
-                    this.polyline.setMap(null)
                     this.add_markers_all(this.allcamera_list)
+                    if( this.polyline ){
+                        this.polyline.setMap(null)
+                    }
                 }
             },
             // 导出事件
@@ -543,26 +535,22 @@
                     }
                 }
                 // console.log(contects.length)
-                
                 for( let i = 0; i < contects.length; i++ ){
-                    // this.infomycontent.push(
-                    //     '<div class="face_infobox">\
-                    //         <div class="face_title">\
-                    //             <div class="snap">抓拍：3214</div>\
-                    //             <div class="state">正常</div>\
-                    //             <div class="face_icon1"><img src="'+this.icon_eye+'" onclick="test()"/></div>\
-                    //             <div class="face_icon2"><img src="'+this.icon_setting+'"/></div>\
-                    //         </div>\
-                    //         <div class="face_camera">camera:################</div>\
-                    //         <div class="face_conter">'
-                    //         + contects[i] +
-                    //         '</div>\
-                    //     </div>'
-                    // )
+                    let camerastatus
+                    if( this.tabledata[this.markers_list[i]].cameraStatus ){
+                        camerastatus = '<div class="state state1">正常</div>'
+                    }else{
+                        camerastatus = '<div class="state state2">闲置</div>'
+                    }
                     this.infomycontent.push(
                         '<div class="face_infobox">\
                             <div class="face_title">\
-                                <div class="state">正常</div>\
+                                <div class="snap">抓拍：'+ this.tabledata[this.markers_list[i]].snapCount +'</div>\
+                                '+ camerastatus +'\
+                                <div class="face_icon1"><img src="'+this.icon_eye+'" onclick="skip_to_realtimem(\''
+                                + this.tabledata[this.markers_list[i]].sdkId +'\',\'' + this.tabledata[this.markers_list[i]].cameraName + '\')"/></div>\
+                                <div class="face_icon2"><img src="'+this.icon_setting+'" onclick="skip_to_mmanage4(\''
+                                + this.tabledata[this.markers_list[i]].cameraGroupName +'\',\'' + this.tabledata[this.markers_list[i]].sdkId + '\')"/></div>\
                             </div>\
                             <div class="face_camera">'+ this.tabledata[this.markers_list[i]].cameraName +'</div>\
                             <div class="face_conter">'
@@ -570,6 +558,17 @@
                             '</div>\
                         </div>'
                     )
+                    // this.infomycontent.push(
+                    //     '<div class="face_infobox">\
+                    //         <div class="face_title">\
+                    //             <div class="state">正常</div>\
+                    //         </div>\
+                    //         <div class="face_camera">'+ this.tabledata[this.markers_list[i]].cameraName +'</div>\
+                    //         <div class="face_conter">'
+                    //         + contects[i] +
+                    //         '</div>\
+                    //     </div>'
+                    // )
                 }
                 
             },
@@ -577,11 +576,27 @@
                 // this.$router.push('/historyface1')
                 console.log(res)
             },
+            skip_to_realtimem:function(sdkId,name){
+                // 实时监控
+                this.$store.state.realtime_data.sdkId = sdkId
+                this.$store.state.realtime_data.name = name
+                this.$store.state.is_search_data = true
+                this.$router.push('/realtimem')
+            },
+            skip_to_mmanage4(groupName,sdkId){
+                this.$store.state.search_data.groupId = groupName
+                this.$store.state.search_data.sdkId = sdkId
+                this.$store.state.is_search_data = true
+                this.$router.push('/mmanage4')
+            },
         },
         mounted:function(){
             // 将window原生事件绑定到vue的事件中
-            window['test'] = (res) => {
-                this.click_to_test(res)
+            window['skip_to_realtimem'] = (sdkId,name) => {
+                this.skip_to_realtimem(sdkId,name)
+            }
+            window['skip_to_mmanage4'] = (groupName,sdkId) => {
+                this.skip_to_mmanage4(groupName,sdkId)
             }
         },
         watch:{
@@ -596,6 +611,7 @@
 
             '$store.state.is_search_data_facepath':function(newVal,old){
                 if ( newVal ){
+                    this.search_data.photo = ""
                     this.search_data.photoUrl = this.$store.state.facepath_data.photo
                     this.dataUrl = this.search_data.photoUrl
                     this.click_to_clear(false)
@@ -618,7 +634,6 @@
                     this.search_data.photoUrl = this.$store.state.facepath_data.photo
                     this.dataUrl = this.search_data.photoUrl
                     this.map.clearMap()
-                    console.log("haha")
                     this.post_to_get_facepath(this.search_data,"skip")
 
                     this.$store.state.is_search_data_facepath = false
@@ -633,97 +648,7 @@
 
 <style>
     @import "../css/historyface.css";
-    /*@import "../css/facepath.css";*/
-/*    .el-date-editor .el-range-input {
-        width: 50%;
-    }
-    
-    .el-date-editor>.el-range__icon,
-    .el-date-editor .el-range-separator,
-    .el-date-editor .el-range__close-icon {
-        line-height: 21px;
-    }
-    
-    .el-input__inner {
-        border: 1px solid #015758;
-        background-color: rgba(0, 0, 0, 0);
-    }
-    
-    .el-pagination button:disabled,
-    .el-pagination .btn-next,
-    .el-pagination .btn-prev,
-    .el-pager li {
-        background-color: rgba(0, 0, 0, 0);
-    }
-    
-    .el-icon-arrow-left:before,
-    .el-icon-arrow-right:before {
-        color: #00fcff;
-    }
-    
-    .el-pager li {
-        color: #017576;
-        font-size: 16px;
-    }
-    
-    .el-pager li.active {
-        color: #06fafd;
-    }
-    
-    .el-pagination__total,
-    .el-pagination .el-select .el-input .el-input__inner,
-    .el-icon-arrow-up:before,
-    .el-select-dropdown__item.selected,
-    .el-pagination__jump,
-    .el-pagination__editor.el-input .el-input__inner {
-        color: #02d0d3;
-    }
-    
-    .el-pagination {
-        width: 660px;
-        margin: 0 auto;
-        margin-top: 5px;
-    }
-    
-    ::-webkit-scrollbar {
-        width: 14px;
-        height: 14px;
-    }
-    
-    ::-webkit-scrollbar-track,
-    ::-webkit-scrollbar-thumb {
-        border-radius: 999px;
-        border: 5px solid transparent;
-    }
-    
-    ::-webkit-scrollbar-track {
-        box-shadow: 1px 1px 5px (200, 203, 206, 0.5) inset;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-        min-height: 20px;
-        background-clip: content-box;
-        box-shadow: 0 0 0 5px rgba(200, 203, 206, 0.5) inset;
-    }
-    
-    ::-webkit-scrollbar-corner {
-        background: transparent;
-    }
-    
-    .el-range-editor.el-input__inner {
-        width: 100%;
-        height: 100%;
-        background-color: white;
-    }
-    
-    .el-date-editor .el-range-input {
-        width: 50% !important;
-    }
 
-    /* 相似度滑块 */
-    /*.el-slider__runway{
-        margin: 10px 0;
-    }*/
     /* 地图logo */
     .amap-logo {
         right: 0 !important;

@@ -94,7 +94,7 @@ const  routes=[
 				requireAuth: true,
 				keep_alive: false,
 			},
-			redirect: '/dataview1',
+			redirect: '/dataview2',
 			children:[
 				{
 					path: '/dataview1',

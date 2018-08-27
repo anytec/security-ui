@@ -279,7 +279,7 @@
 						this.delete_data = this.delete_data + this.tabledata[i].id + ","
 					}
 				}
-				if( this.delete_data ){
+				if( this.delete_data.length ){
 					this.$confirm('是否删除该数据？','提示',{
 						confirmButtonText: '是',
 			            cancelButtonText: '否',
@@ -291,7 +291,7 @@
 						;
 					})
 				}else{
-					this.error_info("请选择删除项")
+					this.warning_info("请选择删除项")
 				}
 			},
 			// 添加事件
@@ -571,6 +571,14 @@
 			error_info:function(mes){
 				this.$message({
                     type: 'error',
+                    message: mes,
+                    showClose: true,
+                    center: true
+                })
+			},
+			warning_info:function(mes){
+				this.$message({
+                    type: 'warning',
                     message: mes,
                     showClose: true,
                     center: true

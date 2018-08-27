@@ -335,7 +335,8 @@
 /*realtimem start*/
 .center_box{
 	position: absolute;
-	top: 90px;
+	/*top: 90px;  2018-08-27 LZT*/
+	top: 10%;
 	left: 265px;
 	height:-webkit-calc(100% - 130px); 
 	height:-moz-calc(100% - 130px); 
@@ -375,12 +376,7 @@
 	font-size: 16px;
 	font-family: "微软雅黑";
 }
-.re_bottombox{
-	width: 100%;
-	height:-webkit-calc(100% - 708px); 
-	height:-moz-calc(100% - 708px); 
-	height:calc(100% - 708px);
-}
+
 .re_imgbox{
 	height: 100%;
 	width:1247px;
@@ -996,7 +992,7 @@
 /*realtimem start*/
 .center_box{
 	position: absolute;
-	top: 90px;
+	top: 10%;
 	left: 265px;
 	height:-webkit-calc(100% - 130px); 
 	height:-moz-calc(100% - 130px); 
@@ -1038,9 +1034,7 @@
 }
 .re_bottombox{
 	width: 100%;
-	height:-webkit-calc(100% - 708px); 
-	height:-moz-calc(100% - 708px); 
-	height:calc(100% - 708px);
+	height:140px; 
 }
 .re_leftbox{
 	width: 1247px;
@@ -1520,7 +1514,13 @@ to {height: 373px;opacity: 1;}
 	float: left;
 	/*margin-right:20px;*/
 	text-align: center;
+	/*background: url(../assets/facepath/state1.png) no-repeat;*/
+}
+.state1{
 	background: url(../assets/facepath/state1.png) no-repeat;
+}
+.state2{
+	background: url(../assets/facepath/state2.png) no-repeat;
 }
 .face_icon1,.face_icon2{
 	width: 40px;

@@ -391,7 +391,7 @@
             },
             // 选择设备后，获取url
             choose_this_url:function(sdkId,name){
-                console.log(sdkId,name)
+                // console.log(sdkId,name)
                 if( !sdkId || !name ){
                     return 
                 }
@@ -763,16 +763,16 @@
             }
         },
         mounted:function(){
-            if( this.first_flag ){
-                this.get_init_data()
-                this.get_init_data2()
+            // if( this.first_flag ){
+            //     this.get_init_data()
+            //     this.get_init_data2()
 
-                this.init_video()
-                this.initSocket()
-                this.myID = this.guid()
+            //     this.init_video()
+            //     this.initSocket()
+            //     this.myID = this.guid()
 
-                this.first_flag = false
-            }
+            //     this.first_flag = false
+            // }
         },
         watch:{
             '$store.state.realtime_data.sdkId':function(newVal,old){
@@ -809,8 +809,7 @@
 
         },
         beforeRouteEnter(to, from, next){
-            // console.log(from.path)
-            if( from.path === "/mmanage4"){
+            if( from.path === "/mmanage4" || from.path === "/facepath"){
                 next(vm => {
                     if( vm.first_flag ){
                         vm.get_init_data()
@@ -825,6 +824,7 @@
                         setTimeout(() => {
                             vm.active_box_num = 1
                             vm.$store.state.is_search_data = false
+                            console.log(vm.$store.state.realtime_data.sdkId,vm.$store.state.realtime_data.name)
                             vm.choose_this_url(vm.$store.state.realtime_data.sdkId,vm.$store.state.realtime_data.name)
                         }, 500)
                     }else{
@@ -836,7 +836,18 @@
                     
                 })
             }else{
-                next()
+                next(vm => {
+                    if( vm.first_flag ){
+                        vm.get_init_data()
+                        vm.get_init_data2()
+
+                        vm.init_video()
+                        vm.initSocket()
+                        vm.myID = vm.guid()
+
+                        vm.first_flag = false
+                    }
+                })
             }
             
         }

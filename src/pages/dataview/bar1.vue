@@ -25,7 +25,10 @@
 				legendArr: [],
 				// color: this.$store.state.color,
 				myChart: {},
-				name: '柱形图'
+				name: '柱形图',
+
+				color: this.$store.state.color1,
+				text_color: this.$store.state.text_color,
 			}
 		},
 		methods:{
@@ -52,7 +55,7 @@
 				    legend: {
 				        data: this.fname,
 				        textStyle:{
-				        	color: '#02BF73',
+				        	color: 'auto',
 				        	fontSize: 16,
 				        },
 				        orient: 'horizontal',// 'horizontal' | 'vertical' 水平布局|垂直布局
@@ -85,7 +88,7 @@
 				    },
 				    calculable : false, // 拖拽重计算特性
 				    backgroundColor: 'rgba(0,0,0,0.4)', // 修改背景颜色
-				    color: ['#60C4A8','#85D3DD','#189A75','#54CCCA','#056160'], // 线条颜色
+				    color: this.color, // 线条颜色
 				    xAxis : [
 				        {
 				        	name : '时间', 
@@ -93,13 +96,13 @@
 				            data : this.dayTime,
 				            axisLine:{
 				            	lineStyle: {
-				            		color: '#02BF73',
+				            		color: 'auto',
 				            		type: 'dashed',
 				            	},
 				            }, // 线条设置
 				            axisLabel:{
 				            	textStyle:{
-		            				color: '#02BF73',
+		            				color: this.text_color,
 		            			},
 				            }, // 字体设置
 				            splitLine:{
@@ -117,12 +120,12 @@
 				            axisLine:{
 				            	show: false,
 				            	lineStyle: {
-				            		color: '#02BF73',
+				            		color: this.text_color,
 				            	},
 				            },
 				            axisLabel:{
 				            	textStyle:{
-		            				color: '#02BF73',
+		            				color: this.text_color,
 		            			},
 				            },
 				            splitLine:{

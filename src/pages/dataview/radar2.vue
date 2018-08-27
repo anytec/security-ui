@@ -39,6 +39,7 @@
 				    color: ['rgba(255,255,255,0.2)','rgba(255,255,255,0.2)'], // 线条颜色
 				    // 图例
 				    legend: {
+				    	icon: 'rect',
 				        data: ['显性情绪', '隐性情绪'],
 				        textStyle:{
 				        	color: 'auto',

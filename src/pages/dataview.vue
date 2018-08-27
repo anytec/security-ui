@@ -153,11 +153,11 @@
                     items: [],
 
                     // 弹窗加切换栏
-                    listnum : 0,
-                    isactive1:true,
-                    isactive2:false,
+                    listnum : 1,
+                    isactive1:false,
+                    isactive2:true,
                     isactive3:false,
-                    active_num: 0,
+                    active_num: 1,
                     index_span1:'9513651',
                     index_span2:'5',
                     index_span3:'1000000',
@@ -192,7 +192,7 @@
                     video_names: [],
                     cameraSdkIds: "",
                     cameraGroupIds: "",
-                    dateValue: [(new Date() - 3600 * 1000 * 24 * 1),new Date()-1],
+                    dateValue: [(new Date() - 3600 * 1000 * 24 * 7),new Date()-1],
                     pickerOptions: {
                       shortcuts: [{
                         text: '最近三天',
@@ -246,10 +246,12 @@
             mounted() {
                 this.get_snapCounting()
                 this.get_mmanage_people_num()
-                this.timer_num = setInterval(() => {
+                setInterval(() => {
                     this.show_date = this.real_time()
-                    this.get_snapCounting()
                 }, 1000);
+                this.timer_num = setInterval(() => {
+                    this.get_snapCounting()
+                }, 5000);
                 // setInterval(() => {
                 //     this.get_mmanage_people_num()
                 // }, 10000);

@@ -3,8 +3,8 @@
 		<div class="mask_box">
 			<div class="top_title">
 				<div class="sys_lefttext">操作记录</div>
-				<div class="sys_input">
-					<input type="text" placeholder="搜索用户名" v-model="search_data.uname"/>
+				<div class="sys_input" @keyup.enter="test('heh ')">
+					<input type="text" placeholder="搜索用户名" v-model="search_data.uname" />
 					<div class="sysSearch_box" @click="click_to_search">
 						<img :src="alert_src" @mouseover="alert_src=ale_imgsrc2" @mouseout="alert_src=ale_imgsrc1"/>
 					</div>
@@ -23,8 +23,8 @@
 							<td class="td td1">用户名</td>
 							<td class="td td1">操作时间</td>
 							<td class="td td1">操作类型</td>
-							<td class="td td1" v-show="false">操作对象</td>
-							<td class="td td1" v-show="false">对象ID</td>
+							<td class="td td1">操作对象</td>
+							<td class="td td1">操作内容</td>
 							<td class="td td1">操作结果</td>
 						</tr>
 					</table>
@@ -53,16 +53,16 @@
 									</div>
 								</div>
 							</td>
-							<td class="td td1" v-show="false">
+							<td class="td td1">
 								<div class="table_text">
 									<div class="cell_text">
 										{{item.operationObj}}
 									</div>
 								</div>
 							</td>
-							<td class="td td1" v-show="false">
-								<div class="td_icon2 sys2_tdtext">
-									{{item.objId}}
+							<td class="td td1">
+								<div class="td_icon2 sys2_tdtext" :title="item.objId">
+									查看详情
 								</div>
 							</td>
 							<td class="td td1">
@@ -169,6 +169,10 @@
 			LeftNav
 		},
 		methods: {
+			test:function(value){
+				console.log(value)
+			},
+
 			handleSizeChange:function(val) {
 				this.init_data.pageSize = val
 				this.get_init_data( this.save_search_data )
