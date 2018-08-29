@@ -59,7 +59,7 @@
                                 </td>
                                 <td class="td td10">
                                     <div class="icon_fa">
-                                    	<div class="td_icon2 systd_icon2" @click="click_to_update_person(index)">
+                                    	<div class="td_icon2 systd_icon2" @click="click_to_update_person(item.id,index)">
 	                                        <img src="../assets/historyface/icon2.png"/>
 	                                    </div>
 	                                    <div class="td_icon2 systd_icon2" @click="click_to_delete_person(index)">
@@ -255,10 +255,8 @@
 				this.is_click_to_set = false
 			},
 			// 修改事件
-			click_to_update_person:function(index){
-				this.is_click_to_set = true
-				this.showData = JSON.parse(JSON.stringify(this.tabledata[index]))
-				this.showData.uuid = index
+			click_to_update_person:function(id,index){
+				this.require_get_change_person(id,index)
 			},
 			confirm_set_data:function(){
 				let update_date = {}
@@ -315,6 +313,35 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status,res.data.msg)
+                    }
+                }).catch((error) => {
+                	console.log(error)
+                	this.error_info('网络连接出错')
+                    return ;
+                })
+			},
+			require_get_change_person:function( id,index ){
+				var params = new URLSearchParams()
+                params.append("id",id)
+
+				this.$ajax.post("/user/getUserInfo",params).then((res) => {
+                    if( res.data.status === 0){
+                    	this.showData = JSON.parse(JSON.stringify(res.data.data))
+						this.showData.uuid = index
+						this.is_click_to_set = true
+                    }else if( res.data.status === 1 ){
+	                    this.error_info('请求失败 ' + res.msg)
+                    	return ;
+                    }else if( res.data.status === 2 ){
+	                    this.error_info('参数错误 ' + res.msg)
+                    	return ;
+                    }else if( res.data.status === 10 ){
+	                    this.error_info('请先登录')
+                    	return ;
+                    }else{
+                    	this.error_info(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -342,6 +369,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -367,6 +396,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -394,6 +425,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)

@@ -17,7 +17,7 @@
 	width:-webkit-calc(100% - 325px); 
 	width:-moz-calc(100% - 325px); 
 	width:calc(100% - 325px);
-	border: 1px solid #00ffff;
+	/*border: 1px solid #00ffff;*/
 	background-color: rgba(72,69,89,0.3);
 	border-radius: 5px;
 }
@@ -1666,11 +1666,15 @@ to {height: 373px;opacity: 1;}
 	text-align: center;
 }
 .percentage{
-	margin-top: 6px;
-	margin-left: 8px;
-	width: 40px;
-	height: 25px;
-	float: left;
+    margin-top: 11px;
+    margin-left: 8px;
+    width: 35px;
+    height: 20px;
+    float: left;
+}
+.fp_percentage{
+    margin-left: 5px !important;
+    margin-top: 10px !important;
 }
 .percentage input{
 	font-size: 16px;
@@ -1999,6 +2003,27 @@ to {height: 373px;opacity: 1;}
 	height: 20px;
 	margin: 10px 0px;
 }
+.ale_text{
+   width: 80%;
+   height: 100%;
+   float: left;
+}
+.ale_icon{
+	height: 60%;
+	width: 12px;
+	float: right;
+	cursor: pointer;
+	/*height: 60%;*/
+	margin-top: 4px;
+	margin-right: 20px;
+	background: url(../assets/index/add_icon.svg) no-repeat;
+}
+.ale_icon:hover{
+	background: url(../assets/index/add_icon1.svg) no-repeat;
+}
+.ale_list:hover{
+	background-color: rgba(46,46,46,0.5);
+}
 .right_table{
 	width: 100%;
 	margin-top: 42px;
@@ -2046,10 +2071,15 @@ to {height: 373px;opacity: 1;}
 	background-color: #474747;
 	border-radius: 3px;
 	margin: 0 auto;
-}
-.ale_delete img{
 	cursor: pointer;
+	background: url('../assets/index/delete.svg') no-repeat;
 }
+.ale_delete:hover{
+	background: url('../assets/index/delete_1.svg') no-repeat;
+}
+/*.ale_delete img{
+	
+}*/
 .cancel{
 	cursor: pointer;
 	position: absolute;
@@ -2302,3 +2332,101 @@ to {height: 373px;opacity: 1;}
 	height: 100%;
 }
 /*system1 end*/
+
+/* system1 弹窗 */
+.sysadd_user3{
+	position: absolute;
+	top: 35%;
+	left: 38%;
+	width:570px;
+	height: 210px;
+	z-index: 999;
+	background: url(../assets/system/tray.svg) no-repeat;
+	background-size: 100%;
+}
+.threshold_text{
+	width: 148px;
+	text-align: center;
+	margin-left: 20px;
+	margin-top: 60px;
+	font-size: 18px;
+	float: left;
+}
+.threshold_box{
+	width: 300px;
+	height: 60px;
+	text-align: center;
+	margin-top: 25px;
+	font-size: 18px;
+	float: left;
+}
+.syssimilar_box{
+	width: 100%;
+	height: 35px;
+	margin-top: 40px;
+}
+.syssimilar_text{
+    width: 148px;
+    margin-left: 20px;
+    text-align: center;
+    font-size: 14px;
+    font-size: 18px;
+    padding-top: 14px;
+    float: left;
+}
+.sysslider_box{
+	
+	width: 230px;
+}
+
+.syspercentage{
+	margin-top: 15px;
+	margin-left: 18px;
+	width: 30px;
+	height: 25px;
+	float: left;
+}
+.syspercentage input{
+	font-size: 16px;
+	font-weight: bold;
+	text-align: center;
+	color: white;
+	width: 100%;
+	height: 100%;
+	border-radius: 5px;
+	border: none;
+	background-color: transparent;
+}
+.percentage_text{
+	font-size: 16px;
+	font-weight: bold;
+	text-align: center;
+	color: white;
+	width: 10px;
+	height: 25px;
+	line-height: 25px;
+	float: left;
+	margin: 0px 0px;
+	margin-top: 14px;
+}
+.systitle_user3{
+	position: relative;
+	color: white;
+	width: 100%;
+	height: 40px;
+}
+.sys_cancelbtn3{
+	position: absolute;
+	right: -55px;
+	top: 30px;
+	width: 40px;
+	height: 40px;
+}
+.sys_addbtn3{
+	position: absolute;
+	right: -55px;
+	top: 85px;
+	width: 40px;
+	height: 40px;
+}
+/* system1 弹窗 end */

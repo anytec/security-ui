@@ -81,14 +81,20 @@
                     </div>
                 </div>
                 <div class="ale_leftlist" v-if="choose_groupName!='设备组选择'">
-                    <div class="ale_list"  v-for="item in info_show_data" @click="add_search_data(item,'camera')" v-show="item.isshow">{{item.name}}</div>
+                    <div class="ale_list" v-for="item in info_show_data" v-show="item.isshow" @click="add_search_data(item,'camera')" >
+                        <div class="ale_text">{{item.name}}</div>
+                        <div class="ale_icon"></div>
+                    </div>
                 </div>
                 <div class="ale_leftlist" v-if="choose_groupName==='设备组选择'">
                     <div class="ale_list"  
                          v-for="item in groupNames" 
                          v-if="item.name != '设备组选择'"
                          @click="add_search_data(item,'group')"
-                    >{{item.name}}</div>
+                    >
+                        <div class="ale_text">{{item.name}}</div>
+                        <div class="ale_icon"></div>
+                    </div>
                 </div>
             </div>
             <div class="ale_rightbox">
@@ -103,26 +109,14 @@
                             <td class="ale_td1">{{index+1}}</td>
                             <td class="ale_td2">{{item.name}}</td>
                             <td class="ale_td3">
-                                <div class="ale_delete">
-                                    <img  :src="table_src" 
-                                          @mouseover="table_src=tableicon_src2" 
-                                          @mouseout="table_src=tableicon_src1"
-                                          @click="delete_search_data(index,'camera')"
-                                    />
-                                </div>
+                                <div class="ale_delete" @click="delete_search_data(index,'camera')"></div>
                             </td>
                         </tr>
                         <tr v-for="item,index in info_search_data_group" v-if="choose_groupName==='设备组选择'">
                             <td class="ale_td1">{{index+1}}</td>
                             <td class="ale_td2">{{item.name}}</td>
                             <td class="ale_td3">
-                                <div class="ale_delete">
-                                    <img  :src="table_src" 
-                                          @mouseover="table_src=tableicon_src2" 
-                                          @mouseout="table_src=tableicon_src1"
-                                          @click="delete_search_data(index,'group')"
-                                    />
-                                </div>
+                                <div class="ale_delete" @click="delete_search_data(index,'group')"></div>
                             </td>
                         </tr>
                     </table>
@@ -173,6 +167,9 @@
                     confirm_src:require('../assets/index/refresh_icon.svg'),
                     confirm_src1:require('../assets/index/refresh_icon.svg'),
                     confirm_src2:require('../assets/index/refresh_icon_1.svg'),
+                    index_src:require('../assets/index/add_icon.svg'),
+                    index_src1:require('../assets/index/add_icon.svg'),
+                    index_src2:require('../assets/index/add_icon1.svg'),
                     is_show_info: false,
                     is_show_date: false,
                     is_show_choose: true,

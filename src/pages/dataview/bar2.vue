@@ -146,29 +146,26 @@
 				            name:'男',
 				            type:'bar',
 				            stack: '总量',
-				            itemStyle: {normal: {
-				                label : {show: true}
-				            }},
 				            barWidth: '30',
 				            data: mydata.maleNum,
 				            label: {
 				                normal: {
 				                    show: true,
-				                    position: 'right',
+				                    position: 'inside',
 				                    formatter: function(params) {
-				                    	// console.log(params)
 				                    	if( params.data === 0 ){
-			            					// return ""
+			            					return ""
 			            				}
-				                        return params.data
+				                        return "    " + params.data
 				                    },
 				                    textStyle:{
 				                		fontSize: 16,
 				                	},
 				                },
 				                emphasis: {
+				                	// position: 'right',
 				                	textStyle:{
-				                		fontSize: 40,
+				                		fontSize: 30,
 				                	}
 				                },
 				            },
@@ -177,28 +174,26 @@
 				            name:'女',
 				            type:'bar',
 				            stack: '总量',
-				            itemStyle: {normal: {
-				                label : {show: true, position: 'left'}
-				            }},
 				            barWidth: '30',
 				            data: mydata.femaleNum,
 				            label: {
 				                normal: {
 				                    show: true,
-				                    position: 'left',
+				                    position: 'inside',
 				                    formatter: function(params) {
 				                    	if( params.data === 0 ){
 			            					// return ""
 			            				}
-				                        return params.data * -1;
+				                        return params.data * -1 + "    ";
 				                    },
 				                    textStyle:{
 				                		fontSize: 16,
 				                	},
 				                },
 				                emphasis: {
+				                	// position: 'right',
 				                	textStyle:{
-				                		fontSize: 40,
+				                		fontSize: 30,
 				                	}
 				                },
 				            },

@@ -36,13 +36,13 @@
 				// let imgPath = ['http://bmob-cdn-15355.b0.upaiyun.com/2017/12/01/bee4341c4089af7980b87074a77479ad.png']
 				let option = {
 					backgroundColor: 'rgba(0,0,0,0.4)', // 修改背景颜色
-				    color: ['rgba(255,255,255,0.2)','rgba(255,255,255,0.2)'], // 线条颜色
+				    color: ['rgba(0, 200, 100, 0.2)','rgba(10, 170, 100, 0.5)'], // 线条颜色
 				    // 图例
 				    legend: {
 				    	icon: 'rect',
 				        data: ['显性情绪', '隐性情绪'],
 				        textStyle:{
-				        	color: 'auto',
+				        	color: '#ffffff',
 				        	fontSize: 16,
 				        },
 				        orient: 'vertical',// 'horizontal' | 'vertical' 水平布局|垂直布局
@@ -58,7 +58,7 @@
 				        // 内边距
 				        padding: 10,
 
-				        icon:'circle',
+				        // icon:'circle',
 				    },
 				    radar: [{
 				        indicator: [

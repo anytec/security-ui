@@ -1,7 +1,7 @@
 <template>
 	<div class="bar1">
 		<div class="line_head">
-			<div class="pie_title">日人流量统计图</div>
+			<div class="pie_title">周人流量统计图</div>
 			<div class="pie_title"></div>
 		</div>
 		<div class="main"></div>

@@ -18,9 +18,6 @@
                             <div class="camera_text">
                                 {{ video_srcs[item-1].name }}
                             </div>
-<!--                        <div class="choose_box" @click="change_video(item)" v-show="is_choose_change[item-2]">
-                                选择设备
-                            </div> -->
                             <div class="choose_box" :class="{'choose_box1':isactive[item-2],'choose_box2':!isactive[item-2]}" @click="change_video(item)">
                                   选择设备
                             </div>
@@ -152,10 +149,8 @@
         </div>
         <!--警告-->
         <!--遮罩层-->
-        <!-- <div class="mack_box" @click="close_info"></div> -->
-        <!-- <div class="warning_box" @click="click_to_move"> -->
         <div class="mack_box" v-show="open_alarm" @click="close_info"></div>
-        <div class="warning_box" v-show="open_alarm" @click="click_to_move">
+        <div class="warning_box" v-show="open_alarm" @click="skip_to_historyface1(alarm_new_data)">
             <div class="warning_title">最新预警</div>
             <div class="warning_conter">
                 <div class="left_photo">
@@ -355,6 +350,11 @@
                 this.$store.state.search_data.sdkId = item.sdkId
                 this.$store.state.is_search_data = true
                 this.$router.push('/mmanage4')
+            },
+            skip_to_historyface1:function(data){
+                console.log(data)
+                // 请求数据先不管
+                // this.$router.push('/historyface1')
             },
             skip_to_historyface2:function(num){
                 // 请求数据先不管
@@ -592,9 +592,9 @@
             // 请求初始化
             initSocket:function(){
                 // let socket = new SockJS('http://192.168.10.158:9999/gee');
-                // let socket = new SockJS('http://192.168.10.126:9990/gee');
+                let socket = new SockJS('http://192.168.10.126:9990/gee');
                 // let socket = new SockJS('http://192.168.10.132:9999/gee');
-                let socket = new SockJS('gee');
+                // let socket = new SockJS('gee');
                 this.stompClient = Stomp.over(socket);
                 this.stompClient.connect({}, (frame) =>{
                     this.stompClient.subscribe('/topic/camera/warning', (data) => {

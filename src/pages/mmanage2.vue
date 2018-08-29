@@ -609,38 +609,119 @@
 			},
 
 			// 弹窗
-			// 上传图片
-			imgPreview:function(file,model){
-	            let self = this;
-	            // 看支持不支持FileReader
-	            if (!file || !window.FileReader) return;
+			// // 上传图片
+			// imgPreview:function(file,model){
+	  //           let self = this;
+	  //           // 看支持不支持FileReader
+	  //           if (!file || !window.FileReader) return;
 	    
-	            if (/^image/.test(file.type)) {
-	                // 创建一个reader
-	                var reader = new FileReader()
-	                // 将图片将转成 base64 格式
-	                reader.readAsDataURL(file)
-	                // 读取成功后的回调
-	                reader.onloadend = function () {
-	                	if( model === "add"){
-	                		self.add_data.dataUrl = this.result
-	                	}else if( model === "change" ){
-	                		self.change_data.dataUrl = this.result
-	                	}
+	  //           if (/^image/.test(file.type)) {
+	  //               // 创建一个reader
+	  //               var reader = new FileReader()
+	  //               // 将图片将转成 base64 格式
+	  //               reader.readAsDataURL(file)
+	  //               // 读取成功后的回调
+	  //               reader.onloadend = function () {
+	  //               	if( model === "add"){
+	  //               		self.add_data.dataUrl = this.result
+	  //               	}else if( model === "change" ){
+	  //               		self.change_data.dataUrl = this.result
+	  //               	}
 	                    
-	                }
-	            }
-	        },
+	  //               }
+	  //           }
+	  //       },
+	        // 上传图片
+            imgPreview:function(file,model){
+                let self = this;
+                // 看支持不支持FileReader
+                if (!file || !window.FileReader) return;
+        
+                if (!/image\/\w+/.test(file.type)) {
+                    self.warning_info("请选择图片")
+                    return false;
+                }
+
+                // 创建一个reader
+                var reader = new FileReader()
+                // 将图片将转成 base64 格式
+                reader.readAsDataURL(file)
+                // 读取成功后的回调
+                reader.onloadend = function (e) {
+                    if( model === "add"){
+                		self.add_data.dataUrl = e.target.result
+                	}else if( model === "change" ){
+                		self.change_data.dataUrl = e.target.result
+                	}
+                    let image = new Image()
+                    let Maxpic = 4000
+                    image.onload = () => {
+                        let width = image.width
+                        let height = image.height
+                        if( width > Maxpic || height > Maxpic ){
+                            let PicBaseText=self.compress(image,width*0.5,height*0.5,1)
+                            if( model === "add" ){
+                            	self.add_data.photo = self.dataURItoBlob(PicBaseText)
+                            }else{
+                            	self.change_data.photo = self.dataURItoBlob(PicBaseText)
+                            }
+                        }
+                    }
+                    image.src = e.target.result
+                }
+                
+            },
 			handleFileChange:function(e){
-				let inputDOM = this.$refs.inputer;
-				this.add_data.photo = inputDOM.files[0];
-				this.imgPreview(this.add_data.photo,"add");
+				let inputDOM = this.$refs.inputer
+				
+				let tempdata = inputDOM.files[0]
+                if( tempdata.size < 10*1024*1024 ){
+                    this.add_data.photo = inputDOM.files[0]
+					this.imgPreview(this.add_data.photo,"add")
+                }else{
+                    this.$refs.inputer.value = ""
+                    this.warning_info("图片大小不超过10M")
+                } 
 			},
 			handleFileChange_change:function(e){
-				let inputDOM = this.$refs.inputer_change;
-				this.change_data.photo = inputDOM.files[0];
-				this.imgPreview(this.change_data.photo,"change");
+				let inputDOM = this.$refs.inputer_change
+				
+				let tempdata = inputDOM.files[0]
+                if( tempdata.size < 10*1024*1024 ){
+                    this.change_data.photo = inputDOM.files[0]
+					this.imgPreview(this.change_data.photo,"change")
+                }else{
+                    this.$refs.inputer.value = ""
+                    this.warning_info("图片大小不超过10M")
+                }
 			},
+			// 图片压缩 canvas
+            compress:function(img, width, height, ratio) {
+                var canvas, ctx, img64;
+
+                canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+
+                ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+
+                img64 = canvas.toDataURL("image/jpeg",ratio);
+
+                return img64;
+            },
+            // base64 转 二进制 图片
+            dataURItoBlob:function(dataURI) {
+                let byteString = atob(dataURI.split(',')[1]);
+                let mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+                let ab = new ArrayBuffer(byteString.length);
+                let ia = new Uint8Array(ab);
+                for (let i = 0; i < byteString.length; i++) {
+                    ia[i] = byteString.charCodeAt(i);
+                }
+                console.log([ab]);
+                return new Blob([ab], {type: mimeString});
+            },
 
 			// 弹窗事件-添加人员
 			click_to_addinfo_data:function(){

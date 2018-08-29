@@ -33,7 +33,7 @@
                         <el-slider v-model="search_data.confidence"></el-slider>
                     </div>
                     <div class="percentage"><input type="text" v-model="search_data.confidence"/></div>
-                    <div class="percentage_text">%</div>
+                    <div class="percentage_text fp_percentage">%</div>
                     <div class="search face_search" @click="click_to_search(search_data)">搜索</div>
                 </div>
                 <div class="results_box">
@@ -292,21 +292,37 @@
                 // 看支持不支持FileReader
                 if (!file || !window.FileReader) return;
         
-                if (/^image/.test(file.type)) {
-                    // 创建一个reader
-                    var reader = new FileReader();
-                    // 将图片将转成 base64 格式
-                    reader.readAsDataURL(file);
-                    // 读取成功后的回调
-                    reader.onloadend = function () {
-                        self.dataUrl = this.result;
-                    }
+                if (!/image\/\w+/.test(file.type)) {
+                    this.warning_info("请选择图片")
+                    return false;
                 }
+
+                // 创建一个reader
+                var reader = new FileReader()
+                // 将图片将转成 base64 格式
+                reader.readAsDataURL(file)
+                // 读取成功后的回调
+                reader.onloadend = function (e) {
+                    self.dataUrl = e.target.result
+                    let  image = new Image()
+                    let Maxpic = 4000
+                    image.onload = () => {
+                        let width = image.width
+                        let height = image.height
+                        if( width > Maxpic || height > Maxpic ){
+                            let PicBaseText=self.compress(image,width*0.5,height*0.5,1);
+                            self.search_data.photo = self.dataURItoBlob(PicBaseText);
+                            // console.log(self.search_data.photo.size)
+                        }
+                    }
+                    image.src = e.target.result
+                }
+                
             },
             handleFileChange:function(e){
                 let inputDOM = this.$refs.inputer
 
-                // console.log(this.$refs.inputer.value)
+                // console.log(this.$refs.inputer.files[0])
 
                 let tempdata = inputDOM.files[0]
                 if( tempdata.size < 10*1024*1024 ){
@@ -317,6 +333,34 @@
                     this.warning_info("图片大小不超过10M")
                 } 
             },
+            // 图片压缩 canvas
+            compress:function(img, width, height, ratio) {
+                var canvas, ctx, img64;
+
+                canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+
+                ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+
+                img64 = canvas.toDataURL("image/jpeg",ratio);
+
+                return img64;
+            },
+            // base64 转 二进制 图片
+            dataURItoBlob:function(dataURI) {
+                let byteString = atob(dataURI.split(',')[1]);
+                let mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+                let ab = new ArrayBuffer(byteString.length);
+                let ia = new Uint8Array(ab);
+                for (let i = 0; i < byteString.length; i++) {
+                    ia[i] = byteString.charCodeAt(i);
+                }
+                console.log([ab]);
+                return new Blob([ab], {type: mimeString});
+            },
+
 
             // 初始化请求数据
             // 请求数据
@@ -460,10 +504,11 @@
                 this.mycontent_marker = []
                 this.markers_list = []
                 this.map.clearMap()
-                // this.tabledata = null
+                this.tabledata = null
+                this.init_data.allnum = 0
                 if( flag ){
                     this.datevalue = [(new Date() - 3600 * 1000 * 24 * 15),new Date()-1],
-                    this.tabledata = null
+                    // this.tabledata = null
                     this.dataUrl = ""
                     this.$refs.inputer.value = ""
                     this.search_data = {
@@ -548,7 +593,7 @@
                                 <div class="snap">抓拍：'+ this.tabledata[this.markers_list[i]].snapCount +'</div>\
                                 '+ camerastatus +'\
                                 <div class="face_icon1"><img src="'+this.icon_eye+'" onclick="skip_to_realtimem(\''
-                                + this.tabledata[this.markers_list[i]].sdkId +'\',\'' + this.tabledata[this.markers_list[i]].cameraName + '\')"/></div>\
+                                + this.tabledata[this.markers_list[i]].cameraSdkId +'\',\'' + this.tabledata[this.markers_list[i]].cameraName + '\')"/></div>\
                                 <div class="face_icon2"><img src="'+this.icon_setting+'" onclick="skip_to_mmanage4(\''
                                 + this.tabledata[this.markers_list[i]].cameraGroupName +'\',\'' + this.tabledata[this.markers_list[i]].sdkId + '\')"/></div>\
                             </div>\

@@ -218,7 +218,7 @@
 				}
 				params.append("pageNum",this.init_data.pageNum)
                 params.append("pageSize",this.init_data.pageSize)
-				this.$ajax.post("/log/operationRecordList",params).then((res) => {
+				this.$ajax.get("/log/operationRecordList",params).then((res) => {
                     if( res.data.status === 0){
                     	this.init_data.allnum = res.data.data.total
                 		this.tabledata = res.data.data.list
@@ -238,11 +238,30 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
                 	this.error_info('网络连接出错')
                     return ;
+                })
+			},
+			// 消息窗口
+			error_info:function(mes){
+				this.$message({
+                    type: 'error',
+                    message: mes,
+                    showClose: true,
+                    center: true
+                })
+			},
+			success_info:function(mes){
+				this.$message({
+                    type: 'success',
+                    message: mes,
+                    showClose: true,
+                    center: true
                 })
 			},
 		},
