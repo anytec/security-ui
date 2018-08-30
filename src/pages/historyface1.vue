@@ -470,6 +470,8 @@
 						this.search_data.personGroupName = get_data.personGroupName
 					}else if( item === "cameraGroupName" ){
 						this.search_data.cameraGroupName = get_data.cameraGroupName
+					}else if( item === "faceSdkId" ){
+						this.search_data.faceSdkId = get_data.faceSdkId
 					}
 				}
 				

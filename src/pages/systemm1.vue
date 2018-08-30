@@ -210,7 +210,10 @@
 				save_search_data: "",
 				delete_data: [],
 				// 弹窗
-				showData:{},
+				showData:{
+					uname: "",
+					upass: "",
+				},
 				// 添加用户
 				is_click_to_add: false,
 
@@ -247,10 +250,19 @@
 				this.is_click_to_add = true
 			},
 			confirm_add_data:function(){
-				this.require_add_person(this.showData)
+				if( this.showData.uname === "" ){
+					this.warning_info("用户名不能为空")
+				}else if( this.showData.upass === ""){
+					this.warning_info("密码不能为空")
+				}else{
+					this.require_add_person(this.showData)
+				}
 			},
 			close_add_info:function(){
-				this.showData = {}
+				this.showData = {
+					uname: "",
+					upass: "",
+				}
 				this.is_click_to_add = false
 				this.is_click_to_set = false
 			},
@@ -438,6 +450,14 @@
 			error_info:function(mes){
 				this.$message({
                     type: 'error',
+                    message: mes,
+                    showClose: true,
+                    center: true
+                })
+			},
+			warning_info:function(mes){
+				this.$message({
+                    type: 'warning',
                     message: mes,
                     showClose: true,
                     center: true

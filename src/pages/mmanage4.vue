@@ -141,8 +141,13 @@
 							<option v-for="item in init_data.video_groups">{{ item.name }}</option>
 						</select>
 						<input class="mm4_text1" type="text" placeholder="设备名称" v-model="add_data.name"/>
-						<select class="mm4_select" v-model="add_data.serverLabel">
+						<select class="mm4_select" v-model="add_data.serverLabel" v-show="add_data.cameraType === '视频流'">
 							<option v-for="item in map_serverLabels_list">{{ item }}</option>
+						</select>
+						<select class="mm4_select" v-model="add_data.serverLabel" v-show="add_data.cameraType === '抓拍机'">
+							<option>mac1</option>
+							<option>mac2</option>
+							<option>mac3</option>
 						</select>
 						<select class="mm4_select" v-model="add_data.cameraType">
 							<option>视频流</option>
@@ -160,15 +165,17 @@
 					<div class="mm4_mapbottom">
 						<div class="map_input">
 							<div class="mm4map_text">鼠标点击设置经纬度</div>
-							<input class="mm4map_text1" type="text" v-model="add_data.location"/>
+							<input class="mm4map_text1" type="text" placeholder="设备坐标" v-model="add_data.location"/>
 						</div>
 						<div class="map_input">
 							<div class="mm4map_text">按关键字搜索</div>
 							<input class="mm4map_text1" type="text" id="tipinput"/>
 						</div>
-						<div class="mm4btn_box" @click="click_to_addinfo_data" v-show="model === 'add'" >添加设备</div>
+						<div class="mm4btn_box" @click="click_to_addinfo_data" v-show="model === 'add' && is_confirm_show" >添加设备</div>
+						<div class="mm4btn_box mm4btn_no" v-show="model === 'add' && !is_confirm_show" >添加设备</div>
 						<div class="mm4btn_box mm4btn_no" @click="clear_show_data" v-show="model === 'add'" >暂不添加</div>
-						<div class="mm4btn_box" @click="click_to_change_info_data" v-show="model === 'update'" >修改设备</div>
+						<div class="mm4btn_box" @click="click_to_change_info_data" v-show="model === 'update' && is_confirm_show" >修改设备</div>
+						<div class="mm4btn_box mm4btn_no"  v-show="model === 'update' && !is_confirm_show" >修改设备</div>
 						<div class="mm4btn_box mm4btn_no" @click="clear_show_data" v-show="model === 'update'" >暂不修改</div>
 					</div>
 				</div>
@@ -222,6 +229,8 @@
 					location: "",
 					serverLabel: "",
 					cameraType: "视频流",
+					name: "",
+					streamAddress: "",
 				},
 
 				tabledata: null,
@@ -230,6 +239,7 @@
 
 				// 弹窗
 				is_request2add: false,
+				is_confirm_show: true,
 				autocomplete: null,
 				map: null,
 				// 弹窗类型标志
@@ -343,7 +353,7 @@
 				for(let i = 0; i < this.init_data.serverLabels.length; i++){
 					this.map_serverLabels_list.push(this.init_data.serverLabels[i])
 				}
-				this.map_serverLabels_list.splice(0,0,"新建地址标志")
+				// this.map_serverLabels_list.splice(0,0,"新建地址标志")
 				this.add_data.groupName = this.init_data.video_groups[0].name
 				this.add_data.serverLabel = this.map_serverLabels_list[1]
 
@@ -394,16 +404,45 @@
 			// 添加事件-弹窗
 			click_to_addinfo_data:function(){
 				// console.log(this.add_data)
+
+				let temp_data = {}
+				for( let item in this.add_data ){
+					// console.log(this.add_data[item] +  "  " + item)
+					if( this.add_data[item] === "" ){
+						if( item === "name" ){
+							this.warning_info("设备名称不能为空")
+							return ;
+						}else if( item === "streamAddress" ){
+							this.warning_info("流地址不能为空")
+							return ;
+						}else if( item === "location" ){
+							this.warning_info("设备坐标不能为空")
+							return ;
+						}
+					}
+					temp_data[item] =  this.add_data[item]
+					if( item === "groupName" ){
+						for( let i = 0; i < this.init_data.video_groups.length; i++ ){
+							if( this.init_data.video_groups[i].name === temp_data[item] ){
+								temp_data.groupId = this.init_data.video_groups[i].id
+								break
+							}
+						}
+					}
+				}
+				this.is_confirm_show = false
 				this.require_to_add(this.add_data)
-				this.clear_show_data()
 			},
 			// 添加事件-清除数据
 			clear_show_data:function(){
 				this.is_request2add = false
+				this.is_confirm_show = true
 				this.add_data = {
 					location: "",
 					serverLabel: "",
 					cameraType: "视频流",
+					name: "",
+					streamAddress: "",
 				}
 				this.model = ""
 			},
@@ -449,9 +488,10 @@
 				}
 				if( JSON.stringify(temp_data) != "{}"){
 					temp_data.id = this.tabledata[this.add_data.uuid].id
+					this.is_confirm_show = false
 					this.require_to_change(temp_data)
-					this.clear_show_data()
 				}else{
+					this.is_confirm_show = true
 					this.error_info("未修改信息")
 				}
 			},
@@ -611,14 +651,14 @@
 				var params = new URLSearchParams()
 				for( let item in temp_data ){
 					params.append(item,temp_data[item])
-					if( item === "groupName" ){
-						for( let i = 0; i < this.init_data.video_groups.length; i++ ){
-							if( this.init_data.video_groups[i].name === temp_data[item] ){
-								params.append("groupId",this.init_data.video_groups[i].id)
-								break
-							}
-						}
-					}
+					// if( item === "groupName" ){
+					// 	for( let i = 0; i < this.init_data.video_groups.length; i++ ){
+					// 		if( this.init_data.video_groups[i].name === temp_data[item] ){
+					// 			params.append("groupId",this.init_data.video_groups[i].id)
+					// 			break
+					// 		}
+					// 	}
+					// }
 				}
 				params.append("cameraStatus",1)
 
@@ -627,6 +667,7 @@
 	                    this.success_info('添加成功')
 	                    this.is_request2add = false
 	                    this.post_to_change_page(this.save_search_data)
+	                    this.clear_show_data()
                     }else if( res.data.status === 1 ){
 	                    this.error_info('请求失败 ' + res.msg)
                     	return ;
@@ -637,9 +678,11 @@
 	                    this.error_info('请先登录')
                     	return ;
                     }
+                    this.is_confirm_show = true
                 }).catch((error) => {
                 	console.log(error)
                     this.error_info('网络连接出错')
+                    this.is_confirm_show = true
                     return ;
                 })
 			},
@@ -658,6 +701,7 @@
                     	}else{
                     		this.success_info('修改设备状态成功')
                     	}
+                    	this.clear_show_data()
                     }else if( res.data.status === 1 ){
                     	if( model === "status" ){
                     		this.tabledata[uuid].cameraStatus = !this.tabledata[uuid].cameraStatus
@@ -674,11 +718,13 @@
 	                    this.error_info('请先登录')
                     	return ;
                     }
+                    this.is_confirm_show = true
                 }).catch((error) => {
                 	if( model === "status" ){
                 		this.tabledata[uuid].cameraStatus = !this.tabledata[uuid].cameraStatus
                 	}
                 	console.log(error)
+                	this.is_confirm_show = true
                     this.error_info('网络连接出错')
                     return ;
                 })
@@ -686,6 +732,7 @@
 
 			// 消息窗口
 			error_info:function(mes){
+				this.is_confirm_show = true
 				this.$message({
                     type: 'error',
                     message: mes,

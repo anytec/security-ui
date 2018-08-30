@@ -107,7 +107,7 @@
 			</div>
 		</div>
 		<!--添加窗口-->
-		<div class="mack_box" v-show="is_request2add"></div>
+		<div class="mack_box" v-show="is_request2add" @click="click_to_clear"></div>
 		<div class="bounced_add" v-show="is_request2add">
 			<div class="bounced_box">
 				<div class="file_box">
@@ -130,7 +130,8 @@
 							<option v-for="item in init_data.galleries">{{ item }}</option>
 						</select>
 					</div>
-					<div class="mmbtn_box" @click="click_to_addinfo_data">确认添加</div>
+					<div class="mmbtn_box" @click="click_to_addinfo_data" v-show="is_confirm_show">确认添加</div>
+					<div class="mmbtn_box left_mmbox" v-show="!is_confirm_show">确认添加</div>
 					<div class="mmbtn_box left_mmbox" @click="click_to_addinfo_close">暂不添加</div>
 				</div>
 				<div class="mmbottom_input">
@@ -138,7 +139,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="mack_box" v-show="is_request2change"></div>
+		<div class="mack_box" v-show="is_request2change" @click="click_to_clear"></div>
 		<div class="bounced_add" v-show="is_request2change">
 			<div class="bounced_box">
 				<div class="file_box">
@@ -161,7 +162,8 @@
 							<option v-for="item in init_data.galleries">{{ item }}</option>
 						</select>
 					</div>
-					<div class="mmbtn_box" @click="click_to_change_infodata">确认修改</div>
+					<div class="mmbtn_box" @click="click_to_change_infodata" v-show="is_confirm_show">确认修改</div>
+					<div class="mmbtn_box left_mmbox" v-show="!is_confirm_show">确认添加</div>
 					<div class="mmbtn_box left_mmbox" @click="click_to_close_change_infodata">暂不修改</div>
 				</div>
 				<div class="mmbottom_input">
@@ -210,6 +212,8 @@
 				change_data:{
 					photo: "",
 					dataUrl:"",
+					name: "",
+					idNumber: "",
 				},
 
 				tabledata: null,
@@ -220,6 +224,9 @@
 				// 弹窗
 				is_request2add: false,
 				is_request2change: false,
+
+				// 避免重复确认
+				is_confirm_show: true,
 
 			} //返回数据最外围
 		},
@@ -300,6 +307,12 @@
 			click_to_add_info:function(){
 				// 弹窗添加
 				this.is_request2add = true
+				this.is_confirm_show = true
+			},
+			click_to_clear:function(){
+				this.is_request2add = false
+				this.is_request2change = false
+				this.is_confirm_show = true
 			},
 
 			// 页面跳转
@@ -324,6 +337,7 @@
 				}
 				this.change_data.dataUrl = this.change_data.thumbnail
 				this.is_request2change = true
+				this.is_confirm_show = true
 			},
 
 			// 请求数据
@@ -513,6 +527,7 @@
             	}
             	params.append("gender",add_data.gender)
                 // 请求人员数据
+                this.is_confirm_show = false
                 this.$ajax.post("/person/add",params,{headers: {'Content-Type': 'multipart/form-data'}}).then((res) => {
                     if( res.data.status === 0){
                     	this.is_request2add = false
@@ -521,7 +536,7 @@
 	                    this.add_data = {
 	                    	gender:"男",
 							idNumber:"",
-							remarks:"--",
+							remarks:"",
 							name:"",
 							photo: "",
 							groupName: this.init_data.galleries[0],
@@ -537,9 +552,11 @@
 	                    this.error_info('请先登录')
                     	return ;
                     }
+                    this.is_confirm_show = true
                 }).catch((error) => {
                 	console.log(error)
                 	this.error_info('网络连接出错')
+                	this.is_confirm_show = true
                     return ;
                 })
 			},
@@ -562,7 +579,7 @@
                 this.$ajax.post("/person/update",params,{headers: {'Content-Type': 'multipart/form-data'}}).then((res) => {
                     if( res.data.status === 0){
                     	this.is_request2change = false
-                    	this.change_data = { photo: "",dataUrl:"" },
+                    	this.change_data = { photo: "",dataUrl:"",name:"", idNumber:"" },
                     	this.success_info("修改成功")
 	                    this.post_to_change_page(this.save_search_data)
                     }else if( res.data.status === 1 ){
@@ -575,6 +592,7 @@
 	                    this.error_info('请先登录')
                     	return ;
                     }
+                    this.is_confirm_show = true
                 }).catch((error) => {
                 	console.log(error)
                 	this.error_info('网络连接出错')
@@ -584,6 +602,7 @@
 
 			// 消息窗口
 			error_info:function(mes){
+				this.is_confirm_show = true
 				this.$message({
                     type: 'error',
                     message: mes,
@@ -719,7 +738,6 @@
                 for (let i = 0; i < byteString.length; i++) {
                     ia[i] = byteString.charCodeAt(i);
                 }
-                console.log([ab]);
                 return new Blob([ab], {type: mimeString});
             },
 
@@ -745,7 +763,12 @@
 					&& !photo_flag
 					 ){
 					this.error_info("信息未更改")
+				}else if( this.change_data.idNumber === "" ){
+					this.warning_info("标识编码不能为空")
+				}else if( this.change_data.name === ""){
+					this.warning_info("姓名不能为空")
 				}else{
+					this.is_confirm_show = false
 					this.require_to_change_people(this.change_data,photo_flag)
 				}
 			},

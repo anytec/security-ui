@@ -75,9 +75,7 @@
                     </div>
                     <div class="ale_input">
                         <input type="text" placeholder="输入名称、ID" v-model="cameraName"/>
-                        <div class="search_box">
-                            <img :src="alert_src" @mouseover="alert_src=ale_imgsrc2" @mouseout="alert_src=ale_imgsrc1"/>
-                        </div>
+                        <!-- <div class="search_box"></div> -->
                     </div>
                 </div>
                 <div class="ale_leftlist" v-if="choose_groupName!='设备组选择'">
@@ -122,12 +120,8 @@
                     </table>
                 </div>
             </div>
-            <div class="cancel" @click="is_show_info = false">
-                <img :src="cancel_src" @mouseover="cancel_src=cancel_src2" @mouseout="cancel_src=cancel_src1"/>
-            </div>
-            <div class="confirm" @click="confirm_search">
-                <img :src="confirm_src" @mouseover="confirm_src=confirm_src2" @mouseout="confirm_src=confirm_src1"/>
-            </div>
+            <div class="cancel" @click="is_show_info = false" title="关闭"></div>
+            <div class="confirm" @click="confirm_search" title="确认"></div>
         </div>
     </div>
 </template>
@@ -155,21 +149,6 @@
                     index_span1:'9513651',
                     index_span2:'5',
                     index_span3:'1000000',
-                    alert_src:require('../assets/index/search.svg'),
-                    ale_imgsrc1:require('../assets/index/search.svg'),
-                    ale_imgsrc2:require('../assets/index/search_1.svg'),
-                    table_src:require('../assets/index/delete.svg'),
-                    tableicon_src1:require('../assets/index/delete.svg'),
-                    tableicon_src2:require('../assets/index/delete_1.svg'),
-                    cancel_src:require('../assets/index/cancel.svg'),
-                    cancel_src1:require('../assets/index/cancel.svg'),
-                    cancel_src2:require('../assets/index/cancel_1.svg'),
-                    confirm_src:require('../assets/index/refresh_icon.svg'),
-                    confirm_src1:require('../assets/index/refresh_icon.svg'),
-                    confirm_src2:require('../assets/index/refresh_icon_1.svg'),
-                    index_src:require('../assets/index/add_icon.svg'),
-                    index_src1:require('../assets/index/add_icon.svg'),
-                    index_src2:require('../assets/index/add_icon1.svg'),
                     is_show_info: false,
                     is_show_date: false,
                     is_show_choose: true,
@@ -241,6 +220,7 @@
                 }
             },
             mounted() {
+                this.show_date = this.real_time()
                 this.get_snapCounting()
                 this.get_mmanage_people_num()
                 setInterval(() => {
@@ -266,7 +246,34 @@
 
                 real_time:function(){
                     let date = new Date();
-                    return date.getFullYear() + '年' + (date.getMonth() + 1) + '月' + date.getDate() + '日    ' + date.getHours() + '点' + date.getMinutes() + '分' + date.getSeconds() + '秒';
+                    let month_data = "",day_data = ""
+                    let Hdata = "",Mdata = "",Sdata = ""
+                    if( date.getMonth() + 1 < 10 ){
+                        month_data = "0" + (date.getMonth() + 1)
+                    }else{
+                        month_data = (date.getMonth() + 1)
+                    }
+                    if( date.getDate() < 10){
+                        day_data = "0" + date.getDate()
+                    }else{
+                        day_data = date.getDate()
+                    }
+                    if( date.getHours() < 10){
+                        Hdata = "0" + date.getHours()
+                    }else{
+                        Hdata = date.getHours()
+                    }
+                    if( date.getMinutes() < 10 ){
+                        Mdata = "0" + date.getMinutes()
+                    }else{
+                        Mdata = date.getMinutes()
+                    }
+                    if( date.getSeconds() < 10 ){
+                        Sdata = "0" + date.getSeconds()
+                    }else{
+                        Sdata = date.getSeconds()
+                    }
+                    return date.getFullYear() + '年' + month_data + '月' + day_data + '日    ' + Hdata + '点' + Mdata + '分' + Sdata + '秒';
                 },
 
                 // 弹窗加切换栏
@@ -300,7 +307,11 @@
                 change_show_data:function(num){
                     this.info_show_data = []
                     for( let i = 0; i < this.video_names[num].length; i++ ){
-                        this.video_names[num][i].isshow = true
+                        if( this.video_names[num][i].name.indexOf( this.cameraName ) === -1 ){
+                            this.video_names[num][i].isshow = false
+                        }else{
+                            this.video_names[num][i].isshow = true
+                        }
                         this.info_show_data.splice(-1,0,this.video_names[num][i])
                     }
                     // console.log(this.info_show_data)
@@ -457,6 +468,31 @@
                         console.log(error)
                         // this.error_info('网络连接出错')
                         return ;
+                    })
+                },
+                // 消息窗口
+                error_info:function(mes){
+                    this.$message({
+                        type: 'error',
+                        message: mes,
+                        showClose: true,
+                        center: true
+                    })
+                },
+                warning_info:function(mes){
+                    this.$message({
+                        type: 'warning',
+                        message: mes,
+                        showClose: true,
+                        center: true
+                    })
+                },
+                success_info:function(mes){
+                    this.$message({
+                        type: 'success',
+                        message: mes,
+                        showClose: true,
+                        center: true
                     })
                 },
                 

@@ -63,7 +63,7 @@
 				if( num === 0 ){
 					this.$router.push('/dataview');
 				}else if( num === 1 ){
-					this.$router.push('/facepath')
+					this.$router.push('/facepath_offline')
 				}else if( num === 2 ){
 					this.$router.push('/realtimem')
 				}else if( num === 3 ){

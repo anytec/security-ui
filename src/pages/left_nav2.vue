@@ -165,7 +165,7 @@
 
 		},
 		mounted:function(){
-			this.get_init_data()
+			this.get_init_data()	
 		},
 	};
 </script>

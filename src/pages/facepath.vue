@@ -164,7 +164,7 @@
                 this.map = new AMap.Map('container', {
                   center: location,
                   resizeEnable: true,
-                  zoom: 16,
+                  zoom: 17,
                   mapStyle: 'amap://styles/darkblue',
                 })
             },
@@ -173,6 +173,7 @@
             },
             // 地图添加标志
             add_markers:function(){
+                this.change_map_center(this.tabledata[0].location)
                 for( let i = 0; i < this.infomycontent.length; i++)
                 {
                     var infoWindow
@@ -218,19 +219,24 @@
                 for( let i = 0; i < add_data.length; i++)
                 {   
                     // console.log(add_data[i].cameraStatus)
-                    let camerastatus = ''
+                    let camerastatus = '',eye_div = ''
                     if( add_data[i].cameraStatus ){
                         camerastatus = '<div class="state state1">正常</div>'
+                        eye_div = '<div class="face_icon1"><img src="'+this.icon_eye+'" onclick="skip_to_realtimem(\''
+                                   + add_data[i].sdkId +'\',\'' + add_data[i].name + '\' )" title="跳转实时监控"/></div>'
                     }else{
                         camerastatus = '<div class="state state2">闲置</div>'
+                        eye_div = '<div class="face_icon1"><img src="'+this.icon_eye+'"  style="cursor: not-allowed;" title="闲置状态不可跳转"/></div>'
                     }
 
                     let infomycontent = '<div class="face_infobox">\
                                             <div class="face_title">\
-                                                <div class="snap">抓拍：'+ add_data[i].snapCount +'</div>\
+                                                <div class="snap">\
+                                                    <div class="snap_text1">抓拍:</div>\
+                                                    <div class="snap_text2" title="'+ add_data[i].snapCount +'">'+ add_data[i].snapCount +'</div>\
+                                                </div>\
                                                 '+ camerastatus +'\
-                                                <div class="face_icon1"><img src="'+this.icon_eye+'" onclick="skip_to_realtimem(\''
-                                                + add_data[i].sdkId +'\',\'' + add_data[i].name + '\')"/></div>\
+                                                '+ eye_div +'\
                                                 <div class="face_icon2"><img src="'+this.icon_setting+'" onclick="skip_to_mmanage4(\''
                                                 + add_data[i].groupName +'\',\'' + add_data[i].sdkId + '\')"/></div>\
                                             </div>\
@@ -581,19 +587,24 @@
                 }
                 // console.log(contects.length)
                 for( let i = 0; i < contects.length; i++ ){
-                    let camerastatus
+                    let camerastatus = '', eye_div = ''
                     if( this.tabledata[this.markers_list[i]].cameraStatus ){
                         camerastatus = '<div class="state state1">正常</div>'
+                        eye_div = '<div class="face_icon1" ><img src="'+this.icon_eye+'" onclick="skip_to_realtimem(\''
+                                + this.tabledata[this.markers_list[i]].cameraSdkId +'\',\'' + this.tabledata[this.markers_list[i]].cameraName + '\')" title="跳转实时监控"/></div>'
                     }else{
                         camerastatus = '<div class="state state2">闲置</div>'
+                        eye_div = '<div class="face_icon1"><img src="'+this.icon_eye+'" style="cursor: not-allowed;" title="闲置状态不可跳转"/></div>'
                     }
                     this.infomycontent.push(
                         '<div class="face_infobox">\
                             <div class="face_title">\
-                                <div class="snap">抓拍：'+ this.tabledata[this.markers_list[i]].snapCount +'</div>\
+                                <div class="snap">\
+                                    <div class="snap_text1">抓拍:</div>\
+                                    <div class="snap_text2" title="'+ this.tabledata[this.markers_list[i]].snapCount +'">'+ this.tabledata[this.markers_list[i]].snapCount +'</div>\
+                                </div>\
                                 '+ camerastatus +'\
-                                <div class="face_icon1"><img src="'+this.icon_eye+'" onclick="skip_to_realtimem(\''
-                                + this.tabledata[this.markers_list[i]].cameraSdkId +'\',\'' + this.tabledata[this.markers_list[i]].cameraName + '\')"/></div>\
+                                '+ eye_div +'\
                                 <div class="face_icon2"><img src="'+this.icon_setting+'" onclick="skip_to_mmanage4(\''
                                 + this.tabledata[this.markers_list[i]].cameraGroupName +'\',\'' + this.tabledata[this.markers_list[i]].sdkId + '\')"/></div>\
                             </div>\
@@ -704,11 +715,7 @@
         display: none !important;
     }
 
-    /* map.marker */
-    .map_maxbox{
-        width: 44px;
-        height: 56px;
-    }
+    
     .map_iconbg{
         position: relative;
         width: 44px;
@@ -739,6 +746,9 @@
     }
 </style>
 <style scoped>
-    /*@import "../css/historyface.css";*/
-    /*@import "../css/facepath.css";*/
+    /* map.marker */
+    .map_maxbox{
+        width: 44px;
+        height: 56px;
+    }
 </style>

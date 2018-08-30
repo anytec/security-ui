@@ -982,10 +982,15 @@
 .mm4btn_no{
 	background-color: #626262;
 }
-.map_bg{
+/*.map_bg{
 	width: 100%;
 	height: 100%;
-	/*border: 1px solid red;*/
+}*/
+.map_bg {
+    width: 100%;
+    height: 100%;
+    background-color: #000810;
+    z-index: 0;
 }
 /*mmanage4 end*/
 
@@ -1505,6 +1510,16 @@ to {height: 373px;opacity: 1;}
 	color: #00fcff;
 	float: left;
 }
+.snap_text1{
+	width:50px;
+	float:left;
+}
+.snap_text2{
+	width:55px;
+	float:left;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
 .state{
 	width: 70px;
 	height: 32px;
@@ -1527,7 +1542,7 @@ to {height: 373px;opacity: 1;}
 	height: 32px;
 	float: left;
 	text-align: center;
-	cursor: pointer;
+	/*cursor: pointer;*/
 }
 .face_icon1 img{
 	width: 25px;
@@ -1538,6 +1553,7 @@ to {height: 373px;opacity: 1;}
 .face_icon2 img{
 	margin: 0 auto;
 	margin-top: 4px;
+	cursor: pointer;
 }
 .face_camera{
 	width: calc(100%-8px);
@@ -1806,21 +1822,21 @@ to {height: 373px;opacity: 1;}
 	color: #B5BBC2;
 }
 .index_time{
-	width: 26%;
+	width: 28%;
 	height: 50px;
 	/*margin-right: 150px;*/
     float: left;
 }
 .index_snap{
 	text-align: center;
-	width: 16%;
+	width: 15%;
 	/*width:380px;*/
 	height: 66px;
 	margin-top: -16px;
     float: left;
 }
 .index_snap1{
-	width: 31%;
+	width: 29%;
 	/*margin-right: 180px;*/
 }
 .index_snap span{
@@ -1974,7 +1990,8 @@ to {height: 373px;opacity: 1;}
 .ale_input input{
 	font-size: 16px;
 	background-color: #9B9B9B;
-	width: 65%;
+	/*width: 65%; 08-30 LZT*/
+	width: 100%;
 	height:25px;
 	padding: 0 5px;
 	border: none;
@@ -1985,10 +2002,11 @@ to {height: 373px;opacity: 1;}
 	float: left;
 	width: 32px;
 	height: 25px;
-}
-.search_box img{
 	cursor: pointer;
-	height: 100%;
+	background: url(../assets/index/search.svg) no-repeat;
+}
+.search_box:hover{
+	background: url(../assets/index/search_1.svg) no-repeat;
 }
 .ale_leftlist{
 	color: #D2CBCB;
@@ -2087,6 +2105,10 @@ to {height: 373px;opacity: 1;}
 	right: -50px;
 	width: 40px;
 	height: 40px;
+	background: url(../assets/index/cancel.svg) no-repeat;
+}
+.cancel:hover{
+	background: url(../assets/index/cancel_1.svg) no-repeat;
 }
 .confirm{
 	cursor: pointer;
@@ -2095,10 +2117,12 @@ to {height: 373px;opacity: 1;}
 	right: -50px;
 	width: 40px;
 	height: 40px;
+	background: url(../assets/index/refresh_icon.svg) no-repeat;
 }
-.cancel img{
-	width: 100%;
+.confirm{
+	background: url(../assets/index/refresh_icon_1.svg) no-repeat;
 }
+
 /*dataview end*/
 
 /*system1 start*/
