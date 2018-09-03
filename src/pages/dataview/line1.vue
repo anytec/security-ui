@@ -1,6 +1,7 @@
 <template>
 	<div class="line1">
 		<div class="line_head">
+			<div class="pie_title">时段人流量统计图</div>
 			<select class="pie_select" v-model="choose_day">
                 <option v-for="item in dayTime" class="pie_option">{{item}}</option>
             </select>
@@ -26,7 +27,10 @@
 				// color: this.$store.state.color,
 				myChart: {},
 				name: '折线图',
-
+				// color: ['#54CCCA','#1CA5AF','#00585E','#1B68CC','#6383EE','#00E4EC','#005039','#189A75'],
+				// color: ['#1B68CC','#6383EE','#00E4EC','#005039','#189A75'],
+				color: this.$store.state.color1,
+				text_color: this.$store.state.text_color,
 				choose_day: null,
 			}
 		},
@@ -254,8 +258,9 @@
 				    // 图例
 				    legend: {
 				        data: this.fname,
+				        icon: 'rect',
 				        textStyle:{
-				        	color: '#02BF73',
+				        	color: 'auto',
 				        	fontSize: 16,
 				        },
 				        orient: 'horizontal',// 'horizontal' | 'vertical' 水平布局|垂直布局
@@ -266,8 +271,6 @@
 				        itemWidth: 25,
 				        itemHeight: 10,
 				        itemGap: 20,
-
-				        // backgroundColor: 'rgba(0,0,0,0.3)',
 
 				        // 内边距
 				        padding: 10,
@@ -290,7 +293,7 @@
 				    },
 				    calculable : false, // 拖拽重计算特性
 				    backgroundColor: 'rgba(0,0,0,0.4)', // 修改背景颜色
-				    color: ['#60C4A8','#85D3DD','#189A75','#54CCCA','#056160'], // 线条颜色
+				    color: this.color, // 线条颜色
 				    xAxis : [
 				        {
 				        	name : '时间', 
@@ -299,13 +302,13 @@
 				            data : ['00:00','2:00','4:00','6:00','08:00','10:00','12:00','14:00','16:00','18:00','20:00','22:00','24:00'],
 				            axisLine:{
 				            	lineStyle: {
-				            		color: '#02BF73',
+				            		color: this.text_color,
 				            		type: 'dashed',
 				            	},
 				            }, // 线条设置
 				            axisLabel:{
 				            	textStyle:{
-		            				color: '#02BF73',
+		            				color: this.text_color,
 		            			},
 				            }, // 字体设置
 				            splitLine:{
@@ -323,12 +326,12 @@
 				            axisLine:{
 				            	show: false,
 				            	lineStyle: {
-				            		color: '#02BF73',
+				            		color: this.text_color,
 				            	},
 				            },
 				            axisLabel:{
 				            	textStyle:{
-		            				color: '#02BF73',
+		            				color: this.text_color,
 		            			},
 				            },
 				            splitLine:{
@@ -347,7 +350,7 @@
 				    series: this.series_data( data )
 				}
 
-				// this.myChart = echarts.init(document.querySelector('.line .main'))
+				this.myChart = echarts.init(document.querySelector('.line1 .main'))
 				this.myChart.setOption(option,true)
 			},
 
@@ -370,11 +373,10 @@
 			}
 		},
 		mounted(){
-			this.myChart = echarts.init(document.querySelector('.line1 .main'))
+			// this.myChart = echarts.init(document.querySelector('.line1 .main'))
 			this.init_line()
 			// this.line_echart_init()
 			// this.line_echart_init_test()
-			// this.my_init()
 
 			// console.log(this.fname)
 		},
@@ -443,5 +445,14 @@
   		color: #cccccc;
   		border: none;
   		outline: none;
+	}
+	.pie_title{
+        width: 300px;
+        height: 60px;
+        line-height: 60px;
+        color: #cccccc;
+        font-size: 20px;
+        margin-left: 20px;
+        float: left;
 	}
 </style>

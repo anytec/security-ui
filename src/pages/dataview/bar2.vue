@@ -1,7 +1,7 @@
 <template>
 	<div class="bar2">
 		<div class="line_head">
-			<div class="pie_title">年龄段男女统计图</div>
+			<div class="pie_title">性别比重图</div>
 		</div>
 		<div class="main"></div>
 	</div>
@@ -25,6 +25,9 @@
 				// 	maleNum: [320, 302, 341, 374, 390, 450, 420],
 				// 	femaleNum: [-120, -132, -101, -134, -190, -230, -210],
 				// },
+
+				color: this.$store.state.color1,
+				text_color: this.$store.state.text_color,
 			}
 		},
 		methods:{
@@ -80,13 +83,13 @@
 				            type : 'value',
 				            axisLine:{
 				            	lineStyle: {
-				            		color: '#02BF73',
+				            		color: this.text_color,
 				            		type: 'dashed',
 				            	},
 				            }, // 线条设置
 				            axisLabel:{
 				            	textStyle:{
-		            				color: '#02BF73',
+		            				color: this.text_color,
 		            			},
 		            			formatter:function(params){
 		            				if( params < 0 ){
@@ -115,12 +118,13 @@
 				            axisLine:{
 				            	show: false,
 				            	lineStyle: {
-				            		color: '#02BF73',
+				            		color: this.text_color,
 				            	},
 				            },
 				            axisLabel:{
 				            	textStyle:{
-		            				color: '#02BF73',
+		            				color: this.text_color,
+		            				fontSize: 16,
 		            			},
 				            },
 				            splitLine:{
@@ -136,35 +140,32 @@
 				        }
 				    ],
 				    backgroundColor: 'rgba(0,0,0,0.4)', // 修改背景颜色
-				    color: ['#60C4A8','#189A75','#85D3DD','#54CCCA','#056160'], // 线条颜色
+				    color: this.color, // 线条颜色
 				    series : [
 				        {
 				            name:'男',
 				            type:'bar',
 				            stack: '总量',
-				            itemStyle: {normal: {
-				                label : {show: true}
-				            }},
 				            barWidth: '30',
 				            data: mydata.maleNum,
 				            label: {
 				                normal: {
 				                    show: true,
-				                    position: 'right',
+				                    position: 'inside',
 				                    formatter: function(params) {
-				                    	// console.log(params)
 				                    	if( params.data === 0 ){
-			            					// return ""
+			            					return ""
 			            				}
-				                        return params.data
+				                        return "    " + params.data
 				                    },
 				                    textStyle:{
 				                		fontSize: 16,
 				                	},
 				                },
 				                emphasis: {
+				                	// position: 'right',
 				                	textStyle:{
-				                		fontSize: 40,
+				                		fontSize: 30,
 				                	}
 				                },
 				            },
@@ -173,28 +174,26 @@
 				            name:'女',
 				            type:'bar',
 				            stack: '总量',
-				            itemStyle: {normal: {
-				                label : {show: true, position: 'left'}
-				            }},
 				            barWidth: '30',
 				            data: mydata.femaleNum,
 				            label: {
 				                normal: {
 				                    show: true,
-				                    position: 'left',
+				                    position: 'inside',
 				                    formatter: function(params) {
 				                    	if( params.data === 0 ){
 			            					// return ""
 			            				}
-				                        return params.data * -1;
+				                        return params.data * -1 + "    ";
 				                    },
 				                    textStyle:{
 				                		fontSize: 16,
 				                	},
 				                },
 				                emphasis: {
+				                	// position: 'right',
 				                	textStyle:{
-				                		fontSize: 40,
+				                		fontSize: 30,
 				                	}
 				                },
 				            },
@@ -202,11 +201,12 @@
 				    ]
 				}
 
+				this.myChart = echarts.init(document.querySelector('.bar2 .main'))
 				this.myChart.setOption(option,true)
 			},
 		},
 		mounted(){
-			this.myChart = echarts.init(document.querySelector('.bar2 .main'))
+			// this.myChart = echarts.init(document.querySelector('.bar2 .main'))
 			// this.line_echart_init( this.data )
 			// this.line_echart_init( this.genderAgeData )
 			// this.my_init()
@@ -225,7 +225,7 @@
 				// 	}
 				// }
 				let mydata = {
-					yAxis: this.ageGroupList,
+					yAxis: ["儿童","青年","中年","老年"],
 					maleNum: this.maleNum,
 					femaleNum: this.femaleNum,
 				}

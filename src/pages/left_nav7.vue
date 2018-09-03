@@ -1,11 +1,34 @@
 <template>
-	<div class="left_nav">
-		<ul class="left_ul">
-			<li class="left_one" :class="{'leftli_active':isactive1}" @click="change_active(1)" @mouseenter="enter(0)" @mouseleave="leave">用户列表</li>
-			<li class="left_two" :class="{'leftli_active':isactive2}" @click="change_active(2)" @mouseenter="enter(1)" @mouseleave="leave">操作记录</li>
-			<div class="left_active" :style="{ top: 50*listnum + 'px' }"></div>
-		</ul>
-	</div>
+	<div>
+		<div class="left_nav">
+			<ul class="left_ul">
+				<li class="left_one" :class="{'leftli_active':isactive1}" @click="change_active(1)" @mouseenter="enter(0)" @mouseleave="leave">用户列表</li>
+				<li class="left_two" :class="{'leftli_active':isactive2}" @click="change_active(2)" @mouseenter="enter(1)" @mouseleave="leave">操作记录</li>
+				<div class="left_active" :style="{ top: 50*listnum + 'px' }"></div>
+			</ul>
+			<div class="left7set_up" @click="set_confidence"></div>
+		</div>
+		<!--弹窗3-->
+	    <div class="sysadd_user3" v-show="syshidden">
+	        <div class="systitle_user3">
+	        	<div class="systitle_text">
+	        		<div class="editorUser">预设参数</div>
+	        	</div>
+	        	<div class="sysconter_box">
+	        		<div class="syssimilar_box">
+	                    <div class="syssimilar_text">识别阈值：</div>
+	                    <div class="slider_box sysslider_box">
+	                        <el-slider v-model="confidence"></el-slider>
+	                    </div>
+	                    <div class="syspercentage"><input readonly="readonly" type="text" v-model="confidence"/></div>
+	                    <div class="percentage_text">%</div>
+	                </div>
+	        	</div>
+	        	<div class="sys_cancelbtn3" @click="syshidden = false" title="取消"></div>
+	        	<div class="sys_addbtn3" @click="confirm_to_post" title="确认修改"></div>
+	        </div>	
+	    </div>
+    </div>
 </template>
 
 <script>
@@ -16,6 +39,11 @@
 				isactive2: false,
 				listnum: 0,
 				active_num: 0,
+
+				// 弹窗
+				syshidden: false,
+				save_confidence: 75,
+				confidence: 75,
 			}
 		},
 		methods:{
@@ -47,7 +75,39 @@
 					this.isactive2 = false
 					this.listnum = 0
 				}
-			}
+			},
+
+			// 弹窗
+			set_confidence:function(){
+				this.confidence = this.save_confidence
+				this.syshidden = true
+			},
+			confirm_to_post:function(){
+				// 请求库名
+				var params = new URLSearchParams()
+				
+                params.append("confidence",this.confidence)
+				// this.$ajax.post("/user/list",params).then((res) => {
+    //                 if( res.data.status === 0){
+    //                 	this.save_confidence = this.confidence
+    //                 }else if( res.data.status === 1 ){
+	   //                  this.error_info('请求失败 ' + res.msg)
+    //                 	return ;
+    //                 }else if( res.data.status === 2 ){
+	   //                  this.error_info('参数错误 ' + res.msg)
+    //                 	return ;
+    //                 }else if( res.data.status === 10 ){
+	   //                  this.error_info('请先登录')
+    //                 	return ;
+    //                 }else{
+    //                 	this.error_info(res.data.status,res.data.msg)
+    //                 }
+    //             }).catch((error) => {
+    //             	console.log(error)
+    //             	this.error_info('网络连接出错')
+    //                 return ;
+    //             })
+			},
 		},
 		created:function(){
 			this.change_leftnav_active()

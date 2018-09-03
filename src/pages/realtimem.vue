@@ -18,13 +18,14 @@
                             <div class="camera_text">
                                 {{ video_srcs[item-1].name }}
                             </div>
-<!--                        <div class="choose_box" @click="change_video(item)" v-show="is_choose_change[item-2]">
-                                选择设备
-                            </div> -->
                             <div class="choose_box" :class="{'choose_box1':isactive[item-2],'choose_box2':!isactive[item-2]}" @click="change_video(item)">
                                   选择设备
                             </div>
-                            <div class="refresh_icon" :class="{'choose_box1':isactive[item-2],'choose_box2':!isactive[item-2]}" @mouseover="refresh_icon = refresh_icon2" @mouseout="refresh_icon = refresh_icon1">
+                            <div class="refresh_icon" 
+                                 :class="{'choose_box1':isactive[item-2],'choose_box2':!isactive[item-2]}" 
+                                 @mouseover="refresh_icon = refresh_icon2" 
+                                 @mouseout="refresh_icon = refresh_icon1"
+                                 @click="repaly_video(item)">
                                 <img :src="refresh_icon" />
                             </div>
                             <object class="player" :id="'player'+item">
@@ -46,7 +47,7 @@
                                     </div>
                                     <div class="re_icon">
                                         <div class="re_righticon" title="跳转到底库人员">
-                                            <img src="../assets/historyface/icon5.png"  @click="skip_to_mmanage2(item.uuid)"/>
+                                            <img src="../assets/historyface/icon5.png"  @click="skip_to_mmanage2(item.personGroupName,item.personGroupId,item.faceSdkId)"/>
                                         </div>
                                     </div>
                                 </div>
@@ -94,7 +95,7 @@
                                         <img style="width:100%" src="../assets/historyface/icon1.png"  @click="skip_to_facepath(item.img)"/>
                                     </div>
                                     <div class="small_icon1" title="跳转到历史抓拍">
-                                        <img style="width:100%" src="../assets/historyface/icon6.png"  @click="skip_to_historyface2(item)"/>
+                                        <img style="width:100%" src="../assets/historyface/icon6.png"  @click="skip_to_historyface2(item.faceSdkId)"/>
                                     </div>
                                 </div>
                             </div>
@@ -121,9 +122,9 @@
         <!--弹框-->
         <div class="face_infobox real_faceInfobox" v-show="open_flag">
             <div class="face_title">
-                <div class="snap real_snap">抓拍：3214</div>
-                <div class="snap real_anap">报警：0</div>
-                <div class="state add_state">正常</div>
+                <div class="snap real_snap">抓拍：{{snapCount}}</div>
+                <!-- <div class="snap real_anap">报警：0</div> -->
+                <div class="state state1 add_state">正常</div>
             </div>
             <div class="real_camera">
                 <select class="center_select real_select" v-model="choose_groupName">
@@ -134,8 +135,12 @@
             <div class="real_conter">
                 <div class="real_ConterText" v-for="item in info_show_data" @dblclick="choose_this_url(item.sdkId,item.name)" v-show="item.isshow">
                     <div class="real_text">{{ item.name }}</div>
-                    <div class="face_icon1" @click="choose_this_url(item.sdkId,item.name)"><img src="../assets/historyface/icon7.png"/></div>
-                    <div class="face_icon2"><img src="../assets/historyface/icon2.png"/></div>
+                    <div class="face_icon1" @click="choose_this_url(item.sdkId,item.name)" title="选择该设备显示">
+                        <img src="../assets/historyface/icon7.png"/>
+                    </div>
+                    <div class="face_icon2" @click="skip_to_mmanage4(item)" title="跳转到设备配置">
+                        <img src="../assets/historyface/icon2.png"/>
+                    </div>
                 </div>
             </div>
             <div class="bottom_bg">
@@ -144,10 +149,8 @@
         </div>
         <!--警告-->
         <!--遮罩层-->
-        <!-- <div class="mack_box" @click="close_info"></div> -->
-        <!-- <div class="warning_box" @click="click_to_move"> -->
         <div class="mack_box" v-show="open_alarm" @click="close_info"></div>
-        <div class="warning_box" v-show="open_alarm" @click="click_to_move">
+        <div class="warning_box" v-show="open_alarm" @click="skip_to_mmanage2(alarm_new_data.personGroupName,alarm_new_data.personGroupId,alarm_new_data.faceSdkId)">
             <div class="warning_title">最新预警</div>
             <div class="warning_conter">
                 <div class="left_photo">
@@ -217,22 +220,22 @@
                 // 视频数据
                 video_srcs:[
                     {
-                        name: "1",
+                        name: "",
                         playAddress: "",
                         sdkId: "",
                     },
                     {
-                        name: "2",
+                        name: "",
                         playAddress: "",
                         sdkId: "",
                     },
                     {
-                        name: "3",
+                        name: "",
                         playAddress: "",
                         sdkId: "",
                     },
                     {
-                        name: "4",
+                        name: "",
                         playAddress: "",
                         sdkId: "",
                     },
@@ -243,6 +246,8 @@
                     streamType: "live",
                     scaleMode: "zoom", // 自动缩放
                     bufferTime: 0,
+                    controlBarAutoHideTimeout: 0, // 播放隐藏工具栏
+                    // controlBarAutoHide: true,
                 },
                 params:{
                     allowFullScreen: false,
@@ -287,6 +292,7 @@
                     // snapshotUrl: "http://192.168.10.208:3333/uploads//20180428/15249092470250564_norm.png",
                 },
                 timer_num: null,
+                snapCount: 0,
 
                 // 第一次进入页面标志
                 first_flag: true,
@@ -333,16 +339,25 @@
                 this.$store.state.is_search_data_facepath = true
                 this.$router.push('/facepath')
             },
-            skip_to_mmanage2:function(num){
-                // this.$store.state.search_data.groupName = "底库2"
-                // this.$store.state.search_data.groupId = 2
-                this.$store.state.search_data.groupName = this.alarm_showdata[num].personGroupName
-                this.$store.state.search_data.groupId = this.alarm_showdata[num].personGroupId
+            skip_to_mmanage2:function(personGroupName,personGroupId,faceSdkId){
+                this.$store.state.search_data.groupName = personGroupName
+                this.$store.state.search_data.groupId = personGroupId
+                this.$store.state.search_data.faceSdkId = faceSdkId
                 this.$store.state.is_search_data = true
                 this.$router.push('/mmanage2')
             },
-            skip_to_historyface2:function(num){
-                // 请求数据先不管
+            skip_to_mmanage4(item){
+                // console.log(item.sdkId)
+                this.open_flag = false
+                this.$store.state.search_data.groupId = item.groupName
+                this.$store.state.search_data.sdkId = item.sdkId
+                this.$store.state.is_search_data = true
+                this.$router.push('/mmanage4')
+            },
+            skip_to_historyface2:function(faceSdkId){
+                // console.log(faceSdkId)
+                this.$store.state.search_data.faceSdkId = faceSdkId
+                this.$store.state.is_search_data = true
                 this.$router.push('/historyface2')
             },
 
@@ -359,6 +374,14 @@
                 // swfobject.embedSWF("/static/grindPlayer/GrindPlayer.swf", "player"+num, "612px", "344px", "10.2", null, this.flashvars, this.params, this.attrs);
                 this.active_box_num = num
                 this.open_flag = true
+                this.snapCount = 0
+                for( let i = 0; i < this.video_names.length; i++ ){
+                    for( let j = 0; j < this.video_names[i].length; j++ ){
+                        if( this.video_names[i][j].sdkId === this.video_srcs[num-1].sdkId ){
+                            this.snapCount = this.video_names[i][j].snapCount
+                        }
+                    }
+                }
             },
             // 弹窗-关闭弹窗
             close_info:function(){
@@ -369,18 +392,23 @@
             change_show_data:function(num){
                 this.info_show_data = []
                 for( let i = 0; i < this.video_names[num].length; i++ ){
-                    this.video_names[num][i].isshow = true
+                    // console.log(this.cameraName)
+                    if( this.video_names[num][i].name.indexOf( this.cameraName ) === -1 ){
+                        this.video_names[num][i].isshow = false
+                    }else{
+                        this.video_names[num][i].isshow = true
+                    }
                     this.info_show_data.splice(-1,0,this.video_names[num][i])
                 }
                 // console.log(this.info_show_data)
             },
             // 选择设备后，获取url
             choose_this_url:function(sdkId,name){
-                console.log(sdkId,name)
+                // console.log(sdkId,name)
                 if( !sdkId || !name ){
                     return 
                 }
-                console.log(sdkId,name)
+                // console.log(sdkId,name)
                 // console.log(item)
                 // sdkId = "camera1"
                 // console.log("sdkId = "+sdkId)
@@ -440,11 +468,12 @@
                             }
                             
                         }else if(jsonData.msg === "normal"){
-                            console.log(jsonData)
+                            // console.log(jsonData)
                             this.catch_oneday = jsonData.data.snapshotOfDay
                             let temp_data = {}
                             temp_data.time = jsonData.data.catchTime.split(" ")[1]
                             temp_data.img = jsonData.data.snapshotUrl
+                            temp_data.faceSdkId = jsonData.data.faceSdkId
                             temp_data.cameraName = jsonData.data.cameraName
                             if( jsonData.data.emotions ){
                                 temp_data.emotions = this.emotion_analysis(jsonData.data.emotions)
@@ -455,8 +484,8 @@
                                 temp_data.gender = "男"
                             }
                             // this.show_face_list.push(JSON.parse(JSON.stringify(temp_data)))
-                            console.log("temp_data")
-                            console.log(temp_data)
+                            // console.log("temp_data")
+                            // console.log(temp_data)
                             this.rolling_picture(temp_data)
                         }
                     }
@@ -474,6 +503,7 @@
                     this.show_data[0].gender = temp_data.gender
                     this.show_data[0].emotions = temp_data.emotions
                     this.show_data[0].cameraName = temp_data.cameraName
+                    this.show_data[0].faceSdkId = temp_data.faceSdkId
                     this.show_data[0].translatetime = 0.5
                     // temp_data.translatetime = 0.5
                     // temp_data.move_pix = this.show_data[0].move_pix
@@ -484,6 +514,7 @@
                     this.show_data[this.end_id+1].gender = temp_data.gender
                     this.show_data[this.end_id+1].emotions = temp_data.emotions
                     this.show_data[this.end_id+1].cameraName = temp_data.cameraName
+                    this.show_data[this.end_id+1].faceSdkId = temp_data.faceSdkId
                     this.show_data[this.end_id+1].translatetime = 0.5
                     // temp_data.translatetime = 0.5
                     // temp_data.move_pix = this.show_data[this.end_id+1].move_pix
@@ -546,7 +577,7 @@
                 }
                 this.timer_num = setTimeout(() => {
                     this.open_alarm = false
-                }, 4000)
+                }, 1000*4)
             },
 
             // 视频播放
@@ -557,6 +588,12 @@
                 // console.log(this.video_srcs)
                 this.flashvars.src = video_url
                 swfobject.embedSWF("/static/grindPlayer/GrindPlayer.swf", "player"+player_num, "612px", "344px", "10.2", null, this.flashvars, this.params, this.attrs);
+            },
+            // 刷新视频
+            repaly_video:function(num){
+                // console.log(this.video_srcs[num])
+                this.flashvars.src = this.video_srcs[num-1].playAddress
+                swfobject.embedSWF("/static/grindPlayer/GrindPlayer.swf", "player"+num, "612px", "344px", "10.2", null, this.flashvars, this.params, this.attrs);
             },
             // 生成唯一ID
             S4:function(){
@@ -571,9 +608,9 @@
             // 请求初始化
             initSocket:function(){
                 // let socket = new SockJS('http://192.168.10.158:9999/gee');
-                // let socket = new SockJS('http://192.168.10.126:9990/gee');
+                let socket = new SockJS('http://192.168.10.126:9990/gee');
                 // let socket = new SockJS('http://192.168.10.132:9999/gee');
-                let socket = new SockJS('gee');
+                // let socket = new SockJS('gee');
                 this.stompClient = Stomp.over(socket);
                 this.stompClient.connect({}, (frame) =>{
                     this.stompClient.subscribe('/topic/camera/warning', (data) => {
@@ -668,6 +705,17 @@
                     return ;
                 })
             },
+            // 预警数量
+            get_init_data1:function(){
+                var params = new URLSearchParams()
+                this.$ajax.post("/history/getWeekWarnTimes",params).then((res) => {
+                    this.alarm_weeknum = res.data.warnTimes
+                }).catch((error) => {
+                    console.log(error)
+                    this.error_info('网络连接出错')
+                    return ;
+                })
+            },
             // 预警
             get_init_data2:function(){
                 var params = new URLSearchParams()
@@ -742,16 +790,17 @@
             }
         },
         mounted:function(){
-            if( this.first_flag ){
-                this.get_init_data()
-                this.get_init_data2()
+            this.get_init_data1()
+            // if( this.first_flag ){
+            //     this.get_init_data()
+            //     this.get_init_data2()
 
-                this.init_video()
-                this.initSocket()
-                this.myID = this.guid()
+            //     this.init_video()
+            //     this.initSocket()
+            //     this.myID = this.guid()
 
-                this.first_flag = false
-            }
+            //     this.first_flag = false
+            // }
         },
         watch:{
             '$store.state.realtime_data.sdkId':function(newVal,old){
@@ -788,8 +837,7 @@
 
         },
         beforeRouteEnter(to, from, next){
-            // console.log(from.path)
-            if( from.path === "/mmanage4"){
+            if( from.path === "/mmanage4" || from.path === "/facepath"){
                 next(vm => {
                     if( vm.first_flag ){
                         vm.get_init_data()
@@ -804,6 +852,7 @@
                         setTimeout(() => {
                             vm.active_box_num = 1
                             vm.$store.state.is_search_data = false
+                            console.log(vm.$store.state.realtime_data.sdkId,vm.$store.state.realtime_data.name)
                             vm.choose_this_url(vm.$store.state.realtime_data.sdkId,vm.$store.state.realtime_data.name)
                         }, 500)
                     }else{
@@ -815,7 +864,18 @@
                     
                 })
             }else{
-                next()
+                next(vm => {
+                    if( vm.first_flag ){
+                        vm.get_init_data()
+                        vm.get_init_data2()
+
+                        vm.init_video()
+                        vm.initSocket()
+                        vm.myID = vm.guid()
+
+                        vm.first_flag = false
+                    }
+                })
             }
             
         }

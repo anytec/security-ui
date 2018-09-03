@@ -6,7 +6,6 @@
 				<el-submenu :index="item.uuid"  :key="item.uuid" v-for="item in groupNames">
 					<template slot="title">
 						<div class="tem_box1">
-							<!-- <input  class="check_input" type="checkbox" @click.stop/> -->
 							<div class="mincheck_input" @click.stop @click="click_to_change_all(item.uuid)"><img :src="img_url[item.ischecked]"/></div>
 						</div>
 						<span class="check_span">{{item.name}}</span>
@@ -14,7 +13,6 @@
 					<el-menu-item-group>
 						<el-menu-item :index="item.uuid + '-' + cam_item.uuid" :key="item.uuid + '-' + cam_item.uuid" :title="cam_item.name" v-for="cam_item in video_names[item.uuid]">
 							<div class="tem_box1" >
-								<!-- <input  class="check_input" type="checkbox" @click.stop/> -->
 								<div class="mincheck_input" @click.stop @click="click_to_change_one(cam_item.uuid,item.uuid)"><img :src="img_url[cam_item.ischecked]"/></div>
 							</div>
 							{{ cam_item.name.slice(0,8) }}
@@ -31,23 +29,7 @@
 		data(){
 			return {
 				img_url:[require("../assets/historyface/chck_no.png"),require("../assets/historyface/chck_ok.png")],
-				// groupNames: [
-				// 	{uuid:"0",name:"区域1",ischecked:0},
-				// 	{uuid:"1",name:"区域2",ischecked:0},
-				// 	{uuid:"2",name:"区域3",ischecked:0},
-				// ],
-				// video_names:{
-				// 	"设备组1":[
-				// 		{uuid:0,name:"我是个很长的设备名哈哈哈",ischecked:0},
-				// 		{uuid:1,name:"设备2",ischecked:0},
-				// 		{uuid:2,name:"设备3",ischecked:0},
-				// 	],
-				// 	"设备组2":[
-				// 		{uuid:0,name:"设备4",ischecked:0},
-				// 		{uuid:1,name:"设备5",ischecked:0},
-				// 		{uuid:2,name:"设备6",ischecked:0},
-				// 	],
-				// },
+
 				groupNames: [],
 				video_names: [],
 				// view_data: null,
@@ -132,6 +114,11 @@
 								this.video_names[i][j].uuid = j
 								this.video_names[i][j].ischecked = 0
 								this.video_names[i][j].location = [this.video_names[i][j].location.split(",")[0],this.video_names[i][j].location.split(",")[1]]
+								// if( this.video_names[i][j].cameraStatus ){
+								// 	this.video_names[i][j].cameraStatus = "正常"
+								// }else{
+								// 	this.video_names[i][j].cameraStatus = "关闭"
+								// }
 								// console.log(this.video_names[i][j].location)
 								this.$store.state.facepath_search_data.allcamera_list.splice(-1,0,this.video_names[i][j])
 							}
@@ -154,7 +141,7 @@
 			        }
 			    }).catch((error) => {
 			    	console.log(error)
-			    	this.error_info('网络连接出错1')
+			    	this.error_info('网络连接出错')
 			        return ;
 			    })
 			},
@@ -178,7 +165,7 @@
 
 		},
 		mounted:function(){
-			this.get_init_data()
+			this.get_init_data()	
 		},
 	};
 </script>

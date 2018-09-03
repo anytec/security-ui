@@ -1,7 +1,7 @@
 /*realtimem start*/
 .center_box{
 	position: absolute;
-	top: 90px;
+	top: 10%;
 	left: 265px;
 	height:-webkit-calc(100% - 130px); 
 	height:-moz-calc(100% - 130px); 
@@ -127,9 +127,9 @@ to {top: -35;}
 }
 .re_bottombox{
 	width: 100%;
-	height:-webkit-calc(100% - 708px); 
+	/*height:-webkit-calc(100% - 708px); 
 	height:-moz-calc(100% - 708px); 
-	height:calc(100% - 708px);
+	height:calc(100% - 708px);*/
 }
 .re_imgbox{
 	height: 100%;

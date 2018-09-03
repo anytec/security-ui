@@ -107,7 +107,7 @@
 			</div>
 		</div>
 		<!--添加窗口-->
-		<div class="mack_box" v-show="is_request2add"></div>
+		<div class="mack_box" v-show="is_request2add" @click="click_to_clear"></div>
 		<div class="bounced_add" v-show="is_request2add">
 			<div class="bounced_box">
 				<div class="file_box">
@@ -130,7 +130,8 @@
 							<option v-for="item in init_data.galleries">{{ item }}</option>
 						</select>
 					</div>
-					<div class="mmbtn_box" @click="click_to_addinfo_data">确认添加</div>
+					<div class="mmbtn_box" @click="click_to_addinfo_data" v-show="is_confirm_show">确认添加</div>
+					<div class="mmbtn_box left_mmbox" v-show="!is_confirm_show">确认添加</div>
 					<div class="mmbtn_box left_mmbox" @click="click_to_addinfo_close">暂不添加</div>
 				</div>
 				<div class="mmbottom_input">
@@ -138,7 +139,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="mack_box" v-show="is_request2change"></div>
+		<div class="mack_box" v-show="is_request2change" @click="click_to_clear"></div>
 		<div class="bounced_add" v-show="is_request2change">
 			<div class="bounced_box">
 				<div class="file_box">
@@ -161,7 +162,8 @@
 							<option v-for="item in init_data.galleries">{{ item }}</option>
 						</select>
 					</div>
-					<div class="mmbtn_box" @click="click_to_change_infodata">确认修改</div>
+					<div class="mmbtn_box" @click="click_to_change_infodata" v-show="is_confirm_show">确认修改</div>
+					<div class="mmbtn_box left_mmbox" v-show="!is_confirm_show">确认添加</div>
 					<div class="mmbtn_box left_mmbox" @click="click_to_close_change_infodata">暂不修改</div>
 				</div>
 				<div class="mmbottom_input">
@@ -201,7 +203,7 @@
 				add_data:{
 					gender:"男",
 					idNumber:"",
-					remarks:"--",
+					remarks:"",
 					name:"",
 					photo: "",
 					groupName: "",
@@ -210,6 +212,8 @@
 				change_data:{
 					photo: "",
 					dataUrl:"",
+					name: "",
+					idNumber: "",
 				},
 
 				tabledata: null,
@@ -220,6 +224,9 @@
 				// 弹窗
 				is_request2add: false,
 				is_request2change: false,
+
+				// 避免重复确认
+				is_confirm_show: true,
 
 			} //返回数据最外围
 		},
@@ -282,7 +289,7 @@
 						this.delete_data = this.delete_data + this.tabledata[i].sdkId + ","
 					}
 				}
-				if( this.delete_data ){
+				if( this.delete_data.length ){
 					this.$confirm('是否删除该数据？','提示',{
 						confirmButtonText: '是',
 			            cancelButtonText: '否',
@@ -294,12 +301,18 @@
 						;
 					})
 				}else{
-					this.error_info("请选择删除项")
+					this.warning_info("请选择删除项")
 				}
 			},
 			click_to_add_info:function(){
 				// 弹窗添加
 				this.is_request2add = true
+				this.is_confirm_show = true
+			},
+			click_to_clear:function(){
+				this.is_request2add = false
+				this.is_request2change = false
+				this.is_confirm_show = true
 			},
 
 			// 页面跳转
@@ -324,6 +337,7 @@
 				}
 				this.change_data.dataUrl = this.change_data.thumbnail
 				this.is_request2change = true
+				this.is_confirm_show = true
 			},
 
 			// 请求数据
@@ -513,6 +527,7 @@
             	}
             	params.append("gender",add_data.gender)
                 // 请求人员数据
+                this.is_confirm_show = false
                 this.$ajax.post("/person/add",params,{headers: {'Content-Type': 'multipart/form-data'}}).then((res) => {
                     if( res.data.status === 0){
                     	this.is_request2add = false
@@ -521,7 +536,7 @@
 	                    this.add_data = {
 	                    	gender:"男",
 							idNumber:"",
-							remarks:"--",
+							remarks:"",
 							name:"",
 							photo: "",
 							groupName: this.init_data.galleries[0],
@@ -537,9 +552,11 @@
 	                    this.error_info('请先登录')
                     	return ;
                     }
+                    this.is_confirm_show = true
                 }).catch((error) => {
                 	console.log(error)
                 	this.error_info('网络连接出错')
+                	this.is_confirm_show = true
                     return ;
                 })
 			},
@@ -562,7 +579,7 @@
                 this.$ajax.post("/person/update",params,{headers: {'Content-Type': 'multipart/form-data'}}).then((res) => {
                     if( res.data.status === 0){
                     	this.is_request2change = false
-                    	this.change_data = { photo: "",dataUrl:"" },
+                    	this.change_data = { photo: "",dataUrl:"",name:"", idNumber:"" },
                     	this.success_info("修改成功")
 	                    this.post_to_change_page(this.save_search_data)
                     }else if( res.data.status === 1 ){
@@ -575,6 +592,7 @@
 	                    this.error_info('请先登录')
                     	return ;
                     }
+                    this.is_confirm_show = true
                 }).catch((error) => {
                 	console.log(error)
                 	this.error_info('网络连接出错')
@@ -584,8 +602,17 @@
 
 			// 消息窗口
 			error_info:function(mes){
+				this.is_confirm_show = true
 				this.$message({
                     type: 'error',
+                    message: mes,
+                    showClose: true,
+                    center: true
+                })
+			},
+			warning_info:function(mes){
+				this.$message({
+                    type: 'warning',
                     message: mes,
                     showClose: true,
                     center: true
@@ -601,38 +628,118 @@
 			},
 
 			// 弹窗
-			// 上传图片
-			imgPreview:function(file,model){
-	            let self = this;
-	            // 看支持不支持FileReader
-	            if (!file || !window.FileReader) return;
+			// // 上传图片
+			// imgPreview:function(file,model){
+	  //           let self = this;
+	  //           // 看支持不支持FileReader
+	  //           if (!file || !window.FileReader) return;
 	    
-	            if (/^image/.test(file.type)) {
-	                // 创建一个reader
-	                var reader = new FileReader()
-	                // 将图片将转成 base64 格式
-	                reader.readAsDataURL(file)
-	                // 读取成功后的回调
-	                reader.onloadend = function () {
-	                	if( model === "add"){
-	                		self.add_data.dataUrl = this.result
-	                	}else if( model === "change" ){
-	                		self.change_data.dataUrl = this.result
-	                	}
+	  //           if (/^image/.test(file.type)) {
+	  //               // 创建一个reader
+	  //               var reader = new FileReader()
+	  //               // 将图片将转成 base64 格式
+	  //               reader.readAsDataURL(file)
+	  //               // 读取成功后的回调
+	  //               reader.onloadend = function () {
+	  //               	if( model === "add"){
+	  //               		self.add_data.dataUrl = this.result
+	  //               	}else if( model === "change" ){
+	  //               		self.change_data.dataUrl = this.result
+	  //               	}
 	                    
-	                }
-	            }
-	        },
+	  //               }
+	  //           }
+	  //       },
+	        // 上传图片
+            imgPreview:function(file,model){
+                let self = this;
+                // 看支持不支持FileReader
+                if (!file || !window.FileReader) return;
+        
+                if (!/image\/\w+/.test(file.type)) {
+                    self.warning_info("请选择图片")
+                    return false;
+                }
+
+                // 创建一个reader
+                var reader = new FileReader()
+                // 将图片将转成 base64 格式
+                reader.readAsDataURL(file)
+                // 读取成功后的回调
+                reader.onloadend = function (e) {
+                    if( model === "add"){
+                		self.add_data.dataUrl = e.target.result
+                	}else if( model === "change" ){
+                		self.change_data.dataUrl = e.target.result
+                	}
+                    let image = new Image()
+                    let Maxpic = 4000
+                    image.onload = () => {
+                        let width = image.width
+                        let height = image.height
+                        if( width > Maxpic || height > Maxpic ){
+                            let PicBaseText=self.compress(image,width*0.5,height*0.5,1)
+                            if( model === "add" ){
+                            	self.add_data.photo = self.dataURItoBlob(PicBaseText)
+                            }else{
+                            	self.change_data.photo = self.dataURItoBlob(PicBaseText)
+                            }
+                        }
+                    }
+                    image.src = e.target.result
+                }
+                
+            },
 			handleFileChange:function(e){
-				let inputDOM = this.$refs.inputer;
-				this.add_data.photo = inputDOM.files[0];
-				this.imgPreview(this.add_data.photo,"add");
+				let inputDOM = this.$refs.inputer
+				
+				let tempdata = inputDOM.files[0]
+                if( tempdata.size < 10*1024*1024 ){
+                    this.add_data.photo = inputDOM.files[0]
+					this.imgPreview(this.add_data.photo,"add")
+                }else{
+                    this.$refs.inputer.value = ""
+                    this.warning_info("图片大小不超过10M")
+                } 
 			},
 			handleFileChange_change:function(e){
-				let inputDOM = this.$refs.inputer_change;
-				this.change_data.photo = inputDOM.files[0];
-				this.imgPreview(this.change_data.photo,"change");
+				let inputDOM = this.$refs.inputer_change
+				
+				let tempdata = inputDOM.files[0]
+                if( tempdata.size < 10*1024*1024 ){
+                    this.change_data.photo = inputDOM.files[0]
+					this.imgPreview(this.change_data.photo,"change")
+                }else{
+                    this.$refs.inputer.value = ""
+                    this.warning_info("图片大小不超过10M")
+                }
 			},
+			// 图片压缩 canvas
+            compress:function(img, width, height, ratio) {
+                var canvas, ctx, img64;
+
+                canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+
+                ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+
+                img64 = canvas.toDataURL("image/jpeg",ratio);
+
+                return img64;
+            },
+            // base64 转 二进制 图片
+            dataURItoBlob:function(dataURI) {
+                let byteString = atob(dataURI.split(',')[1]);
+                let mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+                let ab = new ArrayBuffer(byteString.length);
+                let ia = new Uint8Array(ab);
+                for (let i = 0; i < byteString.length; i++) {
+                    ia[i] = byteString.charCodeAt(i);
+                }
+                return new Blob([ab], {type: mimeString});
+            },
 
 			// 弹窗事件-添加人员
 			click_to_addinfo_data:function(){
@@ -656,7 +763,12 @@
 					&& !photo_flag
 					 ){
 					this.error_info("信息未更改")
+				}else if( this.change_data.idNumber === "" ){
+					this.warning_info("标识编码不能为空")
+				}else if( this.change_data.name === ""){
+					this.warning_info("姓名不能为空")
 				}else{
+					this.is_confirm_show = false
 					this.require_to_change_people(this.change_data,photo_flag)
 				}
 			},

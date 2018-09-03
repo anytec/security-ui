@@ -1,6 +1,7 @@
 <template>
 	<div class="pie1">
 		<div class="line_head">
+			<div class="pie_title">日人流量占比图</div>
 			<select class="pie_select" v-model="choose_day">
                 <option v-for="item in dayTime" class="pie_option">{{item}}</option>
             </select>
@@ -27,6 +28,9 @@
 				name: '环形图',
 
 				choose_day: "",
+
+				color: this.$store.state.color1,
+				text_color: this.$store.state.text_color,
 			}
 		},
 		methods:{
@@ -105,7 +109,7 @@
 				    legend: {
 				        data: this.fname,
 				        textStyle:{
-				        	color: '#02BF73',
+				        	color: 'auto',
 				        	fontSize: 16,
 				        },
 				        orient: 'vertical',// 'horizontal' | 'vertical' 水平布局|垂直布局
@@ -151,7 +155,7 @@
 				    },
 				    calculable : false, // 拖拽重计算特性
 				    backgroundColor: 'rgba(0,0,0,0.4)', // 修改背景颜色
-				    color: ['#60C4A8','#85D3DD','#189A75','#54CCCA','#056160'], // 线条颜色
+				    color: this.color, // 线条颜色
 
 					series : [
 				        {
@@ -190,12 +194,13 @@
 				        }
 				    ],
 				}
-                    
+                
+                this.myChart = echarts.init(document.querySelector('.pie1 .main'))
 				this.myChart.setOption(option,true)
 			},
 		},
 		mounted(){
-			this.myChart = echarts.init(document.querySelector('.pie1 .main'))
+			
 
 			// console.log(this.dayTime)
 			this.init_pie()
@@ -215,8 +220,9 @@
 							name : this.fname[i]
 						}
 					)
-					total = total + data[i].value
+					total = total + Number(data[i].value)
 				}
+				this.myChart = echarts.init(document.querySelector('.pie1 .main'))
 				this.line_echart_init_test(total,data)
 				this.my_init()
 
@@ -238,8 +244,9 @@
 							name : this.fname[i]
 						}
 					)
-					total = total + data[i].value
+					total = total + Number(data[i].value)
 				}
+				this.myChart = echarts.init(document.querySelector('.pie1 .main'))
 				this.line_echart_init_test(total,data)
 			}
 		},
@@ -283,5 +290,14 @@
   		color: #cccccc;
   		border: none;
   		outline: none;
+	}
+	.pie_title{
+        width: 300px;
+        height: 60px;
+        line-height: 60px;
+        color: #cccccc;
+        font-size: 20px;
+        margin-left: 20px;
+        float: left;
 	}
 </style>

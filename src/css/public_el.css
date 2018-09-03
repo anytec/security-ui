@@ -115,3 +115,21 @@
 .el-slider__runway{
     margin: 10px 0;
 }
+
+/*滑动条新增*/
+.el-slider__bar{
+	background-color: #00fcff !important;
+}
+
+.el-slider__button{
+	border-radius: 0px !important;
+	border: 3px solid #00fcff !important;
+	/*background-color: #000000 !important;*/
+	background-color: #0068b7 !important;
+	transform: rotate(45deg) ;
+	-moz-transform: rotate(45deg) !important;
+	-webkit-transform: rotate(45deg) !important;
+}
+.el-slider__button:hover,.el-slider__button-wrapper:hover,.el-slider__button.dragging{
+	border-radius:25px !important;
+}

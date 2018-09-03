@@ -3,16 +3,16 @@
 		<div class="mask_box">
 			<div class="top_title">
 				<div class="sys_lefttext">操作记录</div>
-				<div class="sys_input">
-					<input type="text" placeholder="搜索用户名" v-model="search_data.uname"/>
+				<div class="sys_input" @keyup.enter="test('heh ')">
+					<input type="text" placeholder="搜索用户名" v-model="search_data.uname" />
 					<div class="sysSearch_box" @click="click_to_search">
 						<img :src="alert_src" @mouseover="alert_src=ale_imgsrc2" @mouseout="alert_src=ale_imgsrc1"/>
 					</div>
 				</div>
-				<select v-model="search_data.operand">
+				<select v-model="search_data.operationObj" v-show="false">
 					<option v-for="item in operands">{{item}}</option>
 				</select>
-				<select v-model="search_data.optype">
+				<select v-model="search_data.operationType" >
 					<option v-for="item in optypes">{{item}}</option>
 				</select>
 			</div>
@@ -21,10 +21,10 @@
 					<table>
 						<tr>
 							<td class="td td1">用户名</td>
-							<td class="td td1">ID</td>
+							<td class="td td1">操作时间</td>
 							<td class="td td1">操作类型</td>
 							<td class="td td1">操作对象</td>
-							<td class="td td1">对象ID</td>
+							<td class="td td1">操作内容</td>
 							<td class="td td1">操作结果</td>
 						</tr>
 					</table>
@@ -35,39 +35,39 @@
 							<td class="td td1">
 								<div class="table_text">
 									<div class="cell_text">
-										{{item.username}}
+										{{item.uname}}
 									</div>
 								</div>
 							</td>
 							<td class="td td1">
 								<div class="table_text">
 									<div class="cell_text">
-										{{item.userID}}
+										{{item.operationTime}}
 									</div>
 								</div>
 							</td>
 							<td class="td td1">
 								<div class="table_text">
 									<div class="cell_text">
-										{{item.type}}
+										{{item.operationType}}
 									</div>
 								</div>
 							</td>
 							<td class="td td1">
 								<div class="table_text">
 									<div class="cell_text">
-										{{item.object1}}
+										{{item.operationObj}}
 									</div>
+								</div>
+							</td>
+							<td class="td td1">
+								<div class="td_icon2 sys2_tdtext" :title="item.objId">
+									查看详情
 								</div>
 							</td>
 							<td class="td td1">
 								<div class="td_icon2 sys2_tdtext">
-									{{item.object_ID}}
-								</div>
-							</td>
-							<td class="td td1">
-								<div class="td_icon2 sys2_tdtext">
-									{{item.object_ID}}
+									{{item.operationResult}}
 								</div>
 							</td>
 						</tr>
@@ -150,116 +150,13 @@
 					pageSize: 10,
 					allnum: 0,
 				},
-				tabledata: [{
-					id: 1,
-					username: 'admin',
-					userID: '000001',
-					type: '删除',
-					object1: '人员底库',
-					object_ID:'----------',
-				},
-				{
-					id: 2,
-					username: 'admin',
-					userID: '000001',
-					type: '删除',
-					object1: '人员底库',
-					object_ID:'----------',
-				},
-				{
-					id: 3,
-					username: 'admin',
-					userID: '000001',
-					type: '删除',
-					object1: '人员底库',
-					object_ID:'----------',
-				},
-				{
-					id: 4,
-					username: 'admin',
-					userID: '000001',
-					type: '删除',
-					object1: '人员底库',
-					object_ID:'----------',
-				},
-				{
-					id: 5,
-					username: 'admin',
-					userID: '000001',
-					type: '删除',
-					object1: '人员底库',
-					object_ID:'----------',
-				},
-				{
-					id: 2,
-					username: 'admin',
-					userID: '000001',
-					type: '删除',
-					object1: '人员底库',
-					object_ID:'----------',
-				},
-				{
-					id: 3,
-					username: 'admin',
-					userID: '000001',
-					type: '删除',
-					object1: '人员底库',
-					object_ID:'----------',
-				},
-				{
-					id: 4,
-					username: 'admin',
-					userID: '000001',
-					type: '删除',
-					object1: '人员底库',
-					object_ID:'----------',
-				},
-				{
-					id: 5,
-					username: 'admin',
-					userID: '000001',
-					type: '删除',
-					object1: '人员底库',
-					object_ID:'----------',
-				},
-				{
-					id: 2,
-					username: 'admin',
-					userID: '000001',
-					type: '删除',
-					object1: '人员底库',
-					object_ID:'----------',
-				},
-				{
-					id: 3,
-					username: 'admin',
-					userID: '000001',
-					type: '删除',
-					object1: '人员底库',
-					object_ID:'----------',
-				},
-				{
-					id: 4,
-					username: 'admin',
-					userID: '000001',
-					type: '删除',
-					object1: '人员底库',
-					object_ID:'----------',
-				},
-				{
-					id: 5,
-					username: 'admin',
-					userID: '000001',
-					type: '删除',
-					object1: '人员底库',
-					object_ID:'----------',
-				}],
+				tabledata: [],
 
 				operands: [ "操作对象/全部","底库","底库人员","设备组","设备" ],
 				optypes: [ "操作类型/全部","添加","删除","查找","修改" ],
 				search_data: {
-					operand: "操作对象/全部",
-					optype: "操作类型/全部",
+					operationObj: "操作对象/全部",
+					operationType: "操作类型/全部",
 					uname: "",
 				},
 				save_search_data: {},
@@ -272,6 +169,10 @@
 			LeftNav
 		},
 		methods: {
+			test:function(value){
+				console.log(value)
+			},
+
 			handleSizeChange:function(val) {
 				this.init_data.pageSize = val
 				this.get_init_data( this.save_search_data )
@@ -296,11 +197,15 @@
 
 			// 搜索事件
 			click_to_search:function(){
-				this.save_search_data = this.search_data
+				
 				let search_data = {}
-				for( let item in this.search_data ){
-					search_data[item] = this.search_data[item]
+				if( this.search_data.operationType != "操作类型/全部" ){
+					search_data.operationType = this.search_data.operationType
 				}
+				if( this.search_data.uname != "" )
+				search_data.uname = this.search_data.uname
+				
+				this.save_search_data = search_data
 				this.get_init_data( search_data )
 			},
 
@@ -313,10 +218,17 @@
 				}
 				params.append("pageNum",this.init_data.pageNum)
                 params.append("pageSize",this.init_data.pageSize)
-				this.$ajax.post("/user/operand",params).then((res) => {
+				this.$ajax.get("/log/operationRecordList",params).then((res) => {
                     if( res.data.status === 0){
                     	this.init_data.allnum = res.data.data.total
-                		// this.tabledata = res.data.data.list
+                		this.tabledata = res.data.data.list
+                		for( let i = 0; i < this.tabledata.length; i++ ){
+                			if(this.tabledata[i].operationResult){
+                				this.tabledata[i].operationResult = "操作成功"
+                			}else{
+                				this.tabledata[i].operationResult = "操作失败"
+                			}
+                		}
                     }else if( res.data.status === 1 ){
 	                    this.error_info('请求失败 ' + res.msg)
                     	return ;
@@ -326,11 +238,30 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
                 	this.error_info('网络连接出错')
                     return ;
+                })
+			},
+			// 消息窗口
+			error_info:function(mes){
+				this.$message({
+                    type: 'error',
+                    message: mes,
+                    showClose: true,
+                    center: true
+                })
+			},
+			success_info:function(mes){
+				this.$message({
+                    type: 'success',
+                    message: mes,
+                    showClose: true,
+                    center: true
                 })
 			},
 		},

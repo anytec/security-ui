@@ -87,7 +87,7 @@
 			</div>
 		</div>
 		<!--遮罩层-->
-		<div class="mack_box" v-show="is_request2add"></div>
+		<div class="mack_box" v-show="is_request2add" @click="is_request2add = false"></div>
 		<!--弹出框-新增设备组-->
 		<div class="bounced_add mm3_bounced mm_hiddenx" v-show="is_request2add">
 			<div class="bounced_box">
@@ -97,7 +97,8 @@
 				<div class="choose_input mm3_choose">
 					<span>设备组名称：</span>
 					<input class="mm3_inputname" type="text" v-model="add_data.name"/>
-					<div class="mmbtn_box mm3_btn" @click="click_to_addinfo_data">新建设备组</div>
+					<div class="mmbtn_box mm3_btn" @click="click_to_addinfo_data" v-show="is_confirm_show">新建设备组</div>
+					<div class="mmbtn_box mm3_btn left_mmbox" v-show="!is_confirm_show">新建设备组</div>
 					<div class="mmbtn_box left_mmbox mm3_btn" @click="click_to_close_addinfo">暂不添加</div>
 				</div>
 				<div class="mmbottom_input">
@@ -106,7 +107,7 @@
 			</div>
 		</div>
 		<!--遮罩层-->
-		<div class="mack_box" v-show="is_request2change"></div>
+		<div class="mack_box" v-show="is_request2change" @click="is_request2change = false"></div>
 		<!--弹出框-编辑设备组信息-->
 		<div class="bounced_add mm3_bounced" v-show="is_request2change">
 			<div class="bounced_box">
@@ -116,7 +117,8 @@
 				<div class="choose_input mm3_choose">
 					<span>底库名称：</span>
 					<input class="mm3_inputname" type="text" v-model="change_data.name"/>
-					<div class="mmbtn_box mm3_btn" @click="click_to_change_infodata">确认修改</div>
+					<div class="mmbtn_box mm3_btn" @click="click_to_change_infodata" v-show="is_confirm_show">确认修改</div>
+					<div class="mmbtn_box mm3_btn left_mmbox" v-show="!is_confirm_show">确认修改</div>
 					<div class="mmbtn_box left_mmbox mm3_btn" @click="click_to_close_change_info">暂不修改</div>
 				</div>
 				<div class="mmbottom_input">
@@ -151,7 +153,7 @@
 				delete_data: [],
 				add_data:{
 					name: "",
-					remarks: "--",
+					remarks: "",
 				},
 				change_data: {},
 
@@ -163,6 +165,7 @@
 				// 弹窗
 				is_request2add: false,
 				is_request2change: false,
+				is_confirm_show : true,
 			} //返回数据最外围
 		},
 		methods: {
@@ -220,6 +223,7 @@
 			},
 			// 添加事件-弹窗
 			click_to_addinfo_data:function(){
+				this.is_confirm_show = false
 				this.require_to_add(this.add_data)
 			},
 			click_to_close_addinfo:function(){
@@ -235,8 +239,11 @@
 				if( this.change_data.remarks === this.tabledata[this.change_data.uuid].remarks &&
 					this.change_data.name === this.tabledata[this.change_data.uuid].name ){
 					this.error_info("信息未更改")
+				}else if( this.change_data.name === "" ){
+					this.warning_info("设备组名称不能为空")
 				}else{
 					let template = {"id":this.change_data.id,"name":this.change_data.name,"remarks":this.change_data.remarks}
+					this.is_confirm_show = false
 					this.require_to_change(template)
 				}
 			},
@@ -251,7 +258,7 @@
 						this.delete_data = this.delete_data + this.tabledata[i].id + ","
 					}
 				}
-				if( this.delete_data ){
+				if( this.delete_data.length ){
 					this.$confirm('是否删除该数据？','提示',{
 						confirmButtonText: '是',
 			            cancelButtonText: '否',
@@ -263,7 +270,7 @@
 						;
 					})
 				}else{
-					this.error_info("请选择删除项")
+					this.warning_info("请选择删除项")
 				}
 			},
 			// 清除数据
@@ -276,6 +283,9 @@
 
 			// 页面跳转
 			skip_to_camera:function(num){
+				// 此处groupId 为设备组名
+				this.$store.state.search_data.groupId = this.tabledata[num].name
+				this.$store.state.is_search_data = true
 				this.$router.push('/mmanage4')
 			},
 			skip_to_facepath:function(num){
@@ -421,7 +431,8 @@
             	if( add_data.name ){
             		params.append( "name", add_data.name )
             	}else{
-            		this.error_info("请添加库名")
+            		this.is_confirm_show = true
+            		this.error_info("设备组名称不能为空")
                     return ;
             	}
             	params.append( "remarks", add_data.remarks)
@@ -442,9 +453,11 @@
 	                    this.error_info('请先登录')
                     	return ;
                     }
+                    this.is_confirm_show = true
                 }).catch((error) => {
                 	console.log(error)
                 	this.error_info('网络连接出错')
+                	this.is_confirm_show = true
                     return ;
                 })
 			},
@@ -481,12 +494,14 @@
 	                    this.error_info('请先登录')
                     	return ;
                     }
+                    this.is_confirm_show = true
                 }).catch((error) => {
                 	if( model === "status" ){
                 		this.tabledata[uuid].groupStatus = !this.tabledata[uuid].groupStatus
                 	}
                 	console.log(error)
                 	this.error_info('网络连接出错')
+                	this.is_confirm_show = true
                     return ;
                 })
 			},
@@ -494,8 +509,17 @@
 
 			// 消息窗口
 			error_info:function(mes){
+				this.is_confirm_show = true
 				this.$message({
                     type: 'error',
+                    message: mes,
+                    showClose: true,
+                    center: true
+                })
+			},
+			warning_info:function(mes){
+				this.$message({
+                    type: 'warning',
                     message: mes,
                     showClose: true,
                     center: true

@@ -1,6 +1,8 @@
 <template>
 	<div class="radar2">
-		<div class="line_head"></div>
+		<div class="line_head">
+			<div class="pie_title">情绪雷达图</div>
+		</div>
 		<div class="main"></div>
 	</div>
 </template>
@@ -34,12 +36,13 @@
 				// let imgPath = ['http://bmob-cdn-15355.b0.upaiyun.com/2017/12/01/bee4341c4089af7980b87074a77479ad.png']
 				let option = {
 					backgroundColor: 'rgba(0,0,0,0.4)', // 修改背景颜色
-				    color: ['rgba(255,255,255,0.2)','rgba(255,255,255,0.2)'], // 线条颜色
+				    color: ['rgba(0, 200, 100, 0.2)','rgba(10, 170, 100, 0.5)'], // 线条颜色
 				    // 图例
 				    legend: {
+				    	icon: 'rect',
 				        data: ['显性情绪', '隐性情绪'],
 				        textStyle:{
-				        	color: 'auto',
+				        	color: '#ffffff',
 				        	fontSize: 16,
 				        },
 				        orient: 'vertical',// 'horizontal' | 'vertical' 水平布局|垂直布局
@@ -55,7 +58,7 @@
 				        // 内边距
 				        padding: 10,
 
-				        icon:'circle',
+				        // icon:'circle',
 				    },
 				    radar: [{
 				        indicator: [
@@ -186,11 +189,12 @@
 				    }, ]
 				}
 
+				this.myChart = echarts.init(document.querySelector('.radar2 .main'))
 				this.myChart.setOption(option,true)
 			}
 		},
 		mounted(){
-			this.myChart = echarts.init(document.querySelector('.radar2 .main'))
+			// this.myChart = echarts.init(document.querySelector('.radar2 .main'))
 
 			// console.log(this.emotionsData[0])
 			// this.max = Math.max.apply(null, this.emotionsData[0])
@@ -207,6 +211,7 @@
 				if( Math.max.apply(null, this.emotionsData[1]) > this.max ){
 					this.max = Math.max.apply(null, this.emotionsData[1])
 				}
+
 				this.line_echart_init( this.emotionsData )
 				this.my_init()
 			}
@@ -229,6 +234,15 @@
 		height: 60px;
 		/*margin-bottom: 10px;*/
 		background-color: rgba(0,0,0,0.5);
+	}
+	.pie_title{
+        width: 300px;
+        height: 60px;
+        line-height: 60px;
+        color: #cccccc;
+        font-size: 20px;
+        margin-left: 20px;
+        float: left;
 	}
 	/*.pie_select{
 		border-top-left-radius: 5px;

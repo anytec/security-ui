@@ -1,53 +1,186 @@
-	.left_nav{
-		width: 225px;
-		height:-webkit-calc(100% - 60px); 
-		height:-moz-calc(100% - 60px); 
-		height:calc(100% - 60px); 
-		position: fixed;
-		top: 60px;
-		padding-top: 20px;
-		background-color: #1a253f;
-		background: linear-gradient(top, rgba(27,52,89,0.8) 0%, rgba(25,29,46,0.9) 100%);
-		background: -webkit-linear-gradient(top, rgba(27,52,89,0.8) 0%, rgba(25,29,46,0.9) 100%);
-		background: -moz-linear-gradient(top, rgba(27,52,89,0.8) 0%, rgba(25,29,46,0.9) 100%);
-		background: -ms-linear-gradient(top, rgba(27,52,89,0.8) 0%, rgba(25,29,46,0.9) 100%);
-		background: -o-linear-gradient(top, rgba(27,52,89,0.8) 0%, rgba(25,29,46,0.9) 100%);
-		z-index: 98;
-	}
-	.left_ul{
-		display: block;
-		width: 225px;
-		padding: 0;
-		position: relative;
-	}
-	.left_ul li{
-		color: white;
-		height: 50px;
-		line-height: 50px;
-		text-align: center;
-		font-size: 18px;
-		font-family: "微软雅黑";
-		display: block;
-		list-style-type: none;
-		cursor: pointer;
-	}
-    .leftli_active{
-    	background-color:#156f89 !important;
-    	color:#00fcff !important;
-    }
-    .left_active{
-    	position: absolute;
-    	right: 0;
-    	top: 0;
-    	width: 3px;
-    	height: 50px;
-    	background-color:#00fcff;
-    	transition: all 400ms;
-    }
-    .left_one:hover ~ .left_active{
-	 	top: 0;
-	}
-	.left_two:hover ~ .left_active{  
-	 	top: 50px;
-	}
+.left_nav{
+	width: 225px;
+	height:-webkit-calc(100% - 60px); 
+	height:-moz-calc(100% - 60px); 
+	height:calc(100% - 60px); 
+	position: fixed;
+	top: 60px;
+	padding-top: 20px;
+	background-color: #1a253f;
+	background: linear-gradient(top, rgba(27,52,89,0.8) 0%, rgba(25,29,46,0.9) 100%);
+	background: -webkit-linear-gradient(top, rgba(27,52,89,0.8) 0%, rgba(25,29,46,0.9) 100%);
+	background: -moz-linear-gradient(top, rgba(27,52,89,0.8) 0%, rgba(25,29,46,0.9) 100%);
+	background: -ms-linear-gradient(top, rgba(27,52,89,0.8) 0%, rgba(25,29,46,0.9) 100%);
+	background: -o-linear-gradient(top, rgba(27,52,89,0.8) 0%, rgba(25,29,46,0.9) 100%);
+	z-index: 98;
+}
+.left_ul{
+	display: block;
+	width: 225px;
+	padding: 0;
+	position: relative;
+}
+.left_ul li{
+	color: white;
+	height: 50px;
+	line-height: 50px;
+	text-align: center;
+	font-size: 18px;
+	font-family: "微软雅黑";
+	display: block;
+	list-style-type: none;
+	cursor: pointer;
+}
+.leftli_active{
+	background-color:#156f89 !important;
+	color:#00fcff !important;
+}
+.left_active{
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 3px;
+	height: 50px;
+	background-color:#00fcff;
+	transition: all 400ms;
+}
+.left_one:hover ~ .left_active{
+ 	top: 0;
+}
+.left_two:hover ~ .left_active{  
+ 	top: 50px;
+}
+
+/* system1 弹窗 */
+.sysadd_user3{
+	position: absolute;
+	top: 35%;
+	left: 38%;
+	width:570px;
+	height: 210px;
+	z-index: 999;
+	background: url(../assets/system/tray.svg) no-repeat;
+	background-size: 100%;
+	z-index: 98;
+}
+.threshold_text{
+	width: 148px;
+	text-align: center;
+	margin-left: 20px;
+	margin-top: 60px;
+	font-size: 18px;
+	float: left;
+}
+.threshold_box{
+	width: 300px;
+	height: 60px;
+	text-align: center;
+	margin-top: 25px;
+	font-size: 18px;
+	float: left;
+}
+.syssimilar_box{
+	width: 100%;
+	height: 35px;
+	margin-top:40px;
+}
+.syssimilar_text{
+    width: 148px;
+    margin-left: 20px;
+    text-align: center;
+    font-size: 14px;
+    font-size: 18px;
+    padding-top: 14px;
+    float: left;
+}
+.systitle_text{
+	width: 130px;
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+	font-size: 18px;
+	margin-left: 20px;
+
+}
+.sysslider_box{
+	float: left;
+	width: 270px;
+	margin-top: 13px;
+}
+.el-slider__bar{
+	background-color:white !important; 
+}
+.syspercentage{
+	margin-top: 15px;
+	margin-left: 18px;
+	width: 30px;
+	height: 25px;
+	float: left;
+}
+.syspercentage input{
+	font-size: 16px;
+	font-weight: bold;
+	text-align: center;
+	color: white;
+	width: 100%;
+	height: 100%;
+	border-radius: 5px;
+	border: none;
+	background-color: transparent;
+}
+.percentage_text{
+	font-size: 16px;
+	font-weight: bold;
+	text-align: center;
+	color: white;
+	width: 10px;
+	height: 25px;
+	line-height: 25px;
+	float: left;
+	margin: 0px 0px;
+	margin-top: 14px;
+}
+.systitle_user3{
+	position: relative;
+	color: white;
+	width: 100%;
+	height: 40px;
+}
+.sys_cancelbtn3{
+	position: absolute;
+	right: -55px;
+	top: 30px;
+	width: 40px;
+	height: 40px;
+	background: url(../assets/system/cancel.svg) no-repeat; 
+}
+.sys_cancelbtn3:hover{
+	background: url(../assets/system/cancel_1.svg) no-repeat;
+}
+.sys_addbtn3{
+	position: absolute;
+	right: -55px;
+	top: 85px;
+	width: 40px;
+	height: 40px;
+	background: url(../assets/system/confirm.svg) no-repeat;
+}
+.sys_addbtn3:hover{
+	background: url(../assets/system/confirm_1.svg) no-repeat;
+}
+
+.left7set_up{
+	width: 20px;
+	height: 20px;
+	position: absolute;
+	bottom: 75px;
+	left: 100px;
+	cursor: pointer;
+	background: url(../assets/historyface/icon2.png) no-repeat;
+	background-size: 100%;
+}
+.left7set_up:hover{
+	background: url(../assets/historyface/icon2_1.png) no-repeat;
+}
+/* system1 弹窗 end */
 	

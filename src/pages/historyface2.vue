@@ -10,7 +10,7 @@
 					<option selected="selected">设备组/不限</option>
 					<option v-for="item in init_data.cameraGroupNames">{{ item.name }}</option>
 				</select>
-				<input class="center_input" type="text" v-model="search_data.cameraName" placeholder="设备名称"/>
+				<!-- <input class="center_input" type="text" v-model="search_data.cameraName" placeholder="设备名称"/> -->
 				<div class="right_btn h2_right_btn">
 					<div class="time_box">时间范围</div>
 					<div class="time_input">
@@ -207,7 +207,25 @@
 			click_to_search:function(search_data){
 				this.init_data.pageNum = 1
 				this.save_search_data = JSON.parse(JSON.stringify(search_data))
-				this.post_to_change_page(search_data)
+				let temp_data = {}
+				for( let item in search_data ){
+                	if( search_data[item].indexOf("不限") == -1 &&  search_data[item] != ""){
+                		if( item === "cameraGroupName" ){
+	                		for(let i = 0; i < this.init_data.cameraGroupNames.length; i++){
+	                			if( search_data[item] === this.init_data.cameraGroupNames[i].name ){
+	                				temp_data.cameraGroupId = this.init_data.cameraGroupNames[i].id
+	                			}
+	                		}
+                		}else{
+                			temp_data[item] = search_data[item]
+                		}
+                	}
+                }
+                if( this.date_value ){
+        			temp_data.startTime = this.date_value[0]-1
+        			temp_data.endTime = this.date_value[1]-1
+        		}
+				this.post_to_change_page(temp_data)
 			},
 
 			// 页面跳转(操作)
@@ -254,6 +272,13 @@
 				this.$ajax.post("/groupCamera/list",params).then((res) => {
                     if( res.data.status === 0){
             			this.init_data.cameraGroupNames = res.data.data.list
+            			if( this.$store.state.is_search_data ){
+            				let search_data = {"faceSdkId":this.$store.state.search_data.faceSdkId}
+            				console.log(search_data)
+            				this.post_to_change_page(search_data)
+            				this.$store.state.is_search_data = false
+							this.$store.state.search_data = {}
+            			}
                     }else if( res.data.status === 1 ){
 	                    this.error_info('请求失败 ' + res.msg)
                     	return ;
@@ -303,25 +328,9 @@
                 })
 			},
 			post_to_change_page:function(search_data){
-				// console.log(this.search_data)
 				var params = new URLSearchParams()
                 for( let item in search_data ){
-                	if( search_data[item].indexOf("不限") == -1 &&  search_data[item] != ""){
-                		if( item === "cameraGroupName" ){
-	                		for(let i = 0; i < this.init_data.cameraGroupNames.length; i++){
-	                			if( search_data[item] === this.init_data.cameraGroupNames[i].name ){
-	                				// params.append(item,search_data[item])
-	                				params.append("cameraGroupId",this.init_data.cameraGroupNames[i].id)
-	                			}
-	                		}
-                		}else{
-                			params.append(item,search_data[item])
-                		}
-                	}
-                	if( this.date_value ){
-            			params.append("startTime",this.date_value[0]-1)
-            			params.append("endTime",this.date_value[1]-1)
-            		}
+                	params.append(item,search_data[item])
                 }
                 params.append("pageNum",this.init_data.pageNum)
                 params.append("pageSize",this.init_data.pageSize)

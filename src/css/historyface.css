@@ -17,7 +17,7 @@
 	width:-webkit-calc(100% - 325px); 
 	width:-moz-calc(100% - 325px); 
 	width:calc(100% - 325px);
-	border: 1px solid #00ffff;
+	/*border: 1px solid #00ffff;*/
 	background-color: rgba(72,69,89,0.3);
 	border-radius: 5px;
 }
@@ -80,6 +80,7 @@
 	float: left;
 	font-size: 16px;
 	padding: 0px 8px;
+	cursor: pointer; /*2018-08-24 LZT增*/
 }
 .time_box{
 	margin-right: 20px;
@@ -334,7 +335,8 @@
 /*realtimem start*/
 .center_box{
 	position: absolute;
-	top: 90px;
+	/*top: 90px;  2018-08-27 LZT*/
+	top: 10%;
 	left: 265px;
 	height:-webkit-calc(100% - 130px); 
 	height:-moz-calc(100% - 130px); 
@@ -374,12 +376,7 @@
 	font-size: 16px;
 	font-family: "微软雅黑";
 }
-.re_bottombox{
-	width: 100%;
-	height:-webkit-calc(100% - 708px); 
-	height:-moz-calc(100% - 708px); 
-	height:calc(100% - 708px);
-}
+
 .re_imgbox{
 	height: 100%;
 	width:1247px;
@@ -438,6 +435,7 @@
 	width: 16px;
 	height: 16px;
 	margin-top: 2px;
+	cursor: pointer;
 }
 .small_icon1{
 	position: absolute;
@@ -445,6 +443,7 @@
 	width: 16px;
 	height: 16px;
 	margin-top: 2px;
+	cursor: pointer;
 }
 /* LZT 08-08新增or修改 end */
 
@@ -983,17 +982,22 @@
 .mm4btn_no{
 	background-color: #626262;
 }
-.map_bg{
+/*.map_bg{
 	width: 100%;
 	height: 100%;
-	/*border: 1px solid red;*/
+}*/
+.map_bg {
+    width: 100%;
+    height: 100%;
+    background-color: #000810;
+    z-index: 0;
 }
 /*mmanage4 end*/
 
 /*realtimem start*/
 .center_box{
 	position: absolute;
-	top: 90px;
+	top: 10%;
 	left: 265px;
 	height:-webkit-calc(100% - 130px); 
 	height:-moz-calc(100% - 130px); 
@@ -1035,9 +1039,7 @@
 }
 .re_bottombox{
 	width: 100%;
-	height:-webkit-calc(100% - 708px); 
-	height:-moz-calc(100% - 708px); 
-	height:calc(100% - 708px);
+	height:140px; 
 }
 .re_leftbox{
 	width: 1247px;
@@ -1508,6 +1510,16 @@ to {height: 373px;opacity: 1;}
 	color: #00fcff;
 	float: left;
 }
+.snap_text1{
+	width:50px;
+	float:left;
+}
+.snap_text2{
+	width:55px;
+	float:left;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
 .state{
 	width: 70px;
 	height: 32px;
@@ -1517,22 +1529,31 @@ to {height: 373px;opacity: 1;}
 	float: left;
 	/*margin-right:20px;*/
 	text-align: center;
+	/*background: url(../assets/facepath/state1.png) no-repeat;*/
+}
+.state1{
 	background: url(../assets/facepath/state1.png) no-repeat;
+}
+.state2{
+	background: url(../assets/facepath/state2.png) no-repeat;
 }
 .face_icon1,.face_icon2{
 	width: 40px;
 	height: 32px;
 	float: left;
 	text-align: center;
+	/*cursor: pointer;*/
 }
 .face_icon1 img{
 	width: 25px;
 	margin: 0 auto;
 	margin-top: 3px;
+	cursor: pointer;
 }
 .face_icon2 img{
 	margin: 0 auto;
 	margin-top: 4px;
+	cursor: pointer;
 }
 .face_camera{
 	width: calc(100%-8px);
@@ -1661,11 +1682,15 @@ to {height: 373px;opacity: 1;}
 	text-align: center;
 }
 .percentage{
-	margin-top: 6px;
-	margin-left: 8px;
-	width: 40px;
-	height: 25px;
-	float: left;
+    margin-top: 11px;
+    margin-left: 8px;
+    width: 35px;
+    height: 20px;
+    float: left;
+}
+.fp_percentage{
+    margin-left: 5px !important;
+    margin-top: 10px !important;
 }
 .percentage input{
 	font-size: 16px;
@@ -1797,21 +1822,21 @@ to {height: 373px;opacity: 1;}
 	color: #B5BBC2;
 }
 .index_time{
-	width: 26%;
+	width: 28%;
 	height: 50px;
 	/*margin-right: 150px;*/
     float: left;
 }
 .index_snap{
 	text-align: center;
-	width: 16%;
+	width: 15%;
 	/*width:380px;*/
 	height: 66px;
 	margin-top: -16px;
     float: left;
 }
 .index_snap1{
-	width: 31%;
+	width: 29%;
 	/*margin-right: 180px;*/
 }
 .index_snap span{
@@ -1858,6 +1883,14 @@ to {height: 373px;opacity: 1;}
 	height: 100%;
 	background-color: rgba(0,0,0,0.3);
 	float:right;
+}
+.data_timebox{
+	width: 300px;
+	height: 30px;
+	margin-top: 20px;
+	float: left;
+	margin-left: 10px;
+	/*border: 1px solid red;*/
 }
 .index_nav1{
 	width:33.3%;
@@ -1957,7 +1990,8 @@ to {height: 373px;opacity: 1;}
 .ale_input input{
 	font-size: 16px;
 	background-color: #9B9B9B;
-	width: 65%;
+	/*width: 65%; 08-30 LZT*/
+	width: 100%;
 	height:25px;
 	padding: 0 5px;
 	border: none;
@@ -1968,10 +2002,11 @@ to {height: 373px;opacity: 1;}
 	float: left;
 	width: 32px;
 	height: 25px;
-}
-.search_box img{
 	cursor: pointer;
-	height: 100%;
+	background: url(../assets/index/search.svg) no-repeat;
+}
+.search_box:hover{
+	background: url(../assets/index/search_1.svg) no-repeat;
 }
 .ale_leftlist{
 	color: #D2CBCB;
@@ -1985,6 +2020,27 @@ to {height: 373px;opacity: 1;}
 	width: 100%;
 	height: 20px;
 	margin: 10px 0px;
+}
+.ale_text{
+   width: 80%;
+   height: 100%;
+   float: left;
+}
+.ale_icon{
+	height: 60%;
+	width: 12px;
+	float: right;
+	cursor: pointer;
+	/*height: 60%;*/
+	margin-top: 4px;
+	margin-right: 20px;
+	background: url(../assets/index/add_icon.svg) no-repeat;
+}
+.ale_icon:hover{
+	background: url(../assets/index/add_icon1.svg) no-repeat;
+}
+.ale_list:hover{
+	background-color: rgba(46,46,46,0.5);
 }
 .right_table{
 	width: 100%;
@@ -2033,10 +2089,15 @@ to {height: 373px;opacity: 1;}
 	background-color: #474747;
 	border-radius: 3px;
 	margin: 0 auto;
-}
-.ale_delete img{
 	cursor: pointer;
+	background: url('../assets/index/delete.svg') no-repeat;
 }
+.ale_delete:hover{
+	background: url('../assets/index/delete_1.svg') no-repeat;
+}
+/*.ale_delete img{
+	
+}*/
 .cancel{
 	cursor: pointer;
 	position: absolute;
@@ -2044,6 +2105,10 @@ to {height: 373px;opacity: 1;}
 	right: -50px;
 	width: 40px;
 	height: 40px;
+	background: url(../assets/index/cancel.svg) no-repeat;
+}
+.cancel:hover{
+	background: url(../assets/index/cancel_1.svg) no-repeat;
 }
 .confirm{
 	cursor: pointer;
@@ -2052,10 +2117,12 @@ to {height: 373px;opacity: 1;}
 	right: -50px;
 	width: 40px;
 	height: 40px;
+	background: url(../assets/index/refresh_icon.svg) no-repeat;
 }
-.cancel img{
-	width: 100%;
+.confirm{
+	background: url(../assets/index/refresh_icon_1.svg) no-repeat;
 }
+
 /*dataview end*/
 
 /*system1 start*/
@@ -2289,3 +2356,101 @@ to {height: 373px;opacity: 1;}
 	height: 100%;
 }
 /*system1 end*/
+
+/* system1 弹窗 */
+.sysadd_user3{
+	position: absolute;
+	top: 35%;
+	left: 38%;
+	width:570px;
+	height: 210px;
+	z-index: 999;
+	background: url(../assets/system/tray.svg) no-repeat;
+	background-size: 100%;
+}
+.threshold_text{
+	width: 148px;
+	text-align: center;
+	margin-left: 20px;
+	margin-top: 60px;
+	font-size: 18px;
+	float: left;
+}
+.threshold_box{
+	width: 300px;
+	height: 60px;
+	text-align: center;
+	margin-top: 25px;
+	font-size: 18px;
+	float: left;
+}
+.syssimilar_box{
+	width: 100%;
+	height: 35px;
+	margin-top: 40px;
+}
+.syssimilar_text{
+    width: 148px;
+    margin-left: 20px;
+    text-align: center;
+    font-size: 14px;
+    font-size: 18px;
+    padding-top: 14px;
+    float: left;
+}
+.sysslider_box{
+	
+	width: 230px;
+}
+
+.syspercentage{
+	margin-top: 15px;
+	margin-left: 18px;
+	width: 30px;
+	height: 25px;
+	float: left;
+}
+.syspercentage input{
+	font-size: 16px;
+	font-weight: bold;
+	text-align: center;
+	color: white;
+	width: 100%;
+	height: 100%;
+	border-radius: 5px;
+	border: none;
+	background-color: transparent;
+}
+.percentage_text{
+	font-size: 16px;
+	font-weight: bold;
+	text-align: center;
+	color: white;
+	width: 10px;
+	height: 25px;
+	line-height: 25px;
+	float: left;
+	margin: 0px 0px;
+	margin-top: 14px;
+}
+.systitle_user3{
+	position: relative;
+	color: white;
+	width: 100%;
+	height: 40px;
+}
+.sys_cancelbtn3{
+	position: absolute;
+	right: -55px;
+	top: 30px;
+	width: 40px;
+	height: 40px;
+}
+.sys_addbtn3{
+	position: absolute;
+	right: -55px;
+	top: 85px;
+	width: 40px;
+	height: 40px;
+}
+/* system1 弹窗 end */

@@ -22,7 +22,7 @@
 			</div>
 			<div class="input_box">
 				<input class="center_input id_card" type="text" v-model="search_data.idNumber" placeholder="标识编码"/>
-				<input class="center_input" type="text" v-model="search_data.cameraName" placeholder="设备名称或设备ID"/>
+				<!-- <input class="center_input" type="text" v-model="search_data.cameraName" placeholder="设备名称或设备ID"/> -->
 				<div class="h1_right">
 					<div class="time_box">时间范围</div>
 					<div class="time_input">
@@ -470,6 +470,8 @@
 						this.search_data.personGroupName = get_data.personGroupName
 					}else if( item === "cameraGroupName" ){
 						this.search_data.cameraGroupName = get_data.cameraGroupName
+					}else if( item === "faceSdkId" ){
+						this.search_data.faceSdkId = get_data.faceSdkId
 					}
 				}
 				

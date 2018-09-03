@@ -84,12 +84,12 @@
 			</div>
 		</div>
 		<!--遮罩层-->
-		<div class="mack_box" v-show="is_request2add"></div>
+		<div class="mack_box" v-show="is_request2add" @click="is_request2add = false"></div>
 		<!--弹出框-新建人员库-->
 		<div class="bounced_add mm1_bounced" v-show="is_request2add">
 			<div class="bounced_box">
 				<div class="bounced_top">
-					<div class="bounced_title">新建人员库</div>
+					<div class="bounced_title">新建底库</div>
 				</div>
 				<div class="mm1_addbox1">
 					<div class="addbox1_text">标记色设置</div>
@@ -107,7 +107,8 @@
 						</div>
 					</div>
 					<div class="right_btndiv">
-						<div class="mmbtn_box mm1_btn" @click="request_add_persongroup">新建底库</div>
+						<div class="mmbtn_box mm1_btn" @click="request_add_persongroup" v-show="is_confirm_show">新建底库</div>
+						<div class="mmbtn_box mm1_btn left_mmbox" v-show="!is_confirm_show">新建底库</div>
 						<div class="mmbtn_box left_mmbox mm1_btn" @click="close_add_persongroup">暂不添加</div>
 					</div>
 				</div>
@@ -117,7 +118,7 @@
 			</div>
 		</div>
 		<!--遮罩层-->
-		<div class="mack_box" v-show="is_request2change"></div>
+		<div class="mack_box" v-show="is_request2change" @click="is_request2change = false"></div>
 		<!--弹出框-编辑设备组信息-->
 		<div class="bounced_add mm1_bounced" v-show="is_request2change">
 			<div class="bounced_box">
@@ -140,7 +141,8 @@
 						</div>
 					</div>
 					<div class="right_btndiv">
-						<div class="mmbtn_box mm1_btn" @click="request_change_persongroup">确认修改</div>
+						<div class="mmbtn_box mm1_btn" @click="request_change_persongroup" v-show="is_confirm_show">确认修改</div>
+						<div class="mmbtn_box mm1_btn left_mmbox" v-show="!is_confirm_show">确认修改</div>
 						<div class="mmbtn_box left_mmbox mm1_btn" @click="close_change_persongroup">暂不修改</div>
 					</div>
 				</div>
@@ -173,7 +175,7 @@
 				delete_data:[],
 				add_data:{
 					name: "",
-					remarks: "--",
+					remarks: "",
 				},
 				change_data:{
 				},
@@ -186,6 +188,7 @@
 				// 添加底库弹窗
 				is_request2add: false,
 				is_request2change: false,
+				is_confirm_show: true,
 				box_color:[
 					{
 						uuid: 0,
@@ -279,7 +282,7 @@
 						this.delete_data = this.delete_data + this.tabledata[i].id + ","
 					}
 				}
-				if( this.delete_data ){
+				if( this.delete_data.length ){
 					this.$confirm('是否删除该数据？','提示',{
 						confirmButtonText: '是',
 			            cancelButtonText: '否',
@@ -291,7 +294,7 @@
 						;
 					})
 				}else{
-					this.error_info("请选择删除项")
+					this.warning_info("请选择删除项")
 				}
 			},
 			// 添加事件
@@ -309,11 +312,12 @@
 				}
 				this.add_data = {
 					name: "",
-					remarks: "--",
+					remarks: "",
 				}
 				this.change_data = {}
 				this.is_request2add = false
 				this.is_request2change = false
+				this.is_confirm_show = true
 			},
 			click_to_add_info:function(){
 				// 弹窗添加
@@ -322,6 +326,7 @@
 			},
 			// 添加事件-弹窗事件
 			request_add_persongroup:function(){
+				this.is_confirm_show = false
 				this.require_to_add_group(this.add_data)
 				// this.clear_data()
 			},
@@ -383,6 +388,7 @@
 					this.change_data.remarks === this.tabledata[this.change_data.uuid].remarks ){
 					this.error_info("信息未更改")
 				}else{
+					this.is_confirm_show = false
 					this.require_to_change_group(this.change_data)
 				}
 				// this.clear_data()
@@ -502,6 +508,7 @@
             	if( add_data.name ){
             		params.append( "name", add_data.name )
             	}else{
+            		this.is_confirm_show = true
             		this.error_info("请添加库名")
                     return ;
             	}
@@ -525,9 +532,11 @@
 	                    this.error_info('请先登录')
                     	return ;
                     }
+                    this.is_confirm_show = true
                 }).catch((error) => {
                 	console.log(error)
-                	this.error_info('网络连接出错5')
+                	this.error_info('网络连接出错')
+                	this.is_confirm_show = true
                     return ;
                 })
 			},
@@ -560,17 +569,28 @@
 	                    this.error_info('请先登录')
                     	return ;
                     }
+                    this.is_confirm_show = true
                 }).catch((error) => {
                 	console.log(error)
                     this.error_info('网络连接出错')
+                    this.is_confirm_show = true
                     return ;
                 })
 			},
 
 			// 消息窗口
 			error_info:function(mes){
+				this.is_confirm_show = true
 				this.$message({
                     type: 'error',
+                    message: mes,
+                    showClose: true,
+                    center: true
+                })
+			},
+			warning_info:function(mes){
+				this.$message({
+                    type: 'warning',
                     message: mes,
                     showClose: true,
                     center: true

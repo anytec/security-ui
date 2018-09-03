@@ -1,5 +1,11 @@
 <template>
    <div class="main_box">
+       <div class="bg_box">
+           <video autoplay="autoplay" loop="loop">
+              <source src="../assets/login/login_bg.mp4" type="video/mp4">
+                        您的浏览器不支持 video 标签。
+           </video>
+       </div>
        <div class="main_content">
            <div class="content_box">
                 <div class="left_box">
@@ -29,7 +35,7 @@
                             <div class="left_icon">
                                 <img src="../assets/login/pwd.png" />
                             </div>
-                            <div class="right_input pwd_inut">
+                            <div class="right_input pwd_inut" @keyup.enter="login">
                                 <input v-model="user.password" :type="pass_type" id="pwd" placeholder="密码"/>
                             </div>
                             <div class="eyes">

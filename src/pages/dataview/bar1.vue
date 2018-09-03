@@ -1,7 +1,8 @@
 <template>
 	<div class="bar1">
 		<div class="line_head">
-			<div class="pie_title">南山区流量统计图</div>
+			<div class="pie_title">周人流量统计图</div>
+			<div class="pie_title"></div>
 		</div>
 		<div class="main"></div>
 	</div>
@@ -24,7 +25,10 @@
 				legendArr: [],
 				// color: this.$store.state.color,
 				myChart: {},
-				name: '柱形图'
+				name: '柱形图',
+
+				color: this.$store.state.color1,
+				text_color: this.$store.state.text_color,
 			}
 		},
 		methods:{
@@ -51,7 +55,7 @@
 				    legend: {
 				        data: this.fname,
 				        textStyle:{
-				        	color: '#02BF73',
+				        	color: 'auto',
 				        	fontSize: 16,
 				        },
 				        orient: 'horizontal',// 'horizontal' | 'vertical' 水平布局|垂直布局
@@ -75,16 +79,16 @@
 				            mark : {show: true}, // 
 				            dataView : {show: false, readOnly: false},
 				            magicType : {
-				            	show: true, 
+				            	show: false, 
 				            	type: ['line', 'bar', 'stack', 'tiled'],
 				            },
-				            restore : {show: true},
+				            restore : {show: false},
 				            saveAsImage : {show: true}
 				        }
 				    },
 				    calculable : false, // 拖拽重计算特性
 				    backgroundColor: 'rgba(0,0,0,0.4)', // 修改背景颜色
-				    color: ['#60C4A8','#85D3DD','#189A75','#54CCCA','#056160'], // 线条颜色
+				    color: this.color, // 线条颜色
 				    xAxis : [
 				        {
 				        	name : '时间', 
@@ -92,13 +96,13 @@
 				            data : this.dayTime,
 				            axisLine:{
 				            	lineStyle: {
-				            		color: '#02BF73',
+				            		color: 'auto',
 				            		type: 'dashed',
 				            	},
 				            }, // 线条设置
 				            axisLabel:{
 				            	textStyle:{
-		            				color: '#02BF73',
+		            				color: this.text_color,
 		            			},
 				            }, // 字体设置
 				            splitLine:{
@@ -116,12 +120,12 @@
 				            axisLine:{
 				            	show: false,
 				            	lineStyle: {
-				            		color: '#02BF73',
+				            		color: this.text_color,
 				            	},
 				            },
 				            axisLabel:{
 				            	textStyle:{
-		            				color: '#02BF73',
+		            				color: this.text_color,
 		            			},
 				            },
 				            splitLine:{
@@ -140,6 +144,7 @@
 				    series: this.series_data( data )
 				}
 
+				this.myChart = echarts.init(document.querySelector('.bar1 .main'))
 				this.myChart.setOption(option,true)
 			},
 			// 数据组装
@@ -160,7 +165,7 @@
 			}
 		},
 		mounted(){
-			this.myChart = echarts.init(document.querySelector('.bar1 .main'))
+			// this.myChart = echarts.init(document.querySelector('.bar1 .main'))
 			// this.line_echart_init()
 			this.line_echart_init_test( this.showData )
 			this.my_init()
@@ -199,5 +204,14 @@
          color: #cccccc;
          font-size: 20px;
          margin-left: 20px;
+	}
+	.pie_title{
+        width: 300px;
+        height: 60px;
+        line-height: 60px;
+        color: #cccccc;
+        font-size: 20px;
+        margin-left: 20px;
+        float: left;
 	}
 </style>

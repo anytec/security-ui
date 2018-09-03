@@ -55,12 +55,12 @@
 	.slide-right-leave-active,
 	.slide-left-enter-active{
 		will-change: transform;
-		transition: all 2000ms ease;
+		transition: all 1400ms ease;
 		position: absolute;
 	}
 	.slide-left-leave-active {
 		will-change: transform;
-		transition: all 1000ms ease;
+		transition: all 700ms ease;
 		position: absolute;
 	}
 	.slide-right-enter {

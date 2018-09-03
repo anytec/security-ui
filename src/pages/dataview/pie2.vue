@@ -1,6 +1,8 @@
 <template>
 	<div class="pie2">
-		<div class="line_head"></div>
+		<div class="line_head">
+			<div class="pie_title">年龄比重图</div>
+		</div>
 		<div class="main"></div>
 	</div>
 </template>
@@ -21,22 +23,8 @@
 				myChart: {},
 				name: '环形图',
 
-				// genderData:[
-	   //              {value:335, name:'男'},
-	   //              {value:679, name:'女'},
-	   //          ],
-	   //          AgeGengerData:[
-	   //              {value:0, name:'0 ~ 10'},
-	   //              {value:310, name:'10 ~ 20'},
-	   //              {value:234, name:'20 ~ 30'},
-	   //              {value:135, name:'30 ~ 40'},
-	   //              {value:104, name:'40 ~ 50'},
-	   //              {value:251, name:'50 ~ 60'},
-	   //              {value:147, name:'60 ~ 70'},
-	   //              {value:102, name:'70 ~ 80'},
-	   //              {value:0, name:'80 ~ 90'},
-	   //          ],
-	            // ageGroupList:[ "0 ~ 10","10 ~ 20","20 ~ 30","30 ~ 40","40 ~ 50","50 ~ 60","60 ~ 70","70 ~ 80","80 ~ 90" ],
+				color: this.$store.state.color2,
+				text_color: this.$store.state.text_color,
 			}
 		},
 		methods:{
@@ -88,7 +76,7 @@
 				let option = {
 				    tooltip : {
 				        trigger: 'item',
-				        formatter: "{a} <br/>{b}岁 : {c}人 ({d}%)",
+				        formatter: "{a} <br/>{b} : {c}人 ({d}%)",
 				        textStyle:{	
 				        	fontSize: 20,
 				        }
@@ -114,15 +102,15 @@
 				    toolbox: {
 				        show : true,
 				        feature : {
-				            mark : {show: true},
+				            mark : {show: false},
 				            dataView : {show: false, readOnly: false},
-				            restore : {show: true},
+				            restore : {show: false},
 				            saveAsImage : {show: true}
 				        }
 				    },
 				    calculable : false,
 				    backgroundColor: 'rgba(0,0,0,0.4)', // 修改背景颜色
-				    color: ['#60C4A8','#189A75','#85D3DD','#54CCCA','#056160'], // 线条颜色
+				    color: this.color, // 线条颜色
 				    series : [
 				        {
 				            name:'性别',
@@ -153,7 +141,7 @@
 				            data: mydata.genderData,
 				        },
 				        {
-				            name:'年龄段',
+				            name:'抓拍量',
 				            type:'pie',
 				            radius : [100, 140],
 				            
@@ -170,9 +158,9 @@
 				                        position: 'outside',
 				                        formatter: function(a){
 				                        	if( a.data.value != 0 ){
-				                        		return '{white|' + a.name + '岁}'
+				                        		return '{white|' + a.name + '}'
 				                        	}else{
-				                        		return a.name + '岁'
+				                        		return a.name + ''
 				                        	}
 				                        },
 				                        rich: rich,
@@ -188,7 +176,7 @@
 				                        show : true,
 				                        position : 'outside',
 				                        formatter: function(a){
-				                        	return '{white_hide|' + a.percent + '%}\n{hr|}\n{yellow_hide|' + a.name + '岁}'
+				                        	return '{white_hide|' + a.percent + '%}\n{hr|}\n{yellow_hide|' + a.name + '}'
 				                        },
 				                        rich: rich,
 				                    }
@@ -199,17 +187,18 @@
 				        }
 				    ]
 				}
-                    
+                this.myChart = echarts.init(document.querySelector('.pie2 .main'))
 				this.myChart.setOption(option,true)
 			},
 		},
 		mounted(){
-			this.myChart = echarts.init(document.querySelector('.pie2 .main'))
+			// this.myChart = echarts.init(document.querySelector('.pie2 .main'))
 		},
 		watch:{
 			'genderData':function(newval,old){
 				let mydata = {}
 				let yAxis = []
+				let age_items = ["儿童","青年","中年","老年"]
 				mydata.genderData = [
 					{value:this.genderData[0], name:'男'},
 	                {value:this.genderData[1], name:'女'},
@@ -217,11 +206,12 @@
 				mydata.AgeGengerData = []
 				for( let i = 0; i < this.AgeGengerData.length; i++ ){
 					if( this.AgeGengerData[i] != 0 ){
-						mydata.AgeGengerData.push( {value:this.AgeGengerData[i], name:this.ageGroupList[i]} )
-						yAxis.push(this.ageGroupList[i])
+						mydata.AgeGengerData.push( {value:this.AgeGengerData[i], name:age_items[i]} )
+						yAxis.push(age_items[i])
 					}
 				}
 				mydata.yAxis = yAxis
+				
 				this.line_echart_init( mydata )
 				this.my_init()
 			},
@@ -266,5 +256,14 @@
   		color: #cccccc;
   		border: none;
   		outline: none;
+	}
+	.pie_title{
+        width: 300px;
+        height: 60px;
+        line-height: 60px;
+        color: #cccccc;
+        font-size: 20px;
+        margin-left: 20px;
+        float: left;
 	}
 </style>

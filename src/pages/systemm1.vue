@@ -59,7 +59,7 @@
                                 </td>
                                 <td class="td td10">
                                     <div class="icon_fa">
-                                    	<div class="td_icon2 systd_icon2" @click="click_to_update_person(index)">
+                                    	<div class="td_icon2 systd_icon2" @click="click_to_update_person(item.id,index)">
 	                                        <img src="../assets/historyface/icon2.png"/>
 	                                    </div>
 	                                    <div class="td_icon2 systd_icon2" @click="click_to_delete_person(index)">
@@ -210,7 +210,10 @@
 				save_search_data: "",
 				delete_data: [],
 				// 弹窗
-				showData:{},
+				showData:{
+					uname: "",
+					upass: "",
+				},
 				// 添加用户
 				is_click_to_add: false,
 
@@ -247,18 +250,25 @@
 				this.is_click_to_add = true
 			},
 			confirm_add_data:function(){
-				this.require_add_person(this.showData)
+				if( this.showData.uname === "" ){
+					this.warning_info("用户名不能为空")
+				}else if( this.showData.upass === ""){
+					this.warning_info("密码不能为空")
+				}else{
+					this.require_add_person(this.showData)
+				}
 			},
 			close_add_info:function(){
-				this.showData = {}
+				this.showData = {
+					uname: "",
+					upass: "",
+				}
 				this.is_click_to_add = false
 				this.is_click_to_set = false
 			},
 			// 修改事件
-			click_to_update_person:function(index){
-				this.is_click_to_set = true
-				this.showData = JSON.parse(JSON.stringify(this.tabledata[index]))
-				this.showData.uuid = index
+			click_to_update_person:function(id,index){
+				this.require_get_change_person(id,index)
 			},
 			confirm_set_data:function(){
 				let update_date = {}
@@ -268,6 +278,7 @@
 						update_date[items[i]] = this.showData[items[i]]
 					}
 				}
+				update_date.id = this.tabledata[this.showData.uuid].id
 				this.require_to_update( update_date )
 
 				this.is_click_to_set = false
@@ -314,6 +325,35 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status,res.data.msg)
+                    }
+                }).catch((error) => {
+                	console.log(error)
+                	this.error_info('网络连接出错')
+                    return ;
+                })
+			},
+			require_get_change_person:function( id,index ){
+				var params = new URLSearchParams()
+                params.append("id",id)
+
+				this.$ajax.post("/user/getUserInfo",params).then((res) => {
+                    if( res.data.status === 0){
+                    	this.showData = JSON.parse(JSON.stringify(res.data.data))
+						this.showData.uuid = index
+						this.is_click_to_set = true
+                    }else if( res.data.status === 1 ){
+	                    this.error_info('请求失败 ' + res.msg)
+                    	return ;
+                    }else if( res.data.status === 2 ){
+	                    this.error_info('参数错误 ' + res.msg)
+                    	return ;
+                    }else if( res.data.status === 10 ){
+	                    this.error_info('请先登录')
+                    	return ;
+                    }else{
+                    	this.error_info(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -341,6 +381,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -366,6 +408,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -379,7 +423,7 @@
                 	params.append(item,update_date[item])
                 }
 
-				this.$ajax.post("/user/register",params).then((res) => {
+				this.$ajax.post("/user/update",params).then((res) => {
                     if( res.data.status === 0){
                     	this.success_info("修改用户信息成功")
                     	this.close_add_info()
@@ -393,6 +437,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -404,6 +450,14 @@
 			error_info:function(mes){
 				this.$message({
                     type: 'error',
+                    message: mes,
+                    showClose: true,
+                    center: true
+                })
+			},
+			warning_info:function(mes){
+				this.$message({
+                    type: 'warning',
                     message: mes,
                     showClose: true,
                     center: true

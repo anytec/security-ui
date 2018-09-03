@@ -14,6 +14,7 @@ const dataview3 = r => require.ensure([], () => r(require('@/pages/dataview/data
 
 // 人脸检索
 const facepath = r => require.ensure([], () => r(require('@/pages/facepath')), 'facepath');
+const facepath_offline = r => require.ensure([], () => r(require('@/pages/facepath_offline')), 'facepath_offline');
 
 // 实时监控
 const realtimem = r => require.ensure([], () => r(require('@/pages/realtimem')), 'realtimem');
@@ -29,6 +30,7 @@ const mmanage1 = r => require.ensure([], () => r(require('@/pages/mmanage1')), '
 const mmanage2 = r => require.ensure([], () => r(require('@/pages/mmanage2')), 'mmanage2');
 const mmanage3 = r => require.ensure([], () => r(require('@/pages/mmanage3')), 'mmanage3');
 const mmanage4 = r => require.ensure([], () => r(require('@/pages/mmanage4')), 'mmanage4');
+const mmanage4_offline = r => require.ensure([], () => r(require('@/pages/mmanage4_offline')), 'mmanage4_offline');
 
 // 系统管理
 const systemm = r => require.ensure([], () => r(require('@/pages/systemm')), 'systemm');
@@ -94,7 +96,7 @@ const  routes=[
 				requireAuth: true,
 				keep_alive: false,
 			},
-			redirect: '/dataview1',
+			redirect: '/dataview2',
 			children:[
 				{
 					path: '/dataview1',
@@ -136,7 +138,18 @@ const  routes=[
 			name: 'facepath',
 			component: facepath,
 			meta:{
-				title: '人脸检索',
+				title: '人脸检索-在线',
+				index: 3,
+				requireAuth: true,
+				keep_alive: true,
+			},
+		},
+		{
+			path: '/facepath_offline',
+			name: 'facepath_offline',
+			component: facepath_offline,
+			meta:{
+				title: '人脸检索-离线',
 				index: 3,
 				requireAuth: true,
 				keep_alive: true,
@@ -231,6 +244,16 @@ const  routes=[
 				path: '/mmanage4',
 				name: 'mmanage4',
 				component: mmanage4,
+				meta:{
+					title: '布控管理-设备配置',
+					index: 4,
+					requireAuth: true,
+					keep_alive: false,
+				},
+			},{
+				path: '/mmanage4_offline',
+				name: 'mmanage4_offline',
+				component: mmanage4_offline,
 				meta:{
 					title: '布控管理-设备配置',
 					index: 4,
