@@ -82,6 +82,7 @@
                 // 地图数据
                 map: null,
                 markers : [],
+                circleMarker: null,
                 polyline : null,
                 center_xy: [114.059648,22.543665],
                 locations: [],
@@ -160,7 +161,7 @@
         methods:{
             // 地图初始化
             init:function(location){
-                // console.log(location)
+                console.log(location)
                 this.map = new AMap.Map('container', {
                   center: location,
                   resizeEnable: true,
@@ -169,6 +170,20 @@
                 })
             },
             change_map_center:function(location){
+                if( this.circleMarker ){
+                    this.circleMarker.setMap(null)
+                }
+                this.circleMarker = new AMap.Circle({
+                    // center: new AMap.LngLat("116.403322", "39.920255"), // 圆心位置
+                    center: location,
+                    radius: 15,  //半径
+                    strokeColor: "#fefefe",  //线颜色
+                    // strokeOpacity: 1,  //线透明度
+                    strokeWeight: 1,  //线粗细度
+                    fillColor: '#1CC7FF',  //填充颜色
+                    fillOpacity: 0.8 ,//填充透明度
+                })
+                this.circleMarker.setMap(this.map)
                 this.map.setCenter(location);
             },
             // 地图添加标志
@@ -183,7 +198,7 @@
                             //添加自定义点标记
                             map: this.map,
                             position: this.tabledata[this.markers_list[i]].location, //基点位置
-                            offset: new AMap.Pixel(-22, -57), //相对于基点的偏移位置
+                            offset: new AMap.Pixel(-22, -50), //相对于基点的偏移位置
                             draggable: false,  //是否可拖动
                             // icon : "/static/logo2.png",
                             content: this.mycontent_marker[i],
@@ -248,7 +263,7 @@
                             //添加自定义点标记
                             map: this.map,
                             position: add_data[i].location, //基点位置
-                            offset: new AMap.Pixel(-22, -57), //相对于基点的偏移位置
+                            offset: new AMap.Pixel(-22, -50), //相对于基点的偏移位置
                             draggable: false,  //是否可拖动
                             // icon : "/static/logo2.png",
                             content: allcamera_marker_icon,
@@ -499,7 +514,6 @@
             // 搜索按钮
             click_to_search:function(search_data){
                 this.click_to_clear(false)
-                // console.log("ha")
                 this.post_to_get_facepath(search_data)
             },
             // 清空事件
@@ -655,6 +669,12 @@
                 this.skip_to_mmanage4(groupName,sdkId)
             }
         },
+        beforeRouteLeave(to, from, next) {
+            if( from.path === "/facepath" && to.path === "/facepath_offline"){
+                to.meta.keepAlive = false; 
+            }
+            next()
+        },
         watch:{
             'search_data.confidence':function (newVal,oldVal) {
                 if( newVal === "" ){
@@ -666,7 +686,7 @@
             },
 
             '$store.state.is_search_data_facepath':function(newVal,old){
-                if ( newVal ){
+                if ( newVal  && this.$store.state.facepath_model === "online" ){
                     this.search_data.photo = ""
                     this.search_data.photoUrl = this.$store.state.facepath_data.photo
                     this.dataUrl = this.search_data.photoUrl
@@ -679,23 +699,24 @@
             },
 
             '$store.state.facepath_search_data.allcamera_list':function(newVal,old){
-                this.allcamera_list = this.$store.state.facepath_search_data.allcamera_list
-                if( this.allcamera_list.length ){
-                    this.init( this.allcamera_list[0].location )
-                }else{
-                    this.init( this.center_xy )
-                }
-                // console.log(this.$store.state.is_search_data_facepath)
-                if ( this.$store.state.is_search_data_facepath ){
-                    this.search_data.photoUrl = this.$store.state.facepath_data.photo
-                    this.dataUrl = this.search_data.photoUrl
-                    this.map.clearMap()
-                    this.post_to_get_facepath(this.search_data,"skip")
+                if( this.$store.state.facepath_model === "online" ){
+                    this.allcamera_list = this.$store.state.facepath_search_data.allcamera_list
+                    if( this.allcamera_list.length ){
+                        this.init( this.allcamera_list[0].location )
+                    }else{
+                        this.init( this.center_xy )
+                    }
+                    if ( this.$store.state.is_search_data_facepath ){
+                        this.search_data.photoUrl = this.$store.state.facepath_data.photo
+                        this.dataUrl = this.search_data.photoUrl
+                        this.map.clearMap()
+                        this.post_to_get_facepath(this.search_data,"skip")
 
-                    this.$store.state.is_search_data_facepath = false
-                    this.$store.state.facepath_data.photo = ""
-                }else{
-                    this.get_init_data()
+                        this.$store.state.is_search_data_facepath = false
+                        this.$store.state.facepath_data.photo = ""
+                    }else{
+                        this.get_init_data()
+                    }
                 }
             }
         }

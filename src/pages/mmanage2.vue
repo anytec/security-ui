@@ -50,7 +50,7 @@
 									<input class="checkbox_box" type="checkbox" :checked="item.ischecked" v-model="item.ischecked" @click="click_to_checkedone(item.uuid)" />
 								</td>
 								<td class="td td4">
-									<img class="td_img"  :src="item.thumbnail"/>
+									<img class="td_img"  :src="item.thumbnail" @click="show_pic(item.wholePhoto)" title="点击显示原图"/>
 								</td>
 								<td class="td td4">
 									<div class="table_text">
@@ -171,6 +171,17 @@
 				</div>
 			</div>
 		</div>
+		<!--遮罩层-->
+		<div class="mack_box" v-show="is_show_pic" @click="is_show_pic = false"></div>
+		<div class="t_graphBox" v-show="is_show_pic" @click="is_show_pic = false">
+			<div class="t_graph" >
+				<div class="graph_table">
+					<div class="graph_cell">
+						<img style="max-width:800px; max-height:800px;margin:0 auto;" :src="total_pic" />
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -227,6 +238,10 @@
 
 				// 避免重复确认
 				is_confirm_show: true,
+
+				// 原图
+				is_show_pic: false,
+				total_pic: "无",
 
 			} //返回数据最外围
 		},
@@ -320,7 +335,11 @@
 				// this.$store.state.search_data
 				this.$store.state.facepath_data.photo = img
                 this.$store.state.is_search_data_facepath = true
-				this.$router.push('/facepath')
+				if( this.$store.state.facepath_model === "online" ){
+                	this.$router.push('/facepath')
+                }else{
+                	this.$router.push('/facepath_offline')
+                }
 			},
 			skip_to_historyface1:function(num){
 				// console.log(this.tabledata[num])
@@ -627,29 +646,16 @@
                 })
 			},
 
-			// 弹窗
-			// // 上传图片
-			// imgPreview:function(file,model){
-	  //           let self = this;
-	  //           // 看支持不支持FileReader
-	  //           if (!file || !window.FileReader) return;
-	    
-	  //           if (/^image/.test(file.type)) {
-	  //               // 创建一个reader
-	  //               var reader = new FileReader()
-	  //               // 将图片将转成 base64 格式
-	  //               reader.readAsDataURL(file)
-	  //               // 读取成功后的回调
-	  //               reader.onloadend = function () {
-	  //               	if( model === "add"){
-	  //               		self.add_data.dataUrl = this.result
-	  //               	}else if( model === "change" ){
-	  //               		self.change_data.dataUrl = this.result
-	  //               	}
-	                    
-	  //               }
-	  //           }
-	  //       },
+			// 显示原图
+			show_pic:function(imgUrl){
+				this.is_show_pic = true
+				if( imgUrl ){
+					this.total_pic = imgUrl
+				}else{
+					this.total_pic = "无"
+				}
+			},
+
 	        // 上传图片
             imgPreview:function(file,model){
                 let self = this;

@@ -23,22 +23,23 @@ new Vue({
 })
 
 // 登录拦截
-// router.beforeEach((to, from, next) => {
-//   if (to.matched.some(res => res.meta.requireAuth)) {// 判断是否跳转到需要登陆权限的页面
-//     if (!store.state.user) {// 判断是否登录
-//       next({
-//         path: '/',  //没登录则跳转到登录界面
-//       })
-//       Vue.prototype.$message({
-//         type: 'error',
-//         message: "请先登录",
-//         showClose: true,
-//         center: true
-//       })
-//     } else {
-//       next()
-//     }
-//   } else {
-//     next()
-//   }
-// })
+router.beforeEach((to, from, next) => {
+	if (to.matched.some(res => res.meta.requireAuth)) {// 判断是否跳转到需要登陆权限的页面
+		// console.log(store.state.user)
+		if (!store.state.user.uname) {// 判断是否登录
+			next({
+				path: '/login',  //没登录则跳转到登录界面
+			})
+			Vue.prototype.$message({
+				type: 'error',
+				message: "请先登录",
+				showClose: true,
+				center: true
+			})
+		}else{
+			next()
+		}
+	}else{
+		next()
+	}
+})

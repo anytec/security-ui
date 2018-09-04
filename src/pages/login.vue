@@ -1,5 +1,5 @@
 <template>
-   <div class="main_box">
+   <div class="main_box_login">
        <div class="bg_box">
            <video autoplay="autoplay" loop="loop">
               <source src="../assets/login/login_bg.mp4" type="video/mp4">

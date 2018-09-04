@@ -32,6 +32,7 @@ const store = new Vuex.Store({
         facepath_data:{
             photo: "",
         },
+        facepath_model: "online",
 
         
         color: ['#1B68CC','#6383EE','#00E4EC','#005039','#189A75'],

@@ -424,14 +424,20 @@
                     corner2 = L.latLng(39.548516, 117.008525),
                     bounds = L.latLngBounds(corner1, corner2);
                 this.map.setMaxBounds(bounds)
-                L.tileLayer('/static/offlineMap/{z}/{x}/{y}.png',
-                // L.tileLayer('http://192.168.10.220:9090/beijingmapblue/{z}/{x}/{y}.png',
+
+                let map_url = '/static/offlineMap/{z}/{x}/{y}.png'
+                if( this.$ajax.defaults.baseURL ){
+                    map_url = this.$ajax.defaults.baseURL + '/static/offlineMap/{z}/{x}/{y}.png'
+                }else{
+                    map_url = '/static/offlineMap/{z}/{x}/{y}.png'
+                }
+                L.tileLayer(map_url,
                     {attribution: this.map_config.attribution}).addTo(this.map);
                 this.popup = L.popup({
                     closeButton: false,
                 });
                 this.map.on("click", (e) => {
-                    this.add_data.location = e.latlng.lat + "," + e.latlng.lng
+                    this.add_data.location = e.latlng.lng.toFixed(7) + "," + e.latlng.lat.toFixed(7)
                 })
             },
             //检索事件

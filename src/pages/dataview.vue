@@ -65,6 +65,7 @@
             </transition>
         </div>
         <!--弹出框-->
+        <div class="mack_box" v-show="is_show_info" @click="clear_search_data"></div>
         <div class="alert_Box" id="alert_Box" v-show="is_show_info">
             <div class="ale_leftbox">
                 <div class="ale_topinput">
@@ -229,9 +230,6 @@
                 this.timer_num = setInterval(() => {
                     this.get_snapCounting()
                 }, 5000);
-                // setInterval(() => {
-                //     this.get_mmanage_people_num()
-                // }, 10000);
 
                 this.get_init_data()
                 this.search_data = {}
@@ -498,7 +496,7 @@
                 
                 // 弹窗关闭清除
                 clear_search_data:function(){
-                    this.info_search_data = []
+                    // this.info_search_data = []
                     this.is_show_info = false
                 },
 

@@ -337,7 +337,11 @@
                 // 人脸轨迹
                 this.$store.state.facepath_data.photo = img
                 this.$store.state.is_search_data_facepath = true
-                this.$router.push('/facepath')
+                if( this.$store.state.facepath_model === "online" ){
+                    this.$router.push('/facepath')
+                }else{
+                    this.$router.push('/facepath_offline')
+                }
             },
             skip_to_mmanage2:function(personGroupName,personGroupId,faceSdkId){
                 this.$store.state.search_data.groupName = personGroupName
@@ -608,9 +612,9 @@
             // 请求初始化
             initSocket:function(){
                 // let socket = new SockJS('http://192.168.10.158:9999/gee');
-                let socket = new SockJS('http://192.168.10.126:9990/gee');
+                // let socket = new SockJS('http://192.168.10.126:9990/gee');
                 // let socket = new SockJS('http://192.168.10.132:9999/gee');
-                // let socket = new SockJS('gee');
+                let socket = new SockJS('gee');
                 this.stompClient = Stomp.over(socket);
                 this.stompClient.connect({}, (frame) =>{
                     this.stompClient.subscribe('/topic/camera/warning', (data) => {

@@ -1,99 +1,112 @@
 <template>
-	<div class="list_box">
-		<div class="mask_box">
-			<div class="top_title">
-				<div class="title_lefttext">抓拍记录</div>
-				<div class="title_righttext">结果{{init_data.allnum}}个</div>
-			</div>
-			<div class="input_box">
-				<select class="center_select" v-model="search_data.cameraGroupName">
-					<option selected="selected">设备组/不限</option>
-					<option v-for="item in init_data.cameraGroupNames">{{ item.name }}</option>
-				</select>
-				<!-- <input class="center_input" type="text" v-model="search_data.cameraName" placeholder="设备名称"/> -->
-				<div class="right_btn h2_right_btn">
-					<div class="time_box">时间范围</div>
-					<div class="time_input">
-						<el-date-picker 
-						  v-model="date_value"
-						  type="datetimerange"
-						  :picker-options="pickeroptions"
-						  range-separator="至"
-      					  start-placeholder="开始日期"
-      					  end-placeholder="结束日期">
-      					</el-date-picker>
+	<div style="width:100%;height:100%;">
+		<div class="list_box">
+			<div class="mask_box">
+				<div class="top_title">
+					<div class="title_lefttext">抓拍记录</div>
+					<div class="title_righttext">结果{{init_data.allnum}}个</div>
+				</div>
+				<div class="input_box">
+					<select class="center_select" v-model="search_data.cameraGroupName">
+						<option selected="selected">设备组/不限</option>
+						<option v-for="item in init_data.cameraGroupNames">{{ item.name }}</option>
+					</select>
+					<!-- <input class="center_input" type="text" v-model="search_data.cameraName" placeholder="设备名称"/> -->
+					<div class="right_btn h2_right_btn">
+						<div class="time_box">时间范围</div>
+						<div class="time_input">
+							<el-date-picker 
+							  v-model="date_value"
+							  type="datetimerange"
+							  :picker-options="pickeroptions"
+							  range-separator="至"
+	      					  start-placeholder="开始日期"
+	      					  end-placeholder="结束日期">
+	      					</el-date-picker>
+						</div>
+						<div class="export_btn" @click="export_data2excel">导出</div>
+						<div class="search h2_search" @click="click_to_search(search_data)">搜索</div>
 					</div>
-					<div class="export_btn" @click="export_data2excel">导出</div>
-					<div class="search h2_search" @click="click_to_search(search_data)">搜索</div>
+				</div>
+				<div class="table_box h2_table_box">
+					<div class="table_thbox">
+						<table>
+							<tr>
+								<td class="td td1">
+									<input class="checkbox_box" type="checkbox" :checked="isallchecked" v-model="isallchecked" @click="click_to_checkedall"/>
+								</td>
+								<td class="td td2">抓拍人脸</td>
+								<td class="td td2">性别</td>
+								<td class="td td2">情绪</td>
+								<td class="td td7">抓拍时间</td>
+								<td class="td td9">设备信息</td>
+								<td class="td td10">操作</td>
+							</tr>
+						</table>
+					</div>
+					<div class="table_thbox2">
+						<table>
+							<tr class="tr" v-for="item in tabledata">
+								<td class="td td1">
+									<input class="checkbox_box" type="checkbox" :checked="item.ischecked" v-model="item.ischecked" @click="click_to_checkedone(item.uuid)"/>
+								</td>
+								<td class="td td2">
+									<img class="td_img"  :src="item.snapshotUrl" @click="show_pic(item.wholePhoto)" title="点击显示原图"/>
+								</td>
+								<td class="td td2">
+										{{item.gender}}
+								</td>
+								<td class="td td2">
+										{{item.emotions}}
+								</td>
+								<td class="td td7">
+									<div class="table_text">
+										<div class="cell_text">
+											{{item.catchTime}}
+										</div>
+									</div>
+								</td>
+								<td class="td td9">
+									<div class="table_text">
+										<div class="cell_text">
+											{{item.cameraGroupName}}-{{item.cameraName}}
+										</div>
+									</div>
+								</td>
+								<td class="td td10">
+									<div class="td_icon1" title="跳转到人脸检索">
+										<img src="../assets/historyface/icon1.png" @click="skip_to_facepath(item.snapshotUrl)"/>
+									</div>
+									<div class="td_icon2" title="跳转添加该人脸">
+										<img src="../assets/historyface/icon8.png" @click="click_to_addface(item.uuid)"/>
+									</div>
+								</td>
+							</tr>
+						</table>
+					</div>
+					<div class="pag">
+						<el-pagination
+					      @size-change="handleSizeChange"
+					      @current-change="handleCurrentChange"
+					      :current-page="init_data.pageNum"
+					      :page-sizes="[10, 20, 30, 50]"
+					      :page-size="init_data.pageSize"
+					      layout="total, sizes, prev, pager, next, jumper"
+					      :total="init_data.allnum"
+					      class="haha">
+					    </el-pagination>
+					</div>
 				</div>
 			</div>
-			<div class="table_box h2_table_box">
-				<div class="table_thbox">
-					<table>
-						<tr>
-							<td class="td td1">
-								<input class="checkbox_box" type="checkbox" :checked="isallchecked" v-model="isallchecked" @click="click_to_checkedall"/>
-							</td>
-							<td class="td td2">抓拍人脸</td>
-							<td class="td td2">性别</td>
-							<td class="td td2">情绪</td>
-							<td class="td td7">抓拍时间</td>
-							<td class="td td9">设备信息</td>
-							<td class="td td10">操作</td>
-						</tr>
-					</table>
-				</div>
-				<div class="table_thbox2">
-					<table>
-						<tr class="tr" v-for="item in tabledata">
-							<td class="td td1">
-								<input class="checkbox_box" type="checkbox" :checked="item.ischecked" v-model="item.ischecked" @click="click_to_checkedone(item.uuid)"/>
-							</td>
-							<td class="td td2">
-								<img class="td_img"  :src="item.snapshotUrl"/>
-							</td>
-							<td class="td td2">
-									{{item.gender}}
-							</td>
-							<td class="td td2">
-									{{item.emotions}}
-							</td>
-							<td class="td td7">
-								<div class="table_text">
-									<div class="cell_text">
-										{{item.catchTime}}
-									</div>
-								</div>
-							</td>
-							<td class="td td9">
-								<div class="table_text">
-									<div class="cell_text">
-										{{item.cameraGroupName}}-{{item.cameraName}}
-									</div>
-								</div>
-							</td>
-							<td class="td td10">
-								<div class="td_icon1" title="跳转到人脸检索">
-									<img src="../assets/historyface/icon1.png" @click="skip_to_facepath(item.snapshotUrl)"/>
-								</div>
-								<div class="td_icon2" title="跳转添加该人脸">
-									<img src="../assets/historyface/icon8.png" @click="click_to_addface(item.uuid)"/>
-								</div>
-							</td>
-						</tr>
-					</table>
-				</div>
-				<div class="pag">
-					<el-pagination
-				      @size-change="handleSizeChange"
-				      @current-change="handleCurrentChange"
-				      :current-page="init_data.pageNum"
-				      :page-sizes="[10, 20, 30, 50]"
-				      :page-size="init_data.pageSize"
-				      layout="total, sizes, prev, pager, next, jumper"
-				      :total="init_data.allnum"
-				      class="haha">
-				    </el-pagination>
+		</div>
+		<!--遮罩层-->
+		<div class="mack_box" v-show="is_show_pic" @click="is_show_pic = false"></div>
+		<div class="t_graphBox" v-show="is_show_pic" @click="is_show_pic = false">
+			<div class="t_graph" >
+				<div class="graph_table">
+					<div class="graph_cell">
+						<img style="max-width:800px; max-height:800px;" :src="total_pic" />
+					</div>
 				</div>
 			</div>
 		</div>
@@ -160,6 +173,11 @@
 
 				// 复选框数据
 				isallchecked: false,
+
+				// 原图
+				is_show_pic: false,
+				total_pic: "无",
+
 			}//返回数据最外围
 		}, // data end
 		methods: {
@@ -233,7 +251,11 @@
 				// this.$store.state.search_data
 				this.$store.state.facepath_data.photo = img
                 this.$store.state.is_search_data_facepath = true
-				this.$router.push('/facepath')
+				if( this.$store.state.facepath_model === "online" ){
+                	this.$router.push('/facepath')
+                }else{
+                	this.$router.push('/facepath_offline')
+                }
 			},
 			click_to_addface:function(num){
 				// 可以直接弹窗添加，也可以跳转到库添加
@@ -405,6 +427,16 @@
                     showClose: true,
                     center: true
                 })
+			},
+
+			// 显示原图
+			show_pic:function(imgUrl){
+				this.is_show_pic = true
+				if( imgUrl ){
+					this.total_pic = imgUrl
+				}else{
+					this.total_pic = "无"
+				}
 			},
 		},// methods end
 		mounted:function(){

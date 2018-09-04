@@ -109,20 +109,21 @@
 							this.groupNames.push( {"name":name,"id":id} )
 							this.video_names.push( res.data.data[item] )
 						}
+						this.$store.state.facepath_search_data.allcamera_list = []
 						for( let i = 0; i < this.video_names.length; i++ ){
 							for( let j = 0; j < this.video_names[i].length; j++ ){
 								this.video_names[i][j].uuid = j
 								this.video_names[i][j].ischecked = 0
-								this.video_names[i][j].location = [this.video_names[i][j].location.split(",")[0],this.video_names[i][j].location.split(",")[1]]
-								// if( this.video_names[i][j].cameraStatus ){
-								// 	this.video_names[i][j].cameraStatus = "正常"
-								// }else{
-								// 	this.video_names[i][j].cameraStatus = "关闭"
-								// }
+								if( this.$store.state.facepath_model === "online" ){
+									this.video_names[i][j].location = [this.video_names[i][j].location.split(",")[0],this.video_names[i][j].location.split(",")[1]]
+								}else if( this.$store.state.facepath_model === "offline" ){
+									this.video_names[i][j].location = [this.video_names[i][j].location.split(",")[1],this.video_names[i][j].location.split(",")[0]]
+								}
 								// console.log(this.video_names[i][j].location)
 								this.$store.state.facepath_search_data.allcamera_list.splice(-1,0,this.video_names[i][j])
 							}
 						}
+						// console.log(this.$store.state.facepath_search_data.allcamera_list)
 						// console.log(this.$store.state.facepath_search_data.allcamera_list)
 						for (let i = 0; i < this.groupNames.length; i++) {
 							this.groupNames[i].uuid = i + ""

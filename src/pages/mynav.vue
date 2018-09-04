@@ -17,9 +17,9 @@
 				</ul>
 			</div>
 			<div class="right_user">
+				<div class="map_model_box" @click="change_map_model">{{map_model}}</div>
 				<div class="user_box">
 					<div class="user_icon"><img src="../assets/user_icon.png"/></div>
-					<!-- <div class="user_text">{{user.name}}</div> -->
 					<div class="user_text" :title="username" >{{username}}</div>
 				</div>
 				<div class="cancellation" @click="logout">注销</div>
@@ -43,11 +43,12 @@
 				// user: {},
 
 				username: "",
+
+				// 地图模式
+				map_model: "在线",
 			}
 		},
 		created:function(){
-			// console.log(this.$route.path)
-			// console.log("result = " + this.$route.path.indexOf("historyface"))
 			this.change_mynav_active()
 		},
 		methods:{
@@ -63,7 +64,11 @@
 				if( num === 0 ){
 					this.$router.push('/dataview');
 				}else if( num === 1 ){
-					this.$router.push('/facepath_offline')
+					if( this.$store.state.facepath_model === "online" ){
+						this.$router.push('/facepath')
+					}else{
+						this.$router.push('/facepath_offline')
+					}
 				}else if( num === 2 ){
 					this.$router.push('/realtimem')
 				}else if( num === 3 ){
@@ -150,25 +155,66 @@
 					this.listnum = 5
 					this.active_num = 5
 				}
-			}
+			},
+
+			change_map_model:function(){
+				if( this.$store.state.facepath_model === "online" ){
+					this.map_model = "离线"
+					this.$store.state.facepath_model = "offline"
+
+					if( this.$route.path === "/mmanage4" ){
+						this.$router.push("/mmanage4_offline")
+					}else if( this.$route.path === "/facepath" ){
+						this.$router.push("/facepath_offline")
+					}
+				}else{
+					this.map_model = "在线"
+					this.$store.state.facepath_model = "online"
+
+					if( this.$route.path === "/mmanage4_offline" ){
+						this.$router.push("/mmanage4")
+					}else if( this.$route.path === "/facepath_offline" ){
+						this.$router.push("/facepath")
+					}
+				}
+				sessionStorage.setItem("map_model", this.map_model)
+			},
 		},
         computed:{
+
             // user:function() {
             //     return this.$store.state.user
             // }
         },
         mounted(){
         	this.username = sessionStorage.username
+        	this.$store.state.user.uname = sessionStorage.username
+
+			if( sessionStorage.map_model ){
+				// console.log(sessionStorage.map_model)
+				this.map_model = sessionStorage.map_model
+				if( this.map_model === "在线" ){
+					this.$store.state.facepath_model = "online"
+				}else if( this.map_model === "离线" ){
+					this.$store.state.facepath_model = "offline"
+				}
+			}else{
+				console.log("heh")
+				this.$store.state.facepath_model = "online"
+				this.map_model = "在线"
+				sessionStorage.setItem("map_model", this.map_model)
+			}
+			
+			// console.log(this.$store.state.facepath_model,this.map_model)
         },
         watch:{
         	'$store.state.user.uname':function(newval,old){
 				this.username = sessionStorage.username
 			},
         	$route(to,from){
-				// console.log(this.$route.path)
 				this.change_mynav_active()
 			},
-        }
+        },
 	}
 </script>
 

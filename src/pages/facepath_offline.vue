@@ -1,7 +1,7 @@
 <template>
     <div class="main_box">
         <left-nav></left-nav>
-        <div class="map_bg" id="container"></div>
+        <div class="map_bg" id="container_offline"></div>
         <!--地图边框线-->
         <div class="left_xian"></div>
         <div class="top_xian"></div>
@@ -33,7 +33,7 @@
                         <el-slider v-model="search_data.confidence"></el-slider>
                     </div>
                     <div class="percentage"><input type="text" v-model="search_data.confidence"/></div>
-                    <div class="percentage_text">%</div>
+                    <div class="percentage_text fp_percentage">%</div>
                     <div class="search face_search" @click="click_to_search(search_data)">搜索</div>
                 </div>
                 <div class="results_box">
@@ -97,7 +97,7 @@
                 locations: [],
                 popup_content: null,
                 map_config: {
-                    zoom: 13,
+                    zoom: 16,
                     center: [39.895218, 116.419072],
                     minZoom: 12,
                     maxZoom: 16,
@@ -126,7 +126,7 @@
                 },
                 input_confidence: 0,
                 same_confidence: 0,
-                datevalue: [(new Date() - 3600 * 1000 * 24 * 1), new Date() - 1],
+                datevalue: [(new Date() - 3600 * 1000 * 24 * 15), new Date() - 1],
                 pickeroptions: {
                     shortcuts: [{
                         text: '最近三天',
@@ -172,7 +172,7 @@
         methods: {
             //初始化地图
             initMap: function (location = [39.895218, 116.419072]) {
-                this.map = L.map("container", {
+                this.map = L.map("container_offline", {
                     center: location,
                     zoom: this.map_config.zoom,
                     minZoom: this.map_config.minZoom,
@@ -184,11 +184,11 @@
                     bounds = L.latLngBounds(corner1, corner2);
                 this.map.setMaxBounds(bounds)
                 let map_url = '/static/offlineMap/{z}/{x}/{y}.png'
-                // if( this.$ajax.defaults.baseURL ){
-                //     map_url = this.$ajax.defaults.baseURL + '/static/offlineMap/{z}/{x}/{y}.png'
-                // }else{
-                //     map_url = '/static/offlineMap/{z}/{x}/{y}.png'
-                // }
+                if( this.$ajax.defaults.baseURL ){
+                    map_url = this.$ajax.defaults.baseURL + '/static/offlineMap/{z}/{x}/{y}.png'
+                }else{
+                    map_url = '/static/offlineMap/{z}/{x}/{y}.png'
+                }
                 L.tileLayer(map_url,
                     {attribution: this.map_config.attribution}).addTo(this.map);
                 this.popup = L.popup({
@@ -223,7 +223,7 @@
                         eye_div = '<div class="face_icon1"><img src="'+this.icon_eye+'"  style="cursor: not-allowed;" title="闲置状态不可跳转"/></div>'
                     }
                     // console.log(add_data[i].snapCount)
-                    let contect =   '<div class="face_infobox" onmouseleave="test_leave()" onmouseenter="test_enter()">\
+                    let contect =   '<div class="face_infobox offline_infobox" onmouseleave="test_leave()" onmouseenter="test_enter()">\
                                         <div class="face_title">\
                                             <div class="snap">\
                                                 <div class="snap_text1">抓拍:</div>\
@@ -245,7 +245,7 @@
                                 .setLatLng(e.latlng)
                                 .setContent(contect)
                                 .openOn(this.map);
-                            this.map.panTo(e.latlng)
+                            // this.map.panTo(e.latlng)
                             this.is_real_leave = false
                         })
                         .on("mouseout", () => {
@@ -272,7 +272,6 @@
             },
             //添加抓拍到的人脸标记
             add_markers: function () {
-                this.map_info()
                 for (let i = 0; i < this.infomycontent.length; i++) {
                     // let myIcon = add_markers_icon(this.tabledata[this.markers_list[i]].uuid)
 
@@ -288,7 +287,7 @@
                                 .setLatLng(e.latlng)
                                 .setContent(this.infomycontent[i])
                                 .openOn(this.map);
-                            this.map.panTo(e.latlng)
+                            // this.map.panTo(e.latlng)
                             this.is_real_leave = false
                         })
                         .on("mouseout", () => {
@@ -355,7 +354,7 @@
                     }
 
                     this.infomycontent.push(
-                        '<div class="face_infobox" onmouseleave="test_leave()" onmouseenter="test_enter()">\
+                        '<div class="face_infobox offline_infobox" onmouseleave="test_leave()" onmouseenter="test_enter()">\
                             <div class="face_title">\
                                 <div class="snap">\
                                     <div class="snap_text1">抓拍:</div>\
@@ -506,11 +505,18 @@
                     return;
                 }
                 // 请求搜索轨迹
-                // var params = new URLSearchParams()
-                // params.append("")
                 this.$ajax.post("/main/identifySnap", params, {headers: {'Content-Type': 'multipart/form-data'}}).then((res) => {
-                    // this.$ajax.post("",params).then((res) => {
                     if (res.data.status === 0) {
+                        if( !res.data.data ){
+                            this.$message({
+                                type: 'warning',
+                                message: '无对应数据',
+                                showClose: true,
+                                center: true
+                            })
+                            return 
+                        }
+
                         this.init_data.allnum = res.data.data.total
                         this.tabledata = res.data.data.list
                         // console.log(this.tabledata)
@@ -522,13 +528,14 @@
                                 this.tabledata[i].mystyle = "2px solid white"
                             }
                             [this.tabledata[i].nyr, this.tabledata[i].sfm] = this.tabledata[i].catchTime.split(" ")
-                            this.tabledata[i].location = [this.tabledata[i].location.split(",")[0], this.tabledata[i].location.split(",")[1]]
+                            this.tabledata[i].location = [this.tabledata[i].location.split(",")[1], this.tabledata[i].location.split(",")[0]]
                             this.locations.push(this.tabledata[i].location)
                         }
+                        this.map_info()
                         this.add_markers() // 添加标记
                         this.add_line() // 添加轨迹
                     } else if (res.data.status === 1) {
-                        this.error_info('请求失败 ' + res.msg)
+                        this.error_info('图片未检测到人脸或格式错误')
                         return;
                     } else if (res.data.status === 2) {
                         this.error_info('参数错误 ' + res.msg)
@@ -553,6 +560,14 @@
                     center: true
                 })
             },
+            warning_info:function(mes){
+                this.$message({
+                    type: 'warning',
+                    message: mes,
+                    showClose: true,
+                    center: true
+                })
+            },
             success_info: function (mes) {
                 this.$message({
                     type: 'success',
@@ -565,47 +580,41 @@
             // 按钮事件
             // 搜索按钮
             click_to_search: function (search_data) {
-                if (this.group != null) {
-                    this.group.clearLayers()
-                    this.polyline = null
-                    this.markers = []
-                    this.locations = []
-                    this.group = null
-                    this.layers = []
-                    this.tabledata = []
-                    this.infomycontent = []
-                    this.markers_list = []
-                    this.post_to_get_facepath(search_data)
-                } else {
-                    this.post_to_get_facepath(search_data)
-                }
-                if (this.circle != null) {
-                    this.circle.remove()
-                }
+                this.click_to_clear(false)
+                this.post_to_get_facepath(search_data)
             },
             // 清空事件
-            click_to_clear: function () {
-                this.group.clearLayers()
-                this.circle.remove()
-                this.polyline = null
+            click_to_clear: function ( flag = true ) {
+                if( this.group ){
+                    this.group.clearLayers()
+                }
+                if( this.polyline ){
+                    this.polyline = null
+                }
+                if( this.circle ){
+                    this.circle.remove()
+                }
                 this.markers = []
                 this.locations = []
-                this.group = null
                 this.layers = []
-                this.dataUrl = ""
-                this.pic = ""
                 this.tabledata = null
-                this.tabledata = []
                 this.infomycontent = []
                 this.markers_list = []
-                this.search_data = {
-                    photo: "",
-                    confidence: 0,
-                    startTime: "",
-                    endTime: "",
+                // this.map = null
+
+                this.init_data.allnum = 0
+                if( flag ){
+                    this.datevalue = [(new Date() - 3600 * 1000 * 24 * 15),new Date()-1],
+                    this.dataUrl = ""
+                    this.$refs.inputer.value = ""
+                    this.search_data = {
+                        photo: "",
+                        confidence: 75,
+                        startTime: "",
+                        endTime: "",
+                    }
+                    this.add_markers_all(this.allcamera_list)
                 }
-                this.tabledata = null
-                this.add_markers_all(this.allcamera_list)
             },
             // 导出事件
             // 导出数据为excel
@@ -630,9 +639,7 @@
 
             click_to_test: function () {
                 // this.$router.push('/historyface1')
-                console.log("hahahah")
-                this.map
-                    .closePopup()
+                this.map.closePopup()
             },
 
             // 跳转页面
@@ -671,6 +678,16 @@
                 this.skip_to_mmanage4(groupName,sdkId)
             }
         },
+        beforeRouteLeave(to, from, next) {
+            if( to.path === "/facepath" && from.path === "/facepath_offline" ){
+                // this.click_to_clear()
+                // if( this.map ){
+                //     this.map.remove()
+                // }
+                to.meta.keepAlive = false;
+            }
+            next()
+        },
         watch: {
             'search_data.confidence': function (newVal, oldVal) {
                 if (newVal === "") {
@@ -681,24 +698,42 @@
                 this.search_data.confidence = parseInt(this.search_data.confidence)
             },
 
-            '$store.state.facepath_search_data.allcamera_list': function (newVal, old) {
-                this.allcamera_list = this.$store.state.facepath_search_data.allcamera_list
-                if (this.allcamera_list.length) {
-                    this.initMap(this.allcamera_list[0].location)
-                } else {
-                    /*console.log("haha")*/
-                    this.initMap(this.map_config.center)
-                }
-                if (this.$store.state.is_search_data) {
+            '$store.state.is_search_data_facepath':function(newVal,old){
+                if ( newVal && this.$store.state.facepath_model === "offline"){
+                    this.search_data.photo = ""
                     this.search_data.photoUrl = this.$store.state.facepath_data.photo
                     this.dataUrl = this.search_data.photoUrl
-                    this.group.clearLayers()
-                    this.post_to_get_facepath(this.search_data, "skip")
+                    this.click_to_clear(false)
 
-                    this.$store.state.is_search_data = false
+                    this.post_to_get_facepath(this.search_data,"skip")
+
+                    this.$store.state.is_search_data_facepath = false
                     this.$store.state.facepath_data.photo = ""
-                } else {
-                    this.get_init_data()
+                }
+            },
+
+            '$store.state.facepath_search_data.allcamera_list': function (newVal, old) {
+                if( this.$store.state.facepath_model === "offline" ){
+                    this.allcamera_list = this.$store.state.facepath_search_data.allcamera_list
+                    if (this.allcamera_list.length) {
+                        this.initMap(this.allcamera_list[0].location)
+                    } else {
+                        this.initMap(this.map_config.center)
+                    }
+                    // console.log("offline")
+                    if (this.$store.state.is_search_data_facepath) {
+                        this.search_data.photoUrl = this.$store.state.facepath_data.photo
+                        this.dataUrl = this.search_data.photoUrl
+                        if( this.group ){
+                            this.group.clearLayers()
+                        }
+                        this.post_to_get_facepath(this.search_data, "skip")
+
+                        this.$store.state.is_search_data_facepath = false
+                        this.$store.state.facepath_data.photo = ""
+                    } else {
+                        this.get_init_data()
+                    }
                 }
             }
         }
@@ -709,7 +744,7 @@
     @import "../css/historyface.css";
     /*@import "../css/facepath.css";*/
 
-    .face_infobox {
+    .offline_infobox {
         top: -300px;
         left: 35px;
     }
@@ -724,7 +759,6 @@
 
     /* marker icon*/
     .leaflet-div-icon{
-        /*display: none;*/
         background: none;
         border: none;
     }
