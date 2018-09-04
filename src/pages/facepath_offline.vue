@@ -68,6 +68,7 @@
 <script>
     import LeftNav from "./left_nav2"
     import Vue from 'vue'
+    import {AntPath, antPath} from "leaflet-ant-path"
     // import * as L from "../../static/offlineMap/leaflet/leaflet-src";
 
     export default {
@@ -90,6 +91,7 @@
                 layers: [],
                 group: null,
                 circle: null,
+                path: null,
                 init_map_data: null,
                 popup: null,
                 polyline: null,
@@ -227,7 +229,7 @@
                                         <div class="face_title">\
                                             <div class="snap">\
                                                 <div class="snap_text1">抓拍:</div>\
-                                                <div class="snap_text2" title="'+ add_data[i].snapCount +'">'+ add_data[i].snapCount +'</div>\
+                                                <div class="snap_text2" title="'+ add_data[i].snapNumber +'">'+ add_data[i].snapNumber +'</div>\
                                             </div>\
                                             '+ camerastatus +'\
                                             '+ eye_div +'\
@@ -255,6 +257,9 @@
                                     this.map.closePopup()
                                 }
                             }, 50)
+                        })
+                        .on("click", (e) => {
+                            this.change_map_center(e.latlng)
                         })
                     );
                     this.group = L.layerGroup(this.layers)
@@ -377,8 +382,18 @@
 
             //添加折线
             add_line: function () {
-                this.polyline = L.polyline(this.locations, {color: '#00a0e9'}).addTo(this.group);
-                this.map.fitBounds(this.polyline.getBounds());
+                this.polyline = L.polyline(this.locations, {color: '#00a0e9'}).addTo(this.group)
+                this.map.fitBounds(this.polyline.getBounds())
+                const options = {
+                    delay: 250,
+                    dashArray: [40, 1000],
+                    weight: 10,
+                    color: "rgba(0,0,0,0)",
+                    pulseColor: "#00fcff",
+                    reverse: true,
+                };
+                this.path = antPath(this.locations, options);
+                this.path.addTo(this.group);
             },
 
             // 上传图片
@@ -593,6 +608,9 @@
                 }
                 if( this.circle ){
                     this.circle.remove()
+                }
+                if( this.path ){
+                    this.path = null
                 }
                 this.markers = []
                 this.locations = []

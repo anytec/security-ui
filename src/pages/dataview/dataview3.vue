@@ -41,10 +41,10 @@
 
                         this.cpuData = (percent.toFixed(4)*100).toFixed(2)
                     }else if( res.data.status === 1 ){
-                        this.error_info('请求失败 ' + res.msg)
+                        this.error_info(res.data.msg)
                         return ;
                     }else if( res.data.status === 2 ){
-                        this.error_info('参数错误 ' + res.msg)
+                        this.error_info(res.data.msg)
                         return ;
                     }else if( res.data.status === 10 ){
                         this.error_info('请先登录')
@@ -65,10 +65,10 @@
 
                         this.hardDisk = (percent.toFixed(4)*100).toFixed(2)
                     }else if( res.data.status === 1 ){
-                        this.error_info('请求失败 ' + res.msg)
+                        this.error_info(res.data.msg)
                         return ;
                     }else if( res.data.status === 2 ){
-                        this.error_info('参数错误 ' + res.msg)
+                        this.error_info(res.data.msg)
                         return ;
                     }else if( res.data.status === 10 ){
                         this.error_info('请先登录')
@@ -87,10 +87,10 @@
 
                         this.ROM = percent
                     }else if( res.data.status === 1 ){
-                        this.error_info('请求失败 ' + res.msg)
+                        this.error_info(res.data.msg)
                         return ;
                     }else if( res.data.status === 2 ){
-                        this.error_info('参数错误 ' + res.msg)
+                        this.error_info(res.data.msg)
                         return ;
                     }else if( res.data.status === 10 ){
                         this.error_info('请先登录')

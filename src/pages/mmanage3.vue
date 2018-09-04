@@ -22,7 +22,7 @@
 									<input class="checkbox_box" type="checkbox" :checked="isallchecked" v-model="isallchecked" @click="click_to_checkedall" />
 								</td>
 								<td class="td td4">组名称</td>
-								<td class="td td4">ID</td>
+								<td class="td td4">区域</td>
 								<td class="td td4">状态</td>
 								<td class="td td4">备注</td>
 								<td class="td td4">操作</td>
@@ -345,10 +345,10 @@
 		                	this.tabledata[i].ischecked = false
 		                }
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
@@ -384,10 +384,10 @@
 		                	this.tabledata[i].ischecked = false
 		                }
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
@@ -410,10 +410,10 @@
 	                    this.isallchecked = false
 	                    this.post_to_change_page(this.save_search_data)
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
@@ -444,10 +444,10 @@
 	                    this.post_to_change_page(this.save_search_data)
 	                    this.clear_data()
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
@@ -482,13 +482,13 @@
                     	if( model === "status" ){
                     		this.tabledata[uuid].groupStatus = !this.tabledata[uuid].groupStatus
                     	}
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
                     	if( model === "status" ){
                     		this.tabledata[uuid].groupStatus = !this.tabledata[uuid].groupStatus
                     	}
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')

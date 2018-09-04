@@ -428,10 +428,10 @@
 		                	this.tabledata[i].ischecked = false
 		                }
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
@@ -461,10 +461,10 @@
 		                	this.tabledata[i].ischecked = false
 		                }
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
@@ -487,10 +487,10 @@
 	                    this.isallchecked = false
 	                    this.post_to_change_page(this.save_search_data)
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
@@ -523,10 +523,10 @@
 	                    this.post_to_change_page(this.save_search_data)
 	                    this.clear_data()
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
@@ -560,10 +560,10 @@
 	                    // this.tabledata.splice(change_data.uuid,1,change_data)
 	                    this.clear_data()
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')

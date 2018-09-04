@@ -374,7 +374,11 @@
                         for( let i = 0; i < this.info_search_data.length; i++ ){
                             search_data.cameraSdkIds.push(this.info_search_data[i].sdkId)
                         }
-                        this.search_data = search_data
+                        if( search_data.cameraSdkIds.length ){
+                            this.search_data = search_data
+                        }else{
+                            this.warning_info("未选择设备")
+                        }
                     }else{
                         let search_data = {
                             cameraGroupIds: [],
@@ -382,7 +386,11 @@
                         for( let i = 0; i < this.info_search_data_group.length; i++ ){
                             search_data.cameraGroupIds.push(this.info_search_data_group[i].sdkId)
                         }
-                        this.search_data = search_data
+                        if( search_data.cameraGroupIds.length ){
+                            this.search_data = search_data
+                        }else{
+                            this.warning_info("未选择设备组")
+                        }
                     }
                 },
 

@@ -533,10 +533,10 @@
                     if( res.data.status === 0){
             			this.init_data.serverLabels = res.data.data
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
@@ -552,10 +552,10 @@
             			this.init_data.video_groups = res.data.data.list
             			this.init_data.is_get_init_data = !this.init_data.is_get_init_data
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
@@ -606,10 +606,10 @@
 		                	this.tabledata[i].ischecked = false
 		                }
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
@@ -631,10 +631,10 @@
 	                    this.isallchecked = false
 	                    this.post_to_change_page(this.save_search_data)
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
@@ -669,10 +669,10 @@
 	                    this.post_to_change_page(this.save_search_data)
 	                    this.clear_show_data()
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
@@ -706,13 +706,13 @@
                     	if( model === "status" ){
                     		this.tabledata[uuid].cameraStatus = !this.tabledata[uuid].cameraStatus
                     	}
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
                     	if( model === "status" ){
                     		this.tabledata[uuid].cameraStatus = !this.tabledata[uuid].cameraStatus
                     	}
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')

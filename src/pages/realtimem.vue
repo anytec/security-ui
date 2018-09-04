@@ -382,7 +382,7 @@
                 for( let i = 0; i < this.video_names.length; i++ ){
                     for( let j = 0; j < this.video_names[i].length; j++ ){
                         if( this.video_names[i][j].sdkId === this.video_srcs[num-1].sdkId ){
-                            this.snapCount = this.video_names[i][j].snapCount
+                            this.snapCount = this.video_names[i][j].snapNumber
                         }
                     }
                 }

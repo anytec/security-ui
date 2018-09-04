@@ -97,10 +97,10 @@
                         this.update_flag = !this.update_flag
                         this.$store.state.dataview_data.update_flag1 = !this.$store.state.dataview_data.update_flag1
                     }else if( res.data.status === 1 ){
-                        this.error_info('请求失败 ' + res.msg)
+                        this.error_info(res.data.msg)
                         return ;
                     }else if( res.data.status === 2 ){
-                        this.error_info('参数错误 ' + res.msg)
+                        this.error_info(res.data.msg)
                         return ;
                     }else if( res.data.status === 10 ){
                         this.error_info('请先登录')

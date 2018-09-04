@@ -372,10 +372,10 @@
                 			this.add_data.groupName = this.init_data.galleries[0]
                     	}
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
@@ -424,10 +424,10 @@
 		                }
                     	// console.log(this.tabledata)
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
@@ -471,10 +471,10 @@
 		                	this.tabledata[i].ischecked = false
 		                }
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
@@ -497,10 +497,10 @@
 	                    this.isallchecked = false
 	                    this.post_to_change_page(this.save_search_data)
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
@@ -562,10 +562,10 @@
 							dataUrl: "",
 	                    }
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
@@ -602,10 +602,10 @@
                     	this.success_info("修改成功")
 	                    this.post_to_change_page(this.save_search_data)
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')

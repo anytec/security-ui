@@ -248,7 +248,7 @@
                                             <div class="face_title">\
                                                 <div class="snap">\
                                                     <div class="snap_text1">抓拍:</div>\
-                                                    <div class="snap_text2" title="'+ add_data[i].snapCount +'">'+ add_data[i].snapCount +'</div>\
+                                                    <div class="snap_text2" title="'+ add_data[i].snapNumber +'">'+ add_data[i].snapNumber +'</div>\
                                                 </div>\
                                                 '+ camerastatus +'\
                                                 '+ eye_div +'\

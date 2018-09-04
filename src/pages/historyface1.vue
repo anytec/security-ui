@@ -337,10 +337,10 @@
                     if( res.data.status === 0){
 	        			this.init_data.galleries = res.data.data.list
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
@@ -356,10 +356,10 @@
                     if( res.data.status === 0){
             			this.init_data.video_groups = res.data.data.list
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
@@ -383,10 +383,10 @@
 		                	this.tabledata[i].confidence = Math.round(this.tabledata[i].confidence * 100)
 		                }
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
@@ -448,10 +448,10 @@
 		                	this.tabledata[i].confidence = Math.round(this.tabledata[i].confidence *100)
 		                }
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')

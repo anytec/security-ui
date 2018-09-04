@@ -223,6 +223,9 @@
                     	this.init_data.allnum = res.data.data.total
                 		this.tabledata = res.data.data.list
                 		for( let i = 0; i < this.tabledata.length; i++ ){
+                			let time_ymd = this.tabledata[i].operationTime.split("T")[0]
+                			let time_hms = this.tabledata[i].operationTime.split("T")[1].split(".")[0]
+                			this.tabledata[i].operationTime = time_ymd + " " + time_hms
                 			if(this.tabledata[i].operationResult){
                 				this.tabledata[i].operationResult = "操作成功"
                 			}else{
@@ -230,10 +233,10 @@
                 			}
                 		}
                     }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
+	                    this.error_info(res.data.msg)
                     	return ;
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
