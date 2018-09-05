@@ -31,6 +31,7 @@
 			get_init_data:function(){
 				// 请求设备组列表
 				var params = new URLSearchParams()
+				params.append( "status", "activated" )
 				this.$ajax.post("/groupCamera/getAllCameras",params).then((res) => {
 			        if( res.data.status === 0){
 						for( let item in res.data.data ){
@@ -51,10 +52,10 @@
 						this.$store.state.realtime_data.groupNames = this.groupNames
 						this.$store.state.realtime_data.video_names = this.video_names
 			        }else if( res.data.status === 1 ){
-			            this.error_info('请求失败 ' + res.msg)
+			            this.error_info(res.data.msg)
 			        	return ;
 			        }else if( res.data.status === 2 ){
-			            this.error_info('参数错误 ' + res.msg)
+			            this.error_info(res.data.msg)
 			        	return ;
 			        }else if( res.data.status === 10 ){
 			            this.error_info('请先登录')

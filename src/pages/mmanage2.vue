@@ -90,9 +90,9 @@
 								<td class="td td4">
 									<div class="td_icon">
 										<div class="td_icon">
-											<img src="../assets/historyface/icon1.png" @click="skip_to_facepath(item.thumbnail)" title="跳转到人脸检索"/>
-											<img src="../assets/historyface/icon6.png" @click="skip_to_historyface1(item.uuid)" title="跳转到历史报警"/>
-											<img src="../assets/historyface/icon2.png" @click="click_to_change_gallery(item.uuid)" title="修改该人员信息"/>
+											<div class="m_icon icon1" @click="skip_to_facepath(item.thumbnail)" title="跳转到人脸检索"></div>
+											<div class="m_icon icon6" @click="skip_to_historyface1(item.uuid)" title="跳转到历史报警"></div>
+											<div class="m_icon icon2" @click="click_to_change_gallery(item.uuid)" title="修改该人员信息"></div>
 										</div>
 									</div>
 								</td>
@@ -407,6 +407,8 @@
 					this.init_data.is_get_init_data = false
 					this.$store.state.add_data = null
 					this.$store.state.is_add_data = false
+
+					this.get_init_data2()
 				}else{
 					this.get_init_data2()
 				}
@@ -523,7 +525,7 @@
             	if( add_data.idNumber ){
             		params.append( "idNumber", add_data.idNumber )   // 搜索身份证号 该三个信息不一定有，且可能只有其中一个
             	}else{
-            		this.error_info("请添加标志编号")
+            		this.error_info("请添加标志编码")
                     return ;
             	}
             	if( add_data.name ){

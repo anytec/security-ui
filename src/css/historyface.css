@@ -259,17 +259,21 @@
 	cursor: pointer;
 }
 .td_icon1{
-    width: 30%;
+    /*width: 30%;*/
     margin-left: 17%;
-	height: 100%;
+	/*height: 100%;*/
 	float: left;
-	/*cursor: pointer;*/
+	width: 22px;
+	height: 22px;
+	cursor: pointer;
 }
 .td_icon2{
-	width: 30%;
+	/*width: 30%;*/
+	width: 22px;
+	height: 22px;
     margin-right: 17%;
-	height: 100%;
-	/*cursor: pointer;*/
+	/*height: 100%;*/
+	cursor: pointer;
 	float: right;
 }
 .td_icon1 img,.td_icon2 img{
@@ -324,8 +328,8 @@
 	background-color: #1bde5b;
 }
 .td_icon{
-	width: 84px;
-	height: 19px;
+	width: 90px;
+	/*height: 19px;*/
 	margin: 0 auto;
 }
 .td_icon img{
@@ -463,19 +467,31 @@
 }
 .small_icon{
 	position: absolute;
-    left: 20px;
-	width: 16px;
-	height: 16px;
+    left: 18px;
+	width: 19px;
+	height: 19px;
 	margin-top: 2px;
 	cursor: pointer;
+	background: url(../assets/historyface/icon1.png) no-repeat;
+	background-size:100% 100%; 
+}
+.small_icon:hover{
+	background: url(../assets/historyface/icon1_1.png) no-repeat;
+	background-size:100% 100%;
 }
 .small_icon1{
 	position: absolute;
-    right: 20px;
-	width: 16px;
-	height: 16px;
+    right: 18px;
+	width: 19px;
+	height: 19px;
 	margin-top: 2px;
 	cursor: pointer;
+	background: url(../assets/historyface/icon6.png) no-repeat;
+	background-size:100% 100%; 
+}
+.small_icon1:hover{
+	background: url(../assets/historyface/icon6_1.png) no-repeat;
+	background-size:100% 100%;
 }
 /* LZT 08-08新增or修改 end */
 
@@ -533,18 +549,31 @@
 	width: 48px;
 	height: 30px;
 }
+.re_lefticon_img{
+	width: 22px;
+	height: 22px;
+	margin-left: 35px;
+    margin-top: 3px;
+	background: url(../assets/historyface/icon1.png) no-repeat;
+	cursor: pointer;
+}
+.re_lefticon_img:hover{
+	background: url(../assets/historyface/icon1_1.png) no-repeat;
+}
 .re_righticon{
 	float: right;
 }
-.re_lefticon img{
-	margin-left: 27px;
-	margin-top: 3px;
+.re_righticon_img{
+	width: 22px;
+	height: 22px;
+	margin-right: 6px;
+    margin-top: 4px;
+    float: right;
 	cursor: pointer;
+	background: url(../assets/historyface/icon5.png) no-repeat;
 }
-.re_righticon img{
-	margin-left: 18px;
-	margin-top: 4px;
-	cursor: pointer;
+.re_righticon_img:hover{
+	background: url(../assets/historyface/icon5_1.png) no-repeat;
 }
 .re_infotext{
 	width: 126px;
@@ -788,7 +817,7 @@
 .tag_color4{
 	background-color: #1bde5b;
 }
-.td_icon{
+/*.td_icon{
 	width: 84px;
 	height: 19px;
 	margin: 0 auto;
@@ -798,7 +827,7 @@
 	float: left;
 	margin:0px 4px;
 	cursor: pointer;
-}
+}*/
 .mm1_addbox1,.mm1_addbox2{
 	width: 90%;
 	height: 30px;
@@ -1441,10 +1470,14 @@ to {height: 373px;opacity: 1;}
 }
 .real_ConterText{
 	width: 95%;
-	padding: 10px 0px;
+	padding: 5px 0px;
 	font-size: 18px;
 	color: white;
+	height: 25px;
 	/*text-align: center;*/
+}
+.real_ConterText:hover{
+	background: rgba(0,0,0,0.2);
 }
 .real_icon1,.real_icon2{
 	width: 40px;
@@ -1570,11 +1603,28 @@ to {height: 373px;opacity: 1;}
 	background: url(../assets/facepath/state2.png) no-repeat;
 }
 .face_icon1,.face_icon2{
-	width: 40px;
-	height: 32px;
+	width: 24px;
+	height: 24px;
+	margin-left: 15px;
 	float: left;
 	text-align: center;
-	/*cursor: pointer;*/
+	cursor: pointer;
+}
+.face_icon_fpath{
+	margin-top: 4px;
+}
+.face_icon1_img{
+	/*margin-left: 25px;*/
+	background: url(../assets/historyface/icon7.png) no-repeat;
+}
+.face_icon1_img:hover{
+	background: url(../assets/historyface/icon7_1.png) no-repeat;
+}
+.face_icon2_img{
+	background: url(../assets/historyface/icon2.png) no-repeat;
+}
+.face_icon2_img:hover{
+	background: url(../assets/historyface/icon2_1.png) no-repeat;
 }
 .face_icon1 img{
 	width: 25px;
@@ -2487,3 +2537,53 @@ to {height: 373px;opacity: 1;}
 	height: 40px;
 }
 /* system1 弹窗 end */
+
+/* icon bg */
+.m_icon{
+	width: 22px;
+	height: 22px;
+	float: left;
+	margin:0px 4px;
+}
+.icon1{
+	background: url(../assets/historyface/icon1.png) no-repeat;
+}
+.icon1:hover{
+	background: url(../assets/historyface/icon1_1.png) no-repeat;
+}
+.icon2{
+	background: url(../assets/historyface/icon2.png) no-repeat;
+}
+.icon2:hover{
+	background: url(../assets/historyface/icon2_1.png) no-repeat;
+}
+.icon5{
+	background: url(../assets/historyface/icon5.png) no-repeat;
+}
+.icon5:hover{
+	background: url(../assets/historyface/icon5_1.png) no-repeat;
+}
+.icon6{
+	background: url(../assets/historyface/icon6.png) no-repeat;
+}
+.icon6:hover{
+	background: url(../assets/historyface/icon6_1.png) no-repeat;
+}
+.icon7{
+	background: url(../assets/historyface/icon7.png) no-repeat;
+}
+.icon7:hover{
+	background: url(../assets/historyface/icon7_1.png) no-repeat;
+}
+.icon8{
+	background: url(../assets/historyface/icon8.png) no-repeat;
+}
+.icon8:hover{
+	background: url(../assets/historyface/icon8_1.png) no-repeat;
+}
+.icon9{
+	background: url(../assets/historyface/icon9.png) no-repeat;
+}
+.icon9:hover{
+	background: url(../assets/historyface/icon9_1.png) no-repeat;
+}

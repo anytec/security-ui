@@ -71,9 +71,9 @@
 								
 								<td class="td td4">
 									<div class="td_icon">
-										<img src="../assets/historyface/icon9.png" @click="skip_to_camera(item.uuid)" title="跳转到设备配置"/>
-										<img src="../assets/historyface/icon6.png" @click="skip_to_historyface1(item.uuid)" title="跳转到历史报警"/>
-										<img src="../assets/historyface/icon2.png" @click="click_to_change_gallery(item.uuid)" title="修改该人员信息"/>
+										<div class="m_icon icon9" @click="skip_to_camera(item.uuid)" title="跳转到设备配置"></div>
+										<div class="m_icon icon6" @click="skip_to_historyface1(item.uuid)" title="跳转到历史报警"></div>
+										<div class="m_icon icon2" @click="click_to_change_gallery(item.uuid)" title="修改该人员信息"></div>
 									</div>
 								</td>
 							</tr>

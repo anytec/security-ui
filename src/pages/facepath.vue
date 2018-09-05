@@ -237,23 +237,23 @@
                     let camerastatus = '',eye_div = ''
                     if( add_data[i].cameraStatus ){
                         camerastatus = '<div class="state state1">正常</div>'
-                        eye_div = '<div class="face_icon1"><img src="'+this.icon_eye+'" onclick="skip_to_realtimem(\''
-                                   + add_data[i].sdkId +'\',\'' + add_data[i].name + '\' )" title="跳转实时监控"/></div>'
+                        eye_div = '<div class="face_icon1 face_icon1_img face_icon_fpath" onclick="skip_to_realtimem(\''
+                                   + add_data[i].sdkId +'\',\'' + add_data[i].name + '\' )" title="跳转实时监控"></div>'
                     }else{
                         camerastatus = '<div class="state state2">闲置</div>'
-                        eye_div = '<div class="face_icon1"><img src="'+this.icon_eye+'"  style="cursor: not-allowed;" title="闲置状态不可跳转"/></div>'
+                        eye_div = '<div class="face_icon1 face_icon1_img face_icon_fpath" style="cursor: not-allowed;" title="闲置状态不可跳转"></div>'
                     }
 
                     let infomycontent = '<div class="face_infobox">\
                                             <div class="face_title">\
                                                 <div class="snap">\
                                                     <div class="snap_text1">抓拍:</div>\
-                                                    <div class="snap_text2" title="'+ add_data[i].snapNumber +'">'+ add_data[i].snapNumber +'</div>\
+                                                    <div class="snap_text2" title="'+ add_data[i].snapCount +'">'+ add_data[i].snapCount +'</div>\
                                                 </div>\
                                                 '+ camerastatus +'\
                                                 '+ eye_div +'\
-                                                <div class="face_icon2"><img src="'+this.icon_setting+'" onclick="skip_to_mmanage4(\''
-                                                + add_data[i].groupName +'\',\'' + add_data[i].sdkId + '\')"/></div>\
+                                                <div class="face_icon2 face_icon2_img face_icon_fpath" onclick="skip_to_mmanage4(\''
+                                                + add_data[i].groupName +'\',\'' + add_data[i].sdkId + '\')" title="跳转到设备配置"></div>\
                                             </div>\
                                             <div class="face_camera">'+add_data[i].name+'</div>\
                                             <div class="face_conter"></div>\
@@ -604,11 +604,11 @@
                     let camerastatus = '', eye_div = ''
                     if( this.tabledata[this.markers_list[i]].cameraStatus ){
                         camerastatus = '<div class="state state1">正常</div>'
-                        eye_div = '<div class="face_icon1" ><img src="'+this.icon_eye+'" onclick="skip_to_realtimem(\''
-                                + this.tabledata[this.markers_list[i]].cameraSdkId +'\',\'' + this.tabledata[this.markers_list[i]].cameraName + '\')" title="跳转实时监控"/></div>'
+                        eye_div = '<div class="face_icon1 face_icon1_img face_icon_fpath" " onclick="skip_to_realtimem(\''
+                                + this.tabledata[this.markers_list[i]].cameraSdkId +'\',\'' + this.tabledata[this.markers_list[i]].cameraName + '\')" title="跳转实时监控"></div>'
                     }else{
                         camerastatus = '<div class="state state2">闲置</div>'
-                        eye_div = '<div class="face_icon1"><img src="'+this.icon_eye+'" style="cursor: not-allowed;" title="闲置状态不可跳转"/></div>'
+                        eye_div = '<div class="face_icon1 face_icon1_img face_icon_fpath" style="cursor: not-allowed;" title="闲置状态不可跳转"></div>'
                     }
                     this.infomycontent.push(
                         '<div class="face_infobox">\
@@ -619,8 +619,8 @@
                                 </div>\
                                 '+ camerastatus +'\
                                 '+ eye_div +'\
-                                <div class="face_icon2"><img src="'+this.icon_setting+'" onclick="skip_to_mmanage4(\''
-                                + this.tabledata[this.markers_list[i]].cameraGroupName +'\',\'' + this.tabledata[this.markers_list[i]].sdkId + '\')"/></div>\
+                                <div class="face_icon2 face_icon2_img face_icon_fpath" onclick="skip_to_mmanage4(\''
+                                + this.tabledata[this.markers_list[i]].cameraGroupName +'\',\'' + this.tabledata[this.markers_list[i]].sdkId + '\')" title="跳转到设备配置"></div>\
                             </div>\
                             <div class="face_camera">'+ this.tabledata[this.markers_list[i]].cameraName +'</div>\
                             <div class="face_conter">'

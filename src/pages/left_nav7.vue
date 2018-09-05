@@ -86,27 +86,55 @@
 				// 请求库名
 				var params = new URLSearchParams()
 				
-                params.append("confidence",this.confidence)
-				// this.$ajax.post("/user/list",params).then((res) => {
-    //                 if( res.data.status === 0){
-    //                 	this.save_confidence = this.confidence
-    //                 }else if( res.data.status === 1 ){
-	   //                  this.error_info('请求失败 ' + res.msg)
-    //                 	return ;
-    //                 }else if( res.data.status === 2 ){
-	   //                  this.error_info('参数错误 ' + res.msg)
-    //                 	return ;
-    //                 }else if( res.data.status === 10 ){
-	   //                  this.error_info('请先登录')
-    //                 	return ;
-    //                 }else{
-    //                 	this.error_info(res.data.status,res.data.msg)
-    //                 }
-    //             }).catch((error) => {
-    //             	console.log(error)
-    //             	this.error_info('网络连接出错')
-    //                 return ;
-    //             })
+                params.append("threshold",this.confidence)
+				this.$ajax.post("/setWarningThreshold",params).then((res) => {
+                    if( res.data.status === 0){
+                    	this.save_confidence = this.confidence
+                    	this.syshidden = false
+                    }else if( res.data.status === 1 ){
+	                    this.error_info(res.data.msg)
+                    	return ;
+                    }else if( res.data.status === 2 ){
+	                    this.error_info(res.data.msg)
+                    	return ;
+                    }else if( res.data.status === 10 ){
+	                    this.error_info('请先登录')
+                    	return ;
+                    }else{
+                    	this.error_info(res.data.status,res.data.msg)
+                    }
+                }).catch((error) => {
+                	console.log(error)
+                	this.error_info('网络连接出错')
+                    return ;
+                })
+			},
+
+			// 消息窗口
+			error_info:function(mes){
+				this.is_confirm_show = true
+				this.$message({
+                    type: 'error',
+                    message: mes,
+                    showClose: true,
+                    center: true
+                })
+			},
+			warning_info:function(mes){
+				this.$message({
+                    type: 'warning',
+                    message: mes,
+                    showClose: true,
+                    center: true
+                })
+			},
+			success_info:function(mes){
+				this.$message({
+                    type: 'success',
+                    message: mes,
+                    showClose: true,
+                    center: true
+                })
 			},
 		},
 		created:function(){

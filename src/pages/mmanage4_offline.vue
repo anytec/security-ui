@@ -110,11 +110,9 @@
 								</td>
 								<td class="td td4">
 									<div class="td_icon">
-										<div class="td_icon">
-											<img src="../assets/historyface/icon7.png" @click="skip_to_realtimem(item.sdkId,item.name)" title="跳转到实时监控"/>
-											<img src="../assets/historyface/icon6.png" @click="skip_to_historyface1(item.uuid)" title="跳转到历史报警"/>
-											<img src="../assets/historyface/icon2.png" @click="click_to_change_gallery(item.uuid)" title="修改该设备信息"/>
-										</div>
+										<div class="m_icon icon7" @click="skip_to_realtimem(item.sdkId,item.name)" title="跳转到实时监控"></div>
+										<div class="m_icon icon6" @click="skip_to_historyface1(item.uuid)" title="跳转到历史报警"></div>
+										<div class="m_icon icon2" @click="click_to_change_gallery(item.uuid)" title="修改该设备信息"></div>
 									</div>
 								</td>
 							</tr>
@@ -173,7 +171,7 @@
 							<input class="mm4map_text1" id="tipinput" type="text" v-model.trim="keyword" @keyup="get($event)" @keyup.enter="search()"  @keydown.down="selectDown()" @keydown.up.prevent="selectUp()">
                             <!-- 这是一个小叉叉，点击它可清除输入框内容 -->
                             <span class="search-reset" @click="clearInput()">&times;</span>
-                            <div class="search-select" v-show="isShowSelect">
+                            <div class="search-select" id="search-select" v-show="isShowSelect">
                                 <!-- transition-group也是vue2.0中的新特性,tag='ul'表示用ul包裹v-for出来的li -->
                                 <div name="itemfade" tag="ul" mode="out-in" v-cloak>
                                     <li v-for="(value,index) in myData" :class="{selectback:index==now}" class="search-select-option search-select-list" @keydown.enter="search()"  @mouseover="selectHover(index)" @click="selectClick(index)" :key="index">
@@ -450,12 +448,13 @@
                 this.isShowSelect = true
                 var params = new URLSearchParams()
                 params.append("name", this.keyword)
-                // this.$ajax.post("http://192.168.10.220:9090/map/getMapByName", params).then((res) => {
-                this.$ajax.post("/map/getMapByName", params).then((res) => {
+                this.$ajax.post("http://192.168.10.220:9999/map/getMapByName", params).then((res) => {
+                // this.$ajax.post("/map/getMapByName", params).then((res) => {
                     this.myData = res.data;
                 })
                 if(this.keyword == null || this.keyword === ""){
                     this.isShowSelect = false
+                    this.now = 0
                 }
             },
 
@@ -464,9 +463,13 @@
                     return;
                 }
                 this.now++;
+                if (this.now >= this.myData.length * 0.5) {
+                    document.getElementById("search-select").scrollTop = 999
+                }
                 //到达最后一个时，再按下就回到第一个
                 if (this.now >= this.myData.length) {
                     this.now = 0;
+                    document.getElementById("search-select").scrollTop = 0
                 }
                 this.keyword = this.myData[this.now].name;
             },
@@ -475,9 +478,16 @@
                     return;
                 }
                 this.now--;
+                if (this.now <= this.myData.length * 0.5) {
+                    document.getElementById("search-select").scrollTop = 0
+                }
+                if (this.now >= this.myData.length * 0.5) {
+                    document.getElementById("search-select").scrollTop = 999
+                }
                 //同上
                 if (this.now <= -1) {
                     this.now = this.myData.length - 1
+                    document.getElementById("search-select").scrollTop = 999
                 }
                 if (this.now >= this.myData.length) {
                     this.now = 0;
@@ -759,14 +769,14 @@
 				var params = new URLSearchParams()
 				for( let item in temp_data ){
 					params.append(item,temp_data[item])
-					// if( item === "groupName" ){
-					// 	for( let i = 0; i < this.init_data.video_groups.length; i++ ){
-					// 		if( this.init_data.video_groups[i].name === temp_data[item] ){
-					// 			params.append("groupId",this.init_data.video_groups[i].id)
-					// 			break
-					// 		}
-					// 	}
-					// }
+					if( item === "groupName" ){
+						for( let i = 0; i < this.init_data.video_groups.length; i++ ){
+							if( this.init_data.video_groups[i].name === temp_data[item] ){
+								params.append("groupId",this.init_data.video_groups[i].id)
+								break
+							}
+						}
+					}
 				}
 				params.append("cameraStatus",1)
 
@@ -911,67 +921,68 @@
 	@import "../css/historyface.css";
 
 	.search-select {
-            position: absolute;
-    		top: -360px;
-		    height: 400px;
-		    overflow: hidden;
-		    /* width: 162px; */
-		    -webkit-box-sizing: border-box;
-		    box-sizing: border-box;
-		    z-index: 999;
-	        width: 190.83px;
-   			overflow: auto;								
+		position: absolute;
+		bottom: 23px;
+		left: 447px;
+		height: auto;
+		max-height: 400px;
+		width: 190.83px;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		z-index: 999;
+		overflow: auto;
 	}
 
-    .search-reset {
-        width: 15px;
-        height: 15px;
-        position: absolute;
-        display: block;
-        line-height: 21px;
-        text-align: center;
-        cursor: pointer;
-        font-size: 16px;
-        right: 567px;
-        top: 41px
-    }
+	.search-reset {
+		width: 15px;
+		height: 15px;
+		position: absolute;
+		display: block;
+		line-height: 21px;
+		text-align: center;
+		cursor: pointer;
+		font-size: 16px;
+		right: 567px;
+		top: 41px
+	}
 
-    .search-select li {
-        /*margin-left: -41px;*/
-        border: 1px solid #919191;
-        border-top: none;
-        border-bottom: none;
-        background-color: #fff;
-        width: 100%;
-    }
+	.search-select ul {
+		padding: 0px;
+		width: 176.83px;
+		margin: 0;
+		text-align: left;
+		list-style: none;
+	}
 
-    .search-select-option {
-        box-sizing: border-box;
-        padding: 7px 10px;
-        list-style: none;
-    }
-    .search-select-list {
-        transition: all 0.5s
-    }
-    .search-select ul{
-    	padding: 0px;
-        width: 176.83px;
-        margin:0;
-        text-align: left;
-        list-style: none;
-    }
+	.search-select li {
+		border: 1px solid #919191;
+		border-top: none;
+		border-bottom: none;
+		background-color: #fff;
+		width: 100%;
+	}
 
-    .itemfade-enter,
-    .itemfade-leave-active {
-        opacity: 0;
-    }
+	.search-select-option {
+		box-sizing: border-box;
+		padding: 7px 10px;
+		list-style: none;
+	}
 
-    .itemfade-leave-active {
-        position: absolute;
-    }
+	.search-select-list {
+		transition: all 0.5s
+	}
 
-    .selectback {
-        background-color: rgba(119, 119, 119, 0.87) !important;
-        cursor: pointer
-    }
+	.itemfade-enter,
+	.itemfade-leave-active {
+		opacity: 0;
+	}
+
+	.itemfade-leave-active {
+		position: absolute;
+	}
+
+	.selectback {
+		background-color: rgba(119, 119, 119, 0.87) !important;
+		cursor: pointer
+	}
 </style>

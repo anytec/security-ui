@@ -39,16 +39,12 @@
                             <div class="info_minbox" v-for="item in alarm_showdata" :style="{'transform':'translateY('+item.move_pix+'px)','transition-duration':item.translatetime+'s'}" @click="click_to_move()">
                                 <div class="re_toptitle">
                                     <!-- <div class="re_lefttext">{{item.personName}}  {{item.gender}}  {{item.age}}岁  {{item.personGroupName}}</div> -->
-                                    <div class="re_lefttext">{{item.personName}}  {{item.gender}}  {{item.personGroupName}}</div>
+                                    <div class="re_lefttext" :style="{'background-color':item.colorLabel}">{{item.personName}}  {{item.gender}}  {{item.personGroupName}}</div>
                                     <div class="icon_bg">
-                                        <div class="re_lefticon" title="跳转到人脸检索">
-                                            <img src="../assets/historyface/icon1.png"  @click="skip_to_facepath(item.snapshotUrl)"/>
-                                        </div>
+                                        <div class="re_lefticon_img" title="跳转到人脸检索" @click="skip_to_facepath(item.snapshotUrl)"></div>
                                     </div>
                                     <div class="re_icon">
-                                        <div class="re_righticon" title="跳转到底库人员">
-                                            <img src="../assets/historyface/icon5.png"  @click="skip_to_mmanage2(item.personGroupName,item.personGroupId,item.faceSdkId)"/>
-                                        </div>
+                                        <div class="re_righticon_img" title="跳转到底库人员" @click="skip_to_mmanage2(item.personGroupName,item.personGroupId,item.faceSdkId)"></div>
                                     </div>
                                 </div>
                                 <div class="re_infotext">
@@ -59,7 +55,7 @@
                                 </div>
                                 <div class="re_photoinfo">
                                     <div class="re_photobox" >
-                                        <img :src="item.snapshotUrl" style="width:100px;height:100px"/>
+                                        <img :src="item.snapshotUrl" style="width:100px;height:100px" @click="show_pic(item.wholePhoto)" title="点击显示原图"/>
                                         <div class="re_icontext">{{item.confidence}}%</div>
                                     </div>
                                     <div class="re_photobox" >
@@ -91,12 +87,8 @@
                                     <div class="new_photo_text">{{item.gender}}</div>
                                 </div>
                                 <div class="photo_text" v-show="!is_trans">
-                                    <div class="small_icon" title="跳转到人脸检索">
-                                        <img style="width:100%" src="../assets/historyface/icon1.png"  @click="skip_to_facepath(item.img)"/>
-                                    </div>
-                                    <div class="small_icon1" title="跳转到历史抓拍">
-                                        <img style="width:100%" src="../assets/historyface/icon6.png"  @click="skip_to_historyface2(item.faceSdkId)"/>
-                                    </div>
+                                    <div class="small_icon" title="跳转到人脸检索" @click="skip_to_facepath(item.img)"></div>
+                                    <div class="small_icon1" title="跳转到历史抓拍" @click="skip_to_historyface2(item.faceSdkId)"></div>
                                 </div>
                             </div>
                         </div>
@@ -135,12 +127,8 @@
             <div class="real_conter">
                 <div class="real_ConterText" v-for="item in info_show_data" @dblclick="choose_this_url(item.sdkId,item.name)" v-show="item.isshow">
                     <div class="real_text">{{ item.name }}</div>
-                    <div class="face_icon1" @click="choose_this_url(item.sdkId,item.name)" title="选择该设备显示">
-                        <img src="../assets/historyface/icon7.png"/>
-                    </div>
-                    <div class="face_icon2" @click="skip_to_mmanage4(item)" title="跳转到设备配置">
-                        <img src="../assets/historyface/icon2.png"/>
-                    </div>
+                    <div class="face_icon1 face_icon1_img" @click="choose_this_url(item.sdkId,item.name)" title="选择该设备显示"></div>
+                    <div class="face_icon2 face_icon2_img" @click="skip_to_mmanage4(item)" title="跳转到设备配置"></div>
                 </div>
             </div>
             <div class="bottom_bg">
@@ -172,6 +160,17 @@
                 <div class="real_mark2">目标人脸</div>
                 <div class="real_mark3">相似度</div>
                 <div class="real_mark4">具体信息</div>
+            </div>
+        </div>
+        <!--遮罩层 原图-->
+        <div class="mack_box" v-show="is_show_pic" @click="is_show_pic = false"></div>
+        <div class="t_graphBox" v-show="is_show_pic" @click="is_show_pic = false">
+            <div class="t_graph" >
+                <div class="graph_table">
+                    <div class="graph_cell">
+                        <img style="max-width:800px; max-height:800px;margin:0 auto;" :src="total_pic" />
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -296,6 +295,10 @@
 
                 // 第一次进入页面标志
                 first_flag: true,
+
+                // 原图
+                is_show_pic: false,
+                total_pic: "无",
             }
         },
         components: {
@@ -382,7 +385,7 @@
                 for( let i = 0; i < this.video_names.length; i++ ){
                     for( let j = 0; j < this.video_names[i].length; j++ ){
                         if( this.video_names[i][j].sdkId === this.video_srcs[num-1].sdkId ){
-                            this.snapCount = this.video_names[i][j].snapNumber
+                            this.snapCount = this.video_names[i][j].snapCount
                         }
                     }
                 }
@@ -611,10 +614,10 @@
             // sockJS、Stomp
             // 请求初始化
             initSocket:function(){
-                // let socket = new SockJS('http://192.168.10.158:9999/gee');
+                let socket = new SockJS('http://192.168.10.62:9999/gee');
                 // let socket = new SockJS('http://192.168.10.126:9990/gee');
                 // let socket = new SockJS('http://192.168.10.132:9999/gee');
-                let socket = new SockJS('gee');
+                // let socket = new SockJS('gee');
                 this.stompClient = Stomp.over(socket);
                 this.stompClient.connect({}, (frame) =>{
                     this.stompClient.subscribe('/topic/camera/warning', (data) => {
@@ -786,12 +789,23 @@
                 }
                 return emotions_new.join(',')
             },
+
+            // 显示全图
+            show_pic:function(imgUrl){
+                this.is_show_pic = true
+                if( imgUrl ){
+                    this.total_pic = imgUrl
+                }else{
+                    this.total_pic = "无"
+                }
+            },
+
             beforeRouteLeave(to, from, next) {
                 if( to.path === "/facepath" && this.$store.state.is_search_data_facepath ){
                     to.meta.keepAlive = false; 
                 }
                 next()
-            }
+            },
         },
         mounted:function(){
             this.get_init_data1()

@@ -74,11 +74,11 @@
 									</div>
 								</td>
 								<td class="td td10">
-									<div class="td_icon1" title="跳转到人脸检索">
-										<img src="../assets/historyface/icon1.png" @click="skip_to_facepath(item.snapshotUrl)"/>
+									<div class="td_icon1 icon1" title="跳转到人脸检索" @click="skip_to_facepath(item.snapshotUrl)">
+										<!-- <img src="../assets/historyface/icon1.png" /> -->
 									</div>
-									<div class="td_icon2" title="跳转添加该人脸">
-										<img src="../assets/historyface/icon8.png" @click="click_to_addface(item.uuid)"/>
+									<div class="td_icon2 icon8" title="跳转添加该人脸" @click="click_to_addface(item.uuid)">
+										<!-- <img src="../assets/historyface/icon8.png" /> -->
 									</div>
 								</td>
 							</tr>

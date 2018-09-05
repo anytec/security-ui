@@ -110,11 +110,9 @@
 								</td>
 								<td class="td td4">
 									<div class="td_icon">
-										<div class="td_icon">
-											<img src="../assets/historyface/icon7.png" @click="skip_to_realtimem(item.sdkId,item.name)" title="跳转到实时监控"/>
-											<img src="../assets/historyface/icon6.png" @click="skip_to_historyface1(item.uuid)" title="跳转到历史报警"/>
-											<img src="../assets/historyface/icon2.png" @click="click_to_change_gallery(item.uuid)" title="修改该设备信息"/>
-										</div>
+										<div class="m_icon icon7" @click="skip_to_realtimem(item.sdkId,item.name)" title="跳转到实时监控"></div>
+										<div class="m_icon icon6" @click="skip_to_historyface1(item.uuid)" title="跳转到历史报警"></div>
+										<div class="m_icon icon2" @click="click_to_change_gallery(item.uuid)" title="修改该设备信息"></div>
 									</div>
 								</td>
 							</tr>
@@ -651,14 +649,14 @@
 				var params = new URLSearchParams()
 				for( let item in temp_data ){
 					params.append(item,temp_data[item])
-					// if( item === "groupName" ){
-					// 	for( let i = 0; i < this.init_data.video_groups.length; i++ ){
-					// 		if( this.init_data.video_groups[i].name === temp_data[item] ){
-					// 			params.append("groupId",this.init_data.video_groups[i].id)
-					// 			break
-					// 		}
-					// 	}
-					// }
+					if( item === "groupName" ){
+						for( let i = 0; i < this.init_data.video_groups.length; i++ ){
+							if( this.init_data.video_groups[i].name === temp_data[item] ){
+								params.append("groupId",this.init_data.video_groups[i].id)
+								break
+							}
+						}
+					}
 				}
 				params.append("cameraStatus",1)
 
