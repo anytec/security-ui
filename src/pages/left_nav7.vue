@@ -42,7 +42,6 @@
 
 				// 弹窗
 				syshidden: false,
-				save_confidence: 75,
 				confidence: 75,
 			}
 		},
@@ -79,17 +78,42 @@
 
 			// 弹窗
 			set_confidence:function(){
-				this.confidence = this.save_confidence
 				this.syshidden = true
+				this.get_confidence()
+			},
+
+			// 获取阈值
+			get_confidence:function(){
+				var params = new URLSearchParams()
+
+				this.$ajax.post("/getWarningThreshold",params).then((res) => {
+                    if( res.data.status === 0){
+                    	this.confidence = res.data.data
+                    }else if( res.data.status === 1 ){
+	                    this.error_info(res.data.msg)
+                    	return ;
+                    }else if( res.data.status === 2 ){
+	                    this.error_info(res.data.msg)
+                    	return ;
+                    }else if( res.data.status === 10 ){
+	                    this.error_info('请先登录')
+                    	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
+                    }
+                }).catch((error) => {
+                	console.log(error)
+                	this.error_info('网络连接出错')
+                    return ;
+                })
 			},
 			confirm_to_post:function(){
-				// 请求库名
 				var params = new URLSearchParams()
 				
                 params.append("threshold",this.confidence)
 				this.$ajax.post("/setWarningThreshold",params).then((res) => {
                     if( res.data.status === 0){
-                    	this.save_confidence = this.confidence
+                    	this.success_info("修改阈值成功")
                     	this.syshidden = false
                     }else if( res.data.status === 1 ){
 	                    this.error_info(res.data.msg)
@@ -101,7 +125,7 @@
 	                    this.error_info('请先登录')
                     	return ;
                     }else{
-                    	this.error_info(res.data.status,res.data.msg)
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)

@@ -37,9 +37,9 @@
                     <div class="information_box">
                         <div class="info_alarm">
                             <div class="info_minbox" v-for="item in alarm_showdata" :style="{'transform':'translateY('+item.move_pix+'px)','transition-duration':item.translatetime+'s'}" @click="click_to_move()">
-                                <div class="re_toptitle">
+                                <div class="re_toptitle" :style="{'background-color':item.colorLabel}">
                                     <!-- <div class="re_lefttext">{{item.personName}}  {{item.gender}}  {{item.age}}岁  {{item.personGroupName}}</div> -->
-                                    <div class="re_lefttext" :style="{'background-color':item.colorLabel}">{{item.personName}}  {{item.gender}}  {{item.personGroupName}}</div>
+                                    <div class="re_lefttext" >{{item.personName}}  {{item.gender}}  {{item.personGroupName}}</div>
                                     <div class="icon_bg">
                                         <div class="re_lefticon_img" title="跳转到人脸检索" @click="skip_to_facepath(item.snapshotUrl)"></div>
                                     </div>
@@ -614,10 +614,10 @@
             // sockJS、Stomp
             // 请求初始化
             initSocket:function(){
-                let socket = new SockJS('http://192.168.10.62:9999/gee');
+                // let socket = new SockJS('http://192.168.10.62:9999/gee');
                 // let socket = new SockJS('http://192.168.10.126:9990/gee');
                 // let socket = new SockJS('http://192.168.10.132:9999/gee');
-                // let socket = new SockJS('gee');
+                let socket = new SockJS('gee');
                 this.stompClient = Stomp.over(socket);
                 this.stompClient.connect({}, (frame) =>{
                     this.stompClient.subscribe('/topic/camera/warning', (data) => {
@@ -675,6 +675,7 @@
                             }else if( this.default_show_data[i].gender === "male" ){
                                 this.default_show_data[i].gender = "男"
                             }
+                            this.default_show_data[i].time = this.default_show_data[i].catchTime.split(" ")[1]
                             // this.default_show_data[i].confidence = Math.round(this.default_show_data[i].confidence)
                         }
                         for ( let i = 0; i < 13; i++){
@@ -705,6 +706,8 @@
                     }else if( res.data.status === 10 ){
                         this.error_info('请先登录')
                         return ;
+                    }else{
+                        this.error_info(res.data.status + "  " + res.data.msg)
                     }
                 }).catch((error) => {
                     console.log(error)
@@ -760,6 +763,8 @@
                     }else if( res.data.status === 10 ){
                         this.error_info('请先登录')
                         return ;
+                    }else{
+                        this.error_info(res.data.status + "  " + res.data.msg)
                     }
                 }).catch((error) => {
                     console.log(error)
@@ -808,7 +813,10 @@
             },
         },
         mounted:function(){
-            this.get_init_data1()
+            this.initSocket()
+            setTimeout(() => {
+                this.get_init_data1()
+            }, 500)
             // if( this.first_flag ){
             //     this.get_init_data()
             //     this.get_init_data2()
@@ -862,7 +870,7 @@
                         vm.get_init_data2()
 
                         vm.init_video()
-                        vm.initSocket()
+                        // vm.initSocket()
                         vm.myID = vm.guid()
 
                         vm.first_flag = false
@@ -888,14 +896,13 @@
                         vm.get_init_data2()
 
                         vm.init_video()
-                        vm.initSocket()
+                        // vm.initSocket()
                         vm.myID = vm.guid()
 
                         vm.first_flag = false
                     }
                 })
             }
-            
         }
     }
 </script>

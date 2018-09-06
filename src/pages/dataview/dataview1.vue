@@ -105,6 +105,8 @@
                     }else if( res.data.status === 10 ){
                         this.error_info('请先登录')
                         return ;
+                    }else{
+                        this.error_info(res.data.status + "  " + res.data.msg)
                     }
                 }).catch((error) => {
                     console.log(error)

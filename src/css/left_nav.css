@@ -177,10 +177,11 @@
 	left: 100px;
 	cursor: pointer;
 	background: url(../assets/historyface/icon2.png) no-repeat;
-	background-size: 100%;
+	background-size: 100% ;
 }
 .left7set_up:hover{
 	background: url(../assets/historyface/icon2_1.png) no-repeat;
+	background-size: 100% ;
 }
 /* system1 弹窗 end */
 	

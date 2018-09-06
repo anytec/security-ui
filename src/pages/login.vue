@@ -39,7 +39,8 @@
                                 <input v-model="user.password" :type="pass_type" id="pwd" placeholder="密码"/>
                             </div>
                             <div class="eyes">
-                                <img :src="imgurl" @click="change_view"/>
+                                <img :src="imgurl" @click="change_view" v-if="is_eyeopen"/>
+                                <img :src="imgurl" @click="change_view" v-if="!is_eyeopen" style="cursor: not-allowed;"/>
                             </div>
                         </div>
                         <div class="remember">
@@ -68,6 +69,8 @@
                 user: {},
                 isrem_password: false,
                 post_flag: false,
+
+                is_eyeopen: true,
             }
         },
         methods: {
@@ -149,10 +152,12 @@
                         //判断查找相对应的值
                         if (arr2[0] == 'uname') {
                             this.user.name = arr2[1]; //保存到保存数据的地方
+                            sessionStorage.setItem("username", this.user.name)
                         } else if (arr2[0] == 'upass') {
                             this.user.password = arr2[1];
                         }
                         this.isrem_password = true
+                        this.is_eyeopen = false
                     }
                 }
             },
@@ -167,6 +172,16 @@
             }
             this.getCookie()
         },
+        watch:{
+            // 'user.name':function(newval,old){
+            //     console.log(newval,old)
+            //     if( newval != sessionStorage.username ){
+            //         this.user.password = ""
+            //         this.is_eyeopen = true
+            //         // sessionStorage.username = ""
+            //     }
+            // },
+        }
     }
 
 </script>

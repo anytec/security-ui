@@ -8,8 +8,11 @@
 	line-height: 21px !important;
 }
 
-.el-date-editor--datetimerange.el-input__inner {
+.el-date-editor--datetimerange.el-input__inner{
     width: 350px !important;
+}
+.el-date-editor--daterange.el-input__inner {
+    width: 300px !important;
 }
 
 .el-input__inner {
@@ -132,4 +135,23 @@
 }
 .el-slider__button:hover,.el-slider__button-wrapper:hover,.el-slider__button.dragging{
 	border-radius:25px !important;
+}
+
+
+.el-color-dropdown{
+	z-index: 9999 !important;
+}
+.el-color-picker{
+	width: 100% !important;
+	height: 100% !important;
+}
+.el-color-picker__trigger,.el-color-picker__color{
+	border: 0px solid #e6e6e6 !important;
+	padding: 0 !important;
+	width: 100% !important;
+	height: 100% !important;
+}
+.el-color-picker__color-inner{
+	/*background-color: red !important;*/
+	border: none !important;
 }

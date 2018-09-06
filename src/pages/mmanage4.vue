@@ -84,11 +84,13 @@
 								</td>
 								<td class="td td9">
 									<div class="table_text">
-										<div class="cell_text" @click="isreal_change(item.uuid)">
+										<div class="cell_text">
 											<el-switch
 											  v-model="item.cameraStatus"
 											  active-color="#13ce66"
 	  										  inactive-color="#626262"
+	  										  @change="isreal_change(item.uuid)"
+	  										  :disabled="item.ischange"
 											  >
 											</el-switch>
 										</div>
@@ -302,6 +304,8 @@
 			            cancelButtonText: '取消',
 			            type: 'warning'
 					}).then(() => {
+						this.tabledata[uuid].ischange = true
+						this.tabledata.splice(uuid,1,this.tabledata[uuid])
 						this.require_to_change({"cameraStatus":1,"id":this.tabledata[uuid].id},"status",uuid)
 					}).catch(() => {
 						this.tabledata[uuid].cameraStatus = false
@@ -312,6 +316,8 @@
 			            cancelButtonText: '取消',
 			            type: 'warning'
 					}).then(() => {
+						this.tabledata[uuid].ischange = true
+						this.tabledata.splice(uuid,1,this.tabledata[uuid])
 						this.require_to_change({"cameraStatus":0,"id":this.tabledata[uuid].id},"status",uuid)
 					}).catch(() => {
 						this.tabledata[uuid].cameraStatus = true
@@ -511,10 +517,11 @@
 				this.$router.push('/realtimem')
 			},
 			skip_to_historyface1:function(num){
-				console.log(this.tabledata[num])
+				// console.log(this.tabledata[num])
 				this.$store.state.search_data.cameraGroupName = this.tabledata[num].groupName
 				this.$store.state.search_data.cameraGroupId = this.tabledata[num].groupId
 				this.$store.state.search_data.cameraName = this.tabledata[num].name
+				this.$store.state.search_data.cameraSdkId = this.tabledata[num].sdkId
 				this.$store.state.is_search_data = true
 				this.$router.push('/historyface1')
 			},
@@ -539,6 +546,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                 }).catch((error) => {
                 	this.error_info('网络连接出错')
@@ -558,6 +567,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                 }).catch((error) => {
                 	this.error_info('网络连接出错')
@@ -602,6 +613,7 @@
             				}
 		                	this.tabledata[i].uuid = i
 		                	this.tabledata[i].ischecked = false
+		                	this.tabledata[i].ischange = false
 		                }
                     }else if( res.data.status === 1 ){
 	                    this.error_info(res.data.msg)
@@ -612,6 +624,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                 }).catch((error) => {
                 	this.error_info('网络连接出错')
@@ -637,6 +651,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -675,6 +691,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                     this.is_confirm_show = true
                 }).catch((error) => {
@@ -699,22 +717,26 @@
                     	}else{
                     		this.success_info('修改设备状态成功')
                     	}
+                    	this.tabledata[uuid].ischange = false
+						this.tabledata.splice(uuid,1,this.tabledata[uuid])
                     	this.clear_show_data()
                     }else if( res.data.status === 1 ){
                     	if( model === "status" ){
                     		this.tabledata[uuid].cameraStatus = !this.tabledata[uuid].cameraStatus
                     	}
-	                    this.error_info(res.data.msg)
+	                    this.error_info(res.data.msg,uuid)
                     	return ;
                     }else if( res.data.status === 2 ){
                     	if( model === "status" ){
                     		this.tabledata[uuid].cameraStatus = !this.tabledata[uuid].cameraStatus
                     	}
-	                    this.error_info(res.data.msg)
+	                    this.error_info(res.data.msg,uuid)
                     	return ;
                     }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
+	                    this.error_info('请先登录',uuid)
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg,uuid)
                     }
                     this.is_confirm_show = true
                 }).catch((error) => {
@@ -723,14 +745,19 @@
                 	}
                 	console.log(error)
                 	this.is_confirm_show = true
-                    this.error_info('网络连接出错')
+                    this.error_info('网络连接出错',uuid)
                     return ;
                 })
 			},
 
 			// 消息窗口
-			error_info:function(mes){
+			error_info:function(mes,uuid){
 				this.is_confirm_show = true
+				if( uuid === 0 || (uuid != 0 && uuid) ){
+					this.tabledata[uuid].ischange = false
+					this.tabledata.splice(uuid,1,this.tabledata[uuid])
+				}
+				
 				this.$message({
                     type: 'error',
                     message: mes,
@@ -797,91 +824,6 @@
 		left:calc(25% + 446px) !important;
 	}
 
-/*	.el-date-editor .el-range-input {
-		width: 50%;
-	}
-	
-	.el-date-editor>.el-range__icon,
-	.el-date-editor .el-range-separator,
-	.el-date-editor .el-range__close-icon {
-		line-height: 21px;
-	}
-	
-	.el-input__inner {
-		border: 1px solid #015758;
-		background-color: rgba(0, 0, 0, 0);
-	}
-	
-	.el-pagination button:disabled,
-	.el-pagination .btn-next,
-	.el-pagination .btn-prev,
-	.el-pager li {
-		background-color: rgba(0, 0, 0, 0);
-	}
-	
-	.el-icon-arrow-left:before,
-	.el-icon-arrow-right:before {
-		color: #00fcff;
-	}
-	
-	.el-pager li {
-		color: #017576;
-		font-size: 16px;
-	}
-	
-	.el-pager li.active {
-		color: #06fafd;
-	}
-	
-	.el-pagination__total,
-	.el-pagination .el-select .el-input .el-input__inner,
-	.el-icon-arrow-up:before,
-	.el-select-dropdown__item.selected,
-	.el-pagination__jump,
-	.el-pagination__editor.el-input .el-input__inner {
-		color: #02d0d3;
-	}
-	
-	.el-pagination {
-		width: 660px;
-		margin: 0 auto;
-		margin-top: 5px;
-	}
-	
-	::-webkit-scrollbar {
-		width: 14px;
-		height: 14px;
-	}
-	
-	::-webkit-scrollbar-track,
-	::-webkit-scrollbar-thumb {
-		border-radius: 999px;
-		border: 5px solid transparent;
-	}
-	
-	::-webkit-scrollbar-track {
-		box-shadow: 1px 1px 5px (200, 203, 206, 0.5) inset;
-	}
-	
-	::-webkit-scrollbar-thumb {
-		min-height: 20px;
-		background-clip: content-box;
-		box-shadow: 0 0 0 5px rgba(200, 203, 206, 0.5) inset;
-	}
-	
-	::-webkit-scrollbar-corner {
-		background: transparent;
-	}
-	
-	.el-range-editor.el-input__inner {
-		width: 100%;
-		height: 100%;
-		background-color: white;
-	}
-	
-	.el-date-editor .el-range-input {
-		width: 50% !important;
-	}*/
 </style>
 <style scoped>
 	@import "../css/historyface.css";

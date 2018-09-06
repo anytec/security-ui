@@ -380,6 +380,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -434,6 +436,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -453,7 +457,9 @@
                 	}
                 	if( search_data.idNumber ){
                 		params.append( "idNumber", search_data.idNumber )   // 搜索身份证号 该三个信息不一定有，且可能只有其中一个
-                	}
+                	}else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
+                    }
                 }else if( change_page ){
                 	for(let key in search_data ){
                 		if( key != "groupName" ){
@@ -507,6 +513,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -572,6 +580,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                     this.is_confirm_show = true
                 }).catch((error) => {
@@ -612,6 +622,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                     this.is_confirm_show = true
                 }).catch((error) => {

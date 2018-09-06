@@ -11,25 +11,25 @@
 
 <script>
 export default {
-  name: 'App',
-  created:function(){
-    // window.document.title = "anytec"
-    this.$router.beforeEach((to, from, next) => {
-      window.document.title = to.meta.title;
-      next()
-    })
-  },
-  data(){
-      return {
-          transitionName: '',
-      }
-  },
-  watch:{
-      $route:function(to,from){
-          this.transitionName = 'slide-left';
-          window.document.title = this.$route.meta.title
-      },
-  }
+    name: 'App',
+    mounted:function(){
+        // window.document.title = "anytec"
+        this.$router.beforeEach((to, from, next) => {
+            window.document.title = to.meta.title;
+            next()
+        })
+    },
+    data(){
+        return {
+            transitionName: '',
+        }
+    },
+    watch:{
+        $route:function(to,from){
+            this.transitionName = 'slide-left';
+            window.document.title = this.$route.meta.title
+        },
+    },
 }
 </script>
 

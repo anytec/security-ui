@@ -96,12 +96,18 @@
 				</div>
 				<div class="mm1_addbox2">
 					<div class="left_colordiv">
-						<div class="color_box" 
+						<!-- <div class="color_box" 
 							 :style="{'background-color':item.color,'border':item.border,'margin-top':item.margin_top,'box-shadow':item.shadow}" 
 							 v-for="item in box_color" 
 							 @click="choose_color(item.uuid,'add')" 
 							 @mouseover="mouseover_event(item.uuid)" 
 							 @mouseout="mouseout_event(item.uuid)">
+						</div> -->
+						<div class="color_box1">
+							<el-color-picker 
+								v-model="add_data.colorLabel"
+								:predefine="predefineColors">
+							</el-color-picker>
 						</div>
 					</div>
 					<div class="right_btndiv">
@@ -130,12 +136,18 @@
 				</div>
 				<div class="mm1_addbox2">
 					<div class="left_colordiv">
-						<div class="color_box" 
+						<!-- <div class="color_box" 
 							 :style="{'background-color':item.color,'border':item.border,'margin-top':item.margin_top,'box-shadow':item.shadow}" 
 							 v-for="item in box_color" 
 							 @click="choose_color(item.uuid,'change')" 
 							 @mouseover="mouseover_event(item.uuid)" 
 							 @mouseout="mouseout_event(item.uuid)">
+						</div> -->
+						<div class="color_box1">
+							<el-color-picker 
+								v-model="change_data.colorLabel"
+								:predefine="predefineColors">
+							</el-color-picker>
 						</div>
 					</div>
 					<div class="right_btndiv">
@@ -174,6 +186,7 @@
 				add_data:{
 					name: "",
 					remarks: "",
+					colorLabel: "#ff2f60",
 				},
 				change_data:{
 				},
@@ -218,6 +231,7 @@
 						is_choose:false,
 					},
 				],
+				predefineColors: ["#ff2f60","#ffdd23","#3cafff","#1bde5b"],
 			} //返回数据最外围
 		},
 		methods: {
@@ -311,6 +325,7 @@
 				this.add_data = {
 					name: "",
 					remarks: "",
+					colorLabel: "#ff2f60"
 				}
 				this.change_data = {}
 				this.is_request2add = false
@@ -320,7 +335,7 @@
 			click_to_add_info:function(){
 				// 弹窗添加
 				this.is_request2add = true
-				this.add_data.colorLabel = "#ff2f60"
+				// this.add_data.colorLabel = "#ff2f60"
 			},
 			// 添加事件-弹窗事件
 			request_add_persongroup:function(){
@@ -434,6 +449,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -467,6 +484,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -493,6 +512,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -509,6 +530,12 @@
             		this.is_confirm_show = true
             		this.error_info("请添加库名")
                     return ;
+            	}
+            	if( add_data.colorLabel ){
+            		params.append( "colorLabel", add_data.colorLabel )
+            	}else{
+            		this.error_info("请选择底库颜色")
+            		return ;
             	}
             	params.append( "colorLabel", add_data.colorLabel )
             	params.append( "remarks", add_data.remarks)
@@ -529,6 +556,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                     this.is_confirm_show = true
                 }).catch((error) => {
@@ -547,8 +576,13 @@
             		this.error_info("请添加库名")
                     return ;
             	}
+            	if( change_data.colorLabel ){
+            		params.append( "colorLabel", change_data.colorLabel )
+            	}else{
+            		this.error_info("请选择底库颜色")
+            		return ;
+            	}
             	params.append("id", change_data.id)
-            	params.append( "colorLabel", change_data.colorLabel )
             	params.append( "remarks", change_data.remarks)
 
 				this.$ajax.post("groupPerson/update",params).then((res) => {
@@ -566,6 +600,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                     this.is_confirm_show = true
                 }).catch((error) => {

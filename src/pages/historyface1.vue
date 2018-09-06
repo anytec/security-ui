@@ -7,22 +7,26 @@
 					<div class="title_righttext">结果{{init_data.allnum}}个</div>
 				</div>
 				<div class="input_box">
-					<select class="center_select" v-model="search_data.cameraGroupName">
+					<select class="center_select" v-model="search_data.cameraGroupName_data">
 						<option selected="selected">设备组/不限</option>
-						<option v-for="item in init_data.video_groups">{{ item.name }}</option>
+						<option v-for="item in init_data.video_groups" :value="item">{{ item.name }}</option>
 					</select>
-					<select class="center_select" v-model="search_data.personGroupName">
+					<select class="center_select" v-model="search_data.cameraName_data" @change="show_sub">
+						<option selected="selected">设备/不限</option>
+						<option v-for="item in init_data.cameraNames" :value="item">{{ item.name }}</option>
+					</select>
+					<select class="center_select" v-model="search_data.personGroupName_data">
 						<option selected="selected">底库/不限</option>
-						<option v-for="item in init_data.galleries">{{ item.name }}</option>
+						<option v-for="item in init_data.galleries" :value="item">{{ item.name }}</option>
 					</select>
+				</div>
+				<div class="input_box">
+					<input class="center_input id_card" type="text" v-model="search_data.idNumber" placeholder="标识编码"/>
 					<select class="center_select" v-model="search_data.gender">
 						<option selected="selected">性别/不限</option>
 						<option>男</option>
 						<option>女</option>
 					</select>
-				</div>
-				<div class="input_box">
-					<input class="center_input id_card" type="text" v-model="search_data.idNumber" placeholder="标识编码"/>
 					<!-- <input class="center_input" type="text" v-model="search_data.cameraName" placeholder="设备名称或设备ID"/> -->
 					<div class="h1_right">
 						<div class="time_box">时间范围</div>
@@ -161,20 +165,25 @@
 			return {
 				init_data: {
 					galleries: null,
-					video_groups: null,
 					pageNum: 1,
 					pageSize: 10,
 					allnum: 0,
+					video_groups: [],
+					video_names: [],
+					cameraNames: [],
 				},
 				// 搜索数据
 				search_data:{
 					idNumber: "",
 					cameraName: "",
-					cameraGroupName: "设备组/不限",
-					personGroupName: "底库/不限",
+					cameraGroupName_data: "设备组/不限",
+					personGroupName_data: "底库/不限",
+					// cameraName: "",
 					gender: "性别/不限",
 					startTime: "",
 					endTime: "",
+					cameraId: "",
+					cameraName_data: "设备/不限",
 				},
 				date_value: [(new Date() - 3600 * 1000 * 24 * 1),new Date()-1],
 				save_search_data:{
@@ -239,6 +248,11 @@
 				// console.log(val);
 				this.init_data.pageNum = val
 				this.post_to_change_page(this.save_search_data)
+			},
+
+			// 选择框获取值
+			show_sub:function(){
+				// console.log(this.search_data.cameraName_data)
 			},
 
 			// 复选框函数
@@ -335,7 +349,10 @@
 				var params = new URLSearchParams()
 				this.$ajax.post("/groupPerson/list",params).then((res) => {
                     if( res.data.status === 0){
-	        			this.init_data.galleries = res.data.data.list
+                    	this.init_data.galleries = []
+                    	for( let i = 0; i < res.data.data.list.length; i++ ){
+                    		this.init_data.galleries.splice(i, 0, { name:res.data.data.list[i].name, id:res.data.data.list[i].id })
+                    	}
                     }else if( res.data.status === 1 ){
 	                    this.error_info(res.data.msg)
                     	return ;
@@ -345,31 +362,79 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
                 	this.error_info('网络连接出错1')
                     return ;
                 })
-                // 设备组列表请求
-				this.$ajax.post("/groupCamera/list",params).then((res) => {
-                    if( res.data.status === 0){
-            			this.init_data.video_groups = res.data.data.list
-                    }else if( res.data.status === 1 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
+
+				// 请求设备组列表
+				var params = new URLSearchParams()
+				this.$ajax.post("/groupCamera/getAllCameras",params).then((res) => {
+					this.init_data.video_groups,this.init_data.video_names,this.init_data.cameraNames = [],[],[]
+			        if( res.data.status === 0){
+						for( let item in res.data.data ){
+							let [name,id] = item.split(",")
+							this.init_data.video_groups.push( {"name":name,"id":id} )
+							this.init_data.video_names.push( res.data.data[item] )
+							for( let i = 0; i < res.data.data[item].length; i++ ){
+								this.init_data.cameraNames.push( {"name":res.data.data[item][i].name,"cameraSdkId":res.data.data[item][i].sdkId} )
+							}
+						}
+						this.get_init_data3()
+			        }else if( res.data.status === 1 ){
+			            this.error_info(res.data.msg)
+			        	return ;
+			        }else if( res.data.status === 2 ){
+			            this.error_info(res.data.msg)
+			        	return ;
+			        }else if( res.data.status === 10 ){
+			            this.error_info('请先登录')
+			        	return ;
+			        }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
-                }).catch((error) => {
-                	console.log(error)
-                	this.error_info('网络连接出错')
-                    return ;
-                })
+			    }).catch((error) => {
+			    	console.log(error)
+			    	this.error_info('网络连接出错')
+			        return ;
+			    })
+			},
+			get_init_data3:function(){
+				if ( this.$store.state.is_search_data ){
+
+					// 清空搜索条件
+					this.save_search_data = {}
+
+					let get_data = JSON.parse(JSON.stringify(this.$store.state.search_data))
+
+					// console.log( get_data )
+					for( let item in get_data ){
+						if( item === "personGroupName" ){
+							this.search_data.personGroupName_data = { name:get_data.personGroupName, id:get_data.personGroupId }
+						}else if( item === "cameraGroupName" ){
+							this.search_data.cameraGroupName_data = { name:get_data.cameraGroupName, id:get_data.cameraGroupId }
+						}else if( item === "cameraName"){
+							this.search_data.cameraName_data = { name:get_data.cameraName, cameraSdkId:get_data.cameraSdkId }
+						}else if( item === "faceSdkId" || item === "cameraGroupId" || item === "personGroupId" || item === "idNumber" || item === "cameraSdkId"){
+							if( item === "idNumber" ){
+								this.search_data.idNumber = get_data[item]
+							}
+							this.save_search_data[item] = get_data[item]
+						}
+					}
+					
+					// console.log(this.save_search_data)
+
+					this.post_to_change_page(this.save_search_data,true)
+					this.$store.state.is_search_data = false
+					this.$store.state.search_data = {}
+				}else{
+					this.get_init_data2()
+				}
 			},
 			get_init_data2:function(){
 				var params = new URLSearchParams()
@@ -391,6 +456,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -399,43 +466,50 @@
                 })
 			},
 			post_to_change_page:function(search_data,change_page=false){
+				// console.log(search_data)
                 var params = new URLSearchParams()
                 if( !change_page ){
                 	for( let item in search_data ){
                 		// console.log(item)
-                		if( item === "personGroupId" || item === "cameraGroupId" ){
+                		if( item === "cameraName_data" ){
+                			if( search_data[item].cameraSdkId ){
+                				params.append( "cameraSdkIds",search_data[item].cameraSdkId )
+                			}
                 			continue ;
                 		}
-	                	if( search_data[item].indexOf("不限") == -1 &&  search_data[item] != ""){
-	                		if( item === "cameraGroupName" ){
-		                		for(let i = 0; i < this.init_data.video_groups.length; i++){
-		                			if( search_data[item] === this.init_data.video_groups[i].name ){
-		                				// params.append(item,search_data[item])
-		                				params.append("cameraGroupId",this.init_data.video_groups[i].id)
-		                			}
-		                		}
-	                		}else if( item === "personGroupName"){
-		                		for(let i = 0; i < this.init_data.galleries.length; i++){
-		                			if( search_data[item] === this.init_data.galleries[i].name ){
-		                				// params.append(item,search_data[item])
-		                				params.append("personGroupId",this.init_data.galleries[i].id)
-		                			}
-		                		}
-	                		}else{
-	                			params.append(item,search_data[item])
-	                		}
+                		if( item === "cameraGroupName_data" ){
+	                		if( search_data[item].id ){
+                				params.append( "cameraGroupId",search_data[item].id )
+                			}
+                			continue ;
+                		}
+                		if( item === "personGroupName_data"){
+                			if( search_data[item].id ){
+                				params.append( "personGroupId",search_data[item].id )
+                			}
+                			continue ;
+                		}
+                		if( item === "gender" ){
+                			if( search_data[item].indexOf("不限") === -1){
+                				params.append( "gender",search_data[item] )
+                			}
+                			continue ;
+                		}
+	                	if( search_data[item] != ""){
+	                		params.append(item,search_data[item])
 	                	}
-	                	if( this.date_value ){
-            				// console.log(date_value)
-                			params.append("startTime",this.date_value[0] - 1)
-                			params.append("endTime",this.date_value[1] - 1)
-            			}
 	                }
                 }else if ( change_page ){
                 	for(let key in search_data ){
                 		params.append(key,search_data[key])
                 	}
                 }
+
+                if( this.date_value ){
+    				// console.log(date_value)
+        			params.append("startTime",this.date_value[0] - 1)
+        			params.append("endTime",this.date_value[1] - 1)
+    			}
                 params.append("pageNum",this.init_data.pageNum)
                 params.append("pageSize",this.init_data.pageSize)
                 this.$ajax.post("/history/getWarningFaceList",params).then((res) => {
@@ -456,6 +530,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -494,26 +570,38 @@
 		},
 		mounted:function(){
 			this.get_init_data1()
-			if ( this.$store.state.is_search_data ){
+		},
+		watch:{
+			'search_data.cameraGroupName_data.name':function(newval,old){
+				let value = this.search_data.cameraGroupName_data.name
 
-				let get_data = JSON.parse(JSON.stringify(this.$store.state.search_data))
-				for( let item in get_data ){
-					this.save_search_data[item] = get_data[item]
-					if( item === "personGroupName" ){
-						this.search_data.personGroupName = get_data.personGroupName
-					}else if( item === "cameraGroupName" ){
-						this.search_data.cameraGroupName = get_data.cameraGroupName
-					}else if( item === "faceSdkId" ){
-						this.search_data.faceSdkId = get_data.faceSdkId
+				if( !value ){
+					this.init_data.cameraNames = []
+					for( let i = 0; i < this.init_data.video_names.length; i++ ){
+						for( let j = 0; j < this.init_data.video_names[i].length; j++ ){
+							this.init_data.cameraNames.push( {"name":this.init_data.video_names[i][j].name,"cameraSdkId":this.init_data.video_names[i][j].sdkId} )
+						}
+					}
+					return ;
+				}
+				let active_groups_num = 0
+				this.init_data.cameraNames = []
+				for( let i = 0; i < this.init_data.video_groups.length; i++ ){
+					if( newval === this.init_data.video_groups[i].name ){
+						active_groups_num = i
+						break
 					}
 				}
-				
-				this.post_to_change_page(this.save_search_data,true)
-				this.$store.state.is_search_data = false
-				this.$store.state.search_data = {}
-			}else{
-				this.get_init_data2()
-			}
+				// console.log(this.init_data.video_names)
+				for( let i = 0; i < this.init_data.video_names[active_groups_num].length; i++ ){
+					this.init_data.cameraNames.splice(i,0,
+						{
+							name: this.init_data.video_names[active_groups_num][i].name,
+							cameraSdkId: this.init_data.video_names[active_groups_num][i].sdkId,					
+						}
+					)
+				}
+			},
 		},
 		beforeRouteLeave(to, from, next) {
 			// console.log(to.path)
@@ -525,84 +613,6 @@
 	}
 </script>
 
-
-<style>
-	/*.el-date-editor .el-range-input{
-		width: 50%;
-	}
-	.el-date-editor>.el-range__icon,
-	.el-date-editor .el-range-separator,
-	.el-date-editor .el-range__close-icon{
-	    line-height: 21px;
-	}
-	.el-input__inner{
-		border: 1px solid #015758; 
-	    background-color: rgba(0,0,0,0);
-	}
-	.el-pagination button:disabled,
-	.el-pagination .btn-next, 
-	.el-pagination .btn-prev,
-	.el-pager li{
-		background-color: rgba(0,0,0,0);
-	}
-	.el-icon-arrow-left:before,
-	.el-icon-arrow-right:before{
-		color: #00fcff;
-	}
-	.el-pager li{
-		color:#017576;
-		font-size: 16px;
-	}
-	.el-pager li.active{
-		color: #06fafd;
-	}
-	.el-pagination__total,
-	.el-pagination .el-select .el-input .el-input__inner,
-	.el-icon-arrow-up:before,
-	.el-select-dropdown__item.selected,
-	.el-pagination__jump,
-	.el-pagination__editor.el-input .el-input__inner{
-		color:#02d0d3;
-	}
-	.el-pagination{
-		width: 660px;
-		margin: 0 auto;
-		margin-top: 5px;
-	}
-	::-webkit-scrollbar {
-	  width: 14px;
-	  height: 14px;
-	}
-	 
-	::-webkit-scrollbar-track,
-	::-webkit-scrollbar-thumb {
-	  border-radius: 999px;
-	  border: 5px solid transparent;
-	}
-	 
-	::-webkit-scrollbar-track {
-	  box-shadow: 1px 1px 5px (200,203,206,0.5) inset;
-	}
-	 
-	::-webkit-scrollbar-thumb {
-	  min-height: 20px;
-	  background-clip: content-box;
-	  box-shadow: 0 0 0 5px rgba(200,203,206,0.5) inset;
-	}
-	 
-	::-webkit-scrollbar-corner {
-	  background: transparent;
-	}
-	.el-range-editor.el-input__inner{
-		width: 100%;
-		height: 100%;
-		background-color: white;
-	}
-	.el-date-editor .el-range-input{
-		width: 50% !important;
-	}*/
-
-</style>
 <style scoped>
 	@import "../css/historyface.css";
 </style>

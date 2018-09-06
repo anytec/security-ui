@@ -448,8 +448,8 @@
                 this.isShowSelect = true
                 var params = new URLSearchParams()
                 params.append("name", this.keyword)
-                this.$ajax.post("http://192.168.10.220:9999/map/getMapByName", params).then((res) => {
-                // this.$ajax.post("/map/getMapByName", params).then((res) => {
+                // this.$ajax.post("http://192.168.10.220:9999/map/getMapByName", params).then((res) => {
+                this.$ajax.post("/map/getMapByName", params).then((res) => {
                     this.myData = res.data;
                 })
                 if(this.keyword == null || this.keyword === ""){
@@ -659,6 +659,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                 }).catch((error) => {
                 	this.error_info('网络连接出错')
@@ -678,6 +680,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                 }).catch((error) => {
                 	this.error_info('网络连接出错')
@@ -732,6 +736,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                 }).catch((error) => {
                 	this.error_info('网络连接出错')
@@ -757,6 +763,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -795,6 +803,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                     this.is_confirm_show = true
                 }).catch((error) => {
@@ -835,6 +845,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg)
                     }
                     this.is_confirm_show = true
                 }).catch((error) => {
@@ -921,68 +933,69 @@
 	@import "../css/historyface.css";
 
 	.search-select {
-		position: absolute;
-		bottom: 23px;
-		left: 447px;
-		height: auto;
-		max-height: 400px;
-		width: 190.83px;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;
-		z-index: 999;
-		overflow: auto;
+            position: absolute;
+            bottom: 24px;
+			left: 447px;
+			height: auto;
+		    max-height: 400px;
+		    overflow: hidden;
+		    /* width: 162px; */
+		    -webkit-box-sizing: border-box;
+		    box-sizing: border-box;
+		    z-index: 999;
+	        width: 190.83px;
+   			overflow: auto;								
 	}
 
-	.search-reset {
-		width: 15px;
-		height: 15px;
-		position: absolute;
-		display: block;
-		line-height: 21px;
-		text-align: center;
-		cursor: pointer;
-		font-size: 16px;
-		right: 567px;
-		top: 41px
-	}
+    .search-reset {
+        width: 15px;
+        height: 15px;
+        position: absolute;
+        display: block;
+        line-height: 21px;
+        text-align: center;
+        cursor: pointer;
+        font-size: 16px;
+        right: 567px;
+        top: 41px
+    }
 
-	.search-select ul {
-		padding: 0px;
-		width: 176.83px;
-		margin: 0;
-		text-align: left;
-		list-style: none;
-	}
+    .search-select li {
+        /*margin-left: -41px;*/
+        border: 1px solid #919191;
+        border-top: none;
+        border-bottom: none;
+        background-color: #fff;
+        width: 100%;
+    }
 
-	.search-select li {
-		border: 1px solid #919191;
-		border-top: none;
-		border-bottom: none;
-		background-color: #fff;
-		width: 100%;
-	}
+    .search-select-option {
+        box-sizing: border-box;
+        padding: 7px 10px;
+        list-style: none;
+    }
+    .search-select-list {
+        transition: all 0.5s
+    }
+    .search-select ul{
+    	padding: 0px;
+        width: 176.83px;
+        margin:0;
+        text-align: left;
+        list-style: none;
+    }
 
-	.search-select-option {
-		box-sizing: border-box;
-		padding: 7px 10px;
-		list-style: none;
-	}
+    .itemfade-enter,
+    .itemfade-leave-active {
+        opacity: 0;
+    }
 
-	.search-select-list {
-		transition: all 0.5s
-	}
+    .itemfade-leave-active {
+        position: absolute;
+    }
 
-	.itemfade-enter,
-	.itemfade-leave-active {
-		opacity: 0;
-	}
-
-	.itemfade-leave-active {
-		position: absolute;
-	}
-
-	.selectback {
-		background-color: rgba(119, 119, 119, 0.87) !important;
-		cursor: pointer
-	}
+    .selectback {
+        background-color: rgba(119, 119, 119, 0.87) !important;
+        cursor: pointer
+    }
 </style>

@@ -22,7 +22,8 @@
 	border-radius: 5px;
 }
 .t_graphBox{
-	position: relative;
+	position: absolute;
+    top: 0;
 	width: 100%;
 	height:100%;
 	z-index: 9999;
@@ -107,7 +108,7 @@
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	margin-right: 40px;
-	width: 170px;
+	width: 200px;
 	height: 32px;
 	float: left;
 	font-size: 16px;
@@ -351,7 +352,8 @@
 
 /*mmanage3 start*/
 .m3_right_box{
-	width: 1300px;
+	/*width: 1300px;*/
+	width: 1330px; /* 18-09-05 LZT */
 }
 /*mmanage3 end*/
 
@@ -552,7 +554,7 @@
 .re_lefticon_img{
 	width: 22px;
 	height: 22px;
-	margin-left: 35px;
+	margin-left: 27px;
     margin-top: 3px;
 	background: url(../assets/historyface/icon1.png) no-repeat;
 	cursor: pointer;
@@ -869,6 +871,16 @@
 	float: left;
 	cursor: pointer;
 }
+.color_box1{
+	width: 25px;
+	height: 25px;
+	margin-right: 15px;
+	float: left;
+	cursor: pointer;
+    border: 3px solid white;
+    border-radius: 5px;
+}
+
 /*.color_box1{
 	background-color: #ff2f60;
 }
@@ -889,9 +901,6 @@
 /*mmanage1 添加弹窗 end*/
 
 /*mmanage3 start*/
-.m3_right_box{
-	width: 1300px;
-}
 .mm3_bounced{
 	height:185px;
 }
@@ -1451,6 +1460,7 @@ to {height: 373px;opacity: 1;}
 .real_select{
 	float: left;
 	margin-right: 0px;
+	width: 190px;
 }
 .real_input{
 	width: 170px;
@@ -2015,6 +2025,20 @@ to {height: 373px;opacity: 1;}
 	display: table-cell;
 	vertical-align: middle;
 }
+.index_cam{
+	float:left;
+	margin-top: 12px;
+	margin-left: 15px;
+	font-size: 20px;
+	height: 45%;
+	width: 700px;
+	line-height: 45px; 
+	color: #cccccc;
+
+	overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap
+}
 .index_btn{
 	width: 140px;
 	height: 45px;
@@ -2329,6 +2353,7 @@ to {height: 373px;opacity: 1;}
     height: 100%;
     float: none;
     margin: 0 auto;
+    cursor: default;
 }
 .sys_addicon{
 	width:18px;
@@ -2586,4 +2611,10 @@ to {height: 373px;opacity: 1;}
 }
 .icon9:hover{
 	background: url(../assets/historyface/icon9_1.png) no-repeat;
+}
+.icon_trash{
+	background: url(../assets/system/trash.svg) no-repeat;
+}
+.icon_trash:hover{
+	background: url(../assets/system/trash_1.svg) no-repeat;
 }

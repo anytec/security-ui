@@ -51,11 +51,13 @@
 								</td>
 								<td class="td td4">
 									<div class="table_text">
-										<div class="cell_text" @click="isreal_change(item.uuid)">
+										<div class="cell_text">
 											<el-switch
 											  v-model="item.groupStatus"
 											  active-color="#13ce66"
 	  										  inactive-color="#626262"
+	  										  @change="isreal_change(item.uuid)"
+	  										  :disabled="item.ischange"
 											  >
 											</el-switch>
 										</div>
@@ -308,6 +310,8 @@
 			            cancelButtonText: '取消',
 			            type: 'warning'
 					}).then(() => {
+						this.tabledata[uuid].ischange = true
+						this.tabledata.splice(uuid,1,this.tabledata[uuid])
 						this.require_to_change({"id":this.tabledata[uuid].id,"groupStatus":this.tabledata[uuid].groupStatus},"status",uuid)
 					}).catch(() => {
 						this.tabledata[uuid].groupStatus = false
@@ -318,6 +322,8 @@
 			            cancelButtonText: '取消',
 			            type: 'warning'
 					}).then(() => {
+						this.tabledata[uuid].ischange = true
+						this.tabledata.splice(uuid,1,this.tabledata[uuid])
 						this.require_to_change({"id":this.tabledata[uuid].id,"groupStatus":this.tabledata[uuid].groupStatus},"status",uuid)
 					}).catch(() => {
 						this.tabledata[uuid].groupStatus = true
@@ -343,6 +349,7 @@
             				}
 		                	this.tabledata[i].uuid = i
 		                	this.tabledata[i].ischecked = false
+		                	this.tabledata[i].ischange = false
 		                }
                     }else if( res.data.status === 1 ){
 	                    this.error_info(res.data.msg)
@@ -353,6 +360,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg,uuid)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -392,6 +401,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg,uuid)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -418,6 +429,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg,uuid)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -452,6 +465,8 @@
                     }else if( res.data.status === 10 ){
 	                    this.error_info('请先登录')
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg,uuid)
                     }
                     this.is_confirm_show = true
                 }).catch((error) => {
@@ -478,21 +493,25 @@
                     	}else if( model === "status" ){
                     		this.success_info('修改设备状态成功')
                     	}
+                    	this.tabledata[uuid].ischange = false
+						this.tabledata.splice(uuid,1,this.tabledata[uuid])
                     }else if( res.data.status === 1 ){
                     	if( model === "status" ){
                     		this.tabledata[uuid].groupStatus = !this.tabledata[uuid].groupStatus
                     	}
-	                    this.error_info(res.data.msg)
+	                    this.error_info(res.data.msg,uuid)
                     	return ;
                     }else if( res.data.status === 2 ){
                     	if( model === "status" ){
                     		this.tabledata[uuid].groupStatus = !this.tabledata[uuid].groupStatus
                     	}
-	                    this.error_info(res.data.msg)
+	                    this.error_info(res.data.msg,uuid)
                     	return ;
                     }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
+	                    this.error_info('请先登录',uuid)
                     	return ;
+                    }else{
+                    	this.error_info(res.data.status + "  " + res.data.msg,uuid)
                     }
                     this.is_confirm_show = true
                 }).catch((error) => {
@@ -500,7 +519,7 @@
                 		this.tabledata[uuid].groupStatus = !this.tabledata[uuid].groupStatus
                 	}
                 	console.log(error)
-                	this.error_info('网络连接出错')
+                	this.error_info('网络连接出错',uuid)
                 	this.is_confirm_show = true
                     return ;
                 })
@@ -508,8 +527,12 @@
 
 
 			// 消息窗口
-			error_info:function(mes){
+			error_info:function(mes,uuid){
 				this.is_confirm_show = true
+				if( uuid === 0 || (uuid != 0 && uuid) ){
+					this.tabledata[uuid].ischange = false
+					this.tabledata.splice(uuid,1,this.tabledata[uuid])
+				}
 				this.$message({
                     type: 'error',
                     message: mes,

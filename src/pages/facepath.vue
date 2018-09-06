@@ -1,63 +1,76 @@
 <template>
-    <div class="main_box">
-        <left-nav></left-nav>
-        <div class="map_bg" id="container"></div>
-        <!--地图边框线-->
-        <div class="left_xian"></div>
-        <div class="top_xian"></div>
-        <!--右边上半部分-->
-        <div class="face_rightbox1">
-            <div class="faceleft_photo">
-                <div class="face_photoimg">
-                    <div class="faceshow_img" v-show="dataUrl"><img :src="dataUrl" v-show="dataUrl"></div>
-                    <img class="decoration_img" src="../assets/mmanage/add_file.png"  v-show="!dataUrl" />
-                    <input class="face_file" type="file" @change="handleFileChange" ref="inputer" />
-                </div>
-                <div class="facephoto_text">检索对象</div>
-            </div>
-            <div class="face_fillbox">
-                <div class="face_timetext">时间范围</div>
-                <div class="face_timeinput">
-                    <el-date-picker 
-                      v-model="datevalue"
-                      type="datetimerange"
-                      :picker-options="pickeroptions"
-                      range-separator="至"
-                      start-placeholder="开始日期"
-                      end-placeholder="结束日期">
-                    </el-date-picker>
-                </div>
-                <div class="similar_box">
-                    <div class="similar_text">相似度</div>
-                    <div class="slider_box">
-                        <el-slider v-model="search_data.confidence"></el-slider>
+    <div style="width:100%;height:100%;">
+        <div class="main_box">
+            <left-nav></left-nav>
+            <div class="map_bg" id="container"></div>
+            <!--地图边框线-->
+            <div class="left_xian"></div>
+            <div class="top_xian"></div>
+            <!--右边上半部分-->
+            <div class="face_rightbox1">
+                <div class="faceleft_photo">
+                    <div class="face_photoimg">
+                        <div class="faceshow_img" v-show="dataUrl"><img :src="dataUrl" v-show="dataUrl"></div>
+                        <img class="decoration_img" src="../assets/mmanage/add_file.png"  v-show="!dataUrl" />
+                        <input class="face_file" type="file" @change="handleFileChange" ref="inputer" />
                     </div>
-                    <div class="percentage"><input type="text" v-model="search_data.confidence"/></div>
-                    <div class="percentage_text fp_percentage">%</div>
-                    <div class="search face_search" @click="click_to_search(search_data)">搜索</div>
+                    <div class="facephoto_text">检索对象</div>
                 </div>
-                <div class="results_box">
-                    <div class="results_text">发现{{init_data.allnum}}个结果</div>
-                    <div class="export_btn face_btn" @click="click_to_clear">清空</div>
-                    <div class="export_btn face_btn" @click="export_data2excel">导出</div>
+                <div class="face_fillbox">
+                    <div class="face_timetext">时间范围</div>
+                    <div class="face_timeinput">
+                        <el-date-picker 
+                          v-model="datevalue"
+                          type="datetimerange"
+                          :picker-options="pickeroptions"
+                          range-separator="至"
+                          start-placeholder="开始日期"
+                          end-placeholder="结束日期">
+                        </el-date-picker>
+                    </div>
+                    <div class="similar_box">
+                        <div class="similar_text">相似度</div>
+                        <div class="slider_box">
+                            <el-slider v-model="search_data.confidence"></el-slider>
+                        </div>
+                        <div class="percentage"><input type="text" v-model="search_data.confidence"/></div>
+                        <div class="percentage_text fp_percentage">%</div>
+                        <div class="search face_search" @click="click_to_search(search_data)">搜索</div>
+                    </div>
+                    <div class="results_box">
+                        <div class="results_text">发现{{init_data.allnum}}个结果</div>
+                        <div class="export_btn face_btn" @click="click_to_clear">清空</div>
+                        <div class="export_btn face_btn" @click="export_data2excel">导出</div>
+                    </div>
+                </div>
+            </div>
+            <!--右边下半部分-->
+            <div class="face_rightbox2">
+                <div class="results_listbox">
+                    <div class="results_list" :style="{'border-left': item.mystyle}" v-for="item in tabledata">
+                        <div class="digital_bg" @click="change_map_center(item.location)">{{init_data.allnum - item.uuid}}</div>
+                        <div class="results_right">
+                            <div class="results_conter1">{{item.cameraName}}</div>
+                            <div class="re_conterbox1">
+                                <div class="results_conter2">{{item.nyr}}</div>
+                                <div class="results_conter2">{{item.sfm}}</div>
+                                <div class="results_conter2">相似度：{{ item.confidence }}</div>
+                            </div>
+                            <div class="re_conterbox2">
+                                <img :src="item.snapshotUrl" @click="show_pic(item.wholePhoto)" title="点击显示原图" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <!--右边下半部分-->
-        <div class="face_rightbox2">
-            <div class="results_listbox">
-                <div class="results_list" :style="{'border-left': item.mystyle}" v-for="item in tabledata">
-                    <div class="digital_bg" @click="change_map_center(item.location)">{{init_data.allnum - item.uuid}}</div>
-                    <div class="results_right">
-                        <div class="results_conter1">{{item.cameraName}}</div>
-                        <div class="re_conterbox1">
-                            <div class="results_conter2">{{item.nyr}}</div>
-                            <div class="results_conter2">{{item.sfm}}</div>
-                            <div class="results_conter2">相似度：{{ item.confidence }}</div>
-                        </div>
-                        <div class="re_conterbox2">
-                            <img :src="item.snapshotUrl" />
-                        </div>
+        <!--遮罩层-->
+        <div class="mack_box" v-show="is_show_pic" @click="is_show_pic = false"></div>
+        <div class="t_graphBox" v-show="is_show_pic" @click="is_show_pic = false">
+            <div class="t_graph" >
+                <div class="graph_table">
+                    <div class="graph_cell">
+                        <img style="max-width:800px; max-height:800px;margin:0 auto;" :src="total_pic" />
                     </div>
                 </div>
             </div>
@@ -156,12 +169,26 @@
                 tabledata:[
                    
                 ],
+
+                // 原图
+                is_show_pic: false,
+                total_pic: "无",
             }
         },
         methods:{
+            // 显示全图
+            show_pic:function(imgUrl){
+                this.is_show_pic = true
+                if( imgUrl ){
+                    this.total_pic = imgUrl
+                }else{
+                    this.total_pic = "无"
+                }
+            },
+
             // 地图初始化
             init:function(location){
-                console.log(location)
+                // console.log(location)
                 this.map = new AMap.Map('container', {
                   center: location,
                   resizeEnable: true,
@@ -173,17 +200,27 @@
                 if( this.circleMarker ){
                     this.circleMarker.setMap(null)
                 }
+                // 半径为米，随地图变化
                 this.circleMarker = new AMap.Circle({
-                    // center: new AMap.LngLat("116.403322", "39.920255"), // 圆心位置
+                    map: this.map,
                     center: location,
-                    radius: 15,  //半径
+                    radius: 10,  //半径
                     strokeColor: "#fefefe",  //线颜色
-                    // strokeOpacity: 1,  //线透明度
                     strokeWeight: 1,  //线粗细度
                     fillColor: '#1CC7FF',  //填充颜色
                     fillOpacity: 0.8 ,//填充透明度
                 })
-                this.circleMarker.setMap(this.map)
+
+                // this.circleMarker = new AMap.CircleMarker({
+                //     map: this.map,
+                //     center: location,
+                //     radius: 15,  //半径
+                //     strokeColor: "#fefefe",  //线颜色
+                //     strokeWeight: 1,  //线粗细度
+                //     fillColor: '#1CC7FF',  //填充颜色
+                //     fillOpacity: 0.8 ,//填充透明度
+                // })
+                // this.circleMarker.setMap(this.map)
                 this.map.setCenter(location);
             },
             // 地图添加标志
@@ -439,7 +476,7 @@
                 // this.$ajax.post("",params).then((res) => {
                     if( res.data.status === 0){
 
-                        if( !res.data.data ){
+                        if( !res.data.data.total ){
                             this.$message({
                                 type: 'warning',
                                 message: '无对应数据',
@@ -475,7 +512,7 @@
                         this.error_info('请先登录')
                         return ;
                     }else{
-                        this.error_info(res.data.status)
+                        this.error_info(res.data.status + "  " + res.data.msg)
                     }
                 }).catch((error) => {
                     console.log(error)

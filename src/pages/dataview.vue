@@ -54,7 +54,8 @@
                           :picker-options="pickerOptions">
                         </el-date-picker>
                     </div>
-                    <div class="index_btn" v-show="false">数据生成</div>
+                    <div class="index_cam" v-show="$route.path != '/dataview3' " :title="info_cam_data"> {{info_cam_data}} </div>
+                    <!-- <div class="index_btn" v-show="false">数据生成</div> -->
                     <div class="index_btn" @click="is_show_info = true" v-show="is_show_choose">设备选择</div>
                 </div>
             </div>
@@ -157,6 +158,7 @@
                     // 弹窗
                     cameraName: "",
                     choose_groupName: null,
+                    info_cam_data: "",
                     info_show_data: [],
                     info_search_data: [],
                     info_search_data_group: [],
@@ -371,9 +373,12 @@
                         let search_data = {
                             cameraSdkIds: [],
                         }
+                        let temp_data = []
                         for( let i = 0; i < this.info_search_data.length; i++ ){
                             search_data.cameraSdkIds.push(this.info_search_data[i].sdkId)
+                            temp_data.push(this.info_search_data[i].name)
                         }
+                        this.info_cam_data = temp_data.join("/")
                         if( search_data.cameraSdkIds.length ){
                             this.search_data = search_data
                         }else{
@@ -383,9 +388,12 @@
                         let search_data = {
                             cameraGroupIds: [],
                         }
+                        let temp_data = []
                         for( let i = 0; i < this.info_search_data_group.length; i++ ){
                             search_data.cameraGroupIds.push(this.info_search_data_group[i].sdkId)
+                           temp_data.push(this.info_search_data_group[i].name)
                         }
+                        this.info_cam_data = temp_data.join("/")
                         if( search_data.cameraGroupIds.length ){
                             this.search_data = search_data
                         }else{
@@ -448,6 +456,8 @@
                         }else if( res.data.status === 10 ){
                             // this.error_info('请先登录')
                             return ;
+                        }else{
+                            this.error_info(res.data.status + "  " + res.data.msg)
                         }
                     }).catch((error) => {
                         console.log(error)

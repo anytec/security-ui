@@ -61,9 +61,8 @@
 								</div>
 							</td>
 							<td class="td td1">
-								<div class="td_icon2 sys2_tdtext" :title="item.objId">
-									查看详情
-								</div>
+								<div class="td_icon2 sys2_tdtext" :title="item.objId" v-if="item.objId"> 查看详情 </div>
+								<div class="td_icon2 sys2_tdtext" title="无内容" v-if="!item.objId"> 查看详情 </div>
 							</td>
 							<td class="td td1">
 								<div class="td_icon2 sys2_tdtext">
@@ -103,14 +102,6 @@
 				ale_imgsrc2:require('../assets/system/sys_search_1.svg'),
 				pickeroptions:{
 					shortcuts: [{
-						// text: '最近一天',
-						// onClick(picker) {
-						// 	const end = new Date();
-						// 	const start = new Date();
-						// 	start.setTime(start.getTime() - 3600 * 1000 * 24 * 1);
-						// 	picker.$emit('pick', [start, end]);
-						// }
-						// },{
 						text: '最近三天',
 						onClick(picker) {
 							const end = new Date();
@@ -211,14 +202,9 @@
 
 			// 请求
 			get_init_data:function( search_data = {} ){
-				// 请求库名
-				var params = new URLSearchParams()
-				for( let item in search_data ){
-					params.append( item,search_data[item] )
-				}
-				params.append("pageNum",this.init_data.pageNum)
-                params.append("pageSize",this.init_data.pageSize)
-				this.$ajax.get("/log/operationRecordList",params).then((res) => {
+    			search_data.pageNum = this.init_data.pageNum
+    			search_data.pageSize = this.init_data.pageSize
+				this.$ajax.get("/log/operationRecordList",{params: search_data }).then((res) => {
                     if( res.data.status === 0){
                     	this.init_data.allnum = res.data.data.total
                 		this.tabledata = res.data.data.list

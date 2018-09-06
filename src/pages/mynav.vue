@@ -199,12 +199,23 @@
 					this.$store.state.facepath_model = "offline"
 				}
 			}else{
-				console.log("heh")
 				this.$store.state.facepath_model = "online"
 				this.map_model = "在线"
 				sessionStorage.setItem("map_model", this.map_model)
 			}
 			
+			// 页面直接进入拦截
+			if( !sessionStorage.username ){
+                console.log(this.$route.path)
+                this.$router.push("/login")
+                this.$message({
+                    type: 'warning',
+                    message: "请先登录",
+                    showClose: true,
+                    center: true
+                })
+            }
+
 			// console.log(this.$store.state.facepath_model,this.map_model)
         },
         watch:{

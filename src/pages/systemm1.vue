@@ -59,11 +59,17 @@
                                 </td>
                                 <td class="td td10">
                                     <div class="icon_fa">
-                                    	<div class="td_icon2 systd_icon2" @click="click_to_update_person(item.id,index)">
-	                                        <img src="../assets/historyface/icon2.png"/>
+                                    	<div class="td_icon2 systd_icon2 icon2" @click="click_to_update_person(item.id,index)" title="修改用户信息"></div>
+	                                    <div class="td_icon2 systd_icon2 icon_trash" 
+	                                    	 title="管理员信息不可删除"
+	                                    	 v-if="item.role === '管理员' "
+	                                    	 style="cursor: not-allowed;">
 	                                    </div>
-	                                    <div class="td_icon2 systd_icon2" @click="click_to_delete_person(index)">
-	                                        <img src="../assets/system/trash.svg"/>
+	                                    <div class="td_icon2 systd_icon2 icon_trash" 
+	                                    	 @click="click_to_delete_person(index)" 
+	                                    	 title="删除用户信息"
+	                                    	 v-if="item.role != '管理员' "
+	                                    	 >
 	                                    </div>
                                     </div>   
                                 </td>
