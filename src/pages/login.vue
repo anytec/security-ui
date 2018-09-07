@@ -1,8 +1,8 @@
 <template>
    <div class="main_box_login">
        <div class="bg_box">
-           <video autoplay="autoplay" loop="loop">
-              <source src="../assets/login/login_bg.mp4" type="video/mp4">
+           <video autoplay="autoplay" loop="loop" muted="muted" id="bg_video">
+              <source src="../assets/login/login_bg1.mp4" >
                         您的浏览器不支持 video 标签。
            </video>
        </div>
@@ -71,6 +71,7 @@
                 post_flag: false,
 
                 is_eyeopen: true,
+                video_src: "",
             }
         },
         methods: {

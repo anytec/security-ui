@@ -6,7 +6,7 @@
 					<div class="title_lefttext">底库人员配置</div>
 					<div class="title_righttext">结果{{init_data.allnum}}个</div>
 				</div>
-				<div class="input_box">
+				<div class="input_box" @keyup.enter="keyup_to_search">
 					<div class="export_btn" @click="click_to_add_info">添加</div>
 					<div class="export_btn" @click="click_to_delete">删除</div>
 					<div class="right_btn h2_right_btn m2_right_box">
@@ -36,7 +36,7 @@
 								</td>
 								<td class="td td4">姓名</td>
 								<td class="td td4">性别</td>
-								<td class="td td5">标识编号</td>
+								<td class="td td5">标识编码</td>
 								<td class="td td9">所在底库</td>
 								<td class="td td4">备注</td>
 								<td class="td td4">操作</td>
@@ -50,7 +50,8 @@
 									<input class="checkbox_box" type="checkbox" :checked="item.ischecked" v-model="item.ischecked" @click="click_to_checkedone(item.uuid)" />
 								</td>
 								<td class="td td4">
-									<img class="td_img"  :src="item.thumbnail" @click="show_pic(item.wholePhoto)" title="点击显示原图"/>
+									<!-- <img class="td_img"  :src="item.thumbnail" @click="show_pic(item.wholePhoto)" title="点击显示原图"/> -->
+									<img class="td_img"  :src="item.thumbnail"/>
 								</td>
 								<td class="td td4">
 									<div class="table_text">
@@ -167,7 +168,7 @@
 					<div class="mmbtn_box left_mmbox" @click="click_to_close_change_infodata">暂不修改</div>
 				</div>
 				<div class="mmbottom_input">
-					<input type="text" placeholder="标识编码" v-model="change_data.remarks"/>
+					<input type="text" placeholder="备注" v-model="change_data.remarks"/>
 				</div>
 			</div>
 		</div>
@@ -328,6 +329,13 @@
 				this.is_request2add = false
 				this.is_request2change = false
 				this.is_confirm_show = true
+			},
+			// 键盘事件
+			// 键盘事件-回车搜索
+			keyup_to_search:function(){
+				// this.save_search_data = this.search_data
+				// this.post_to_change_page(this.search_data)
+				this.click_to_search(this.search_data)
 			},
 
 			// 页面跳转
@@ -660,15 +668,16 @@
                 })
 			},
 
-			// 显示原图
-			show_pic:function(imgUrl){
-				this.is_show_pic = true
-				if( imgUrl ){
-					this.total_pic = imgUrl
-				}else{
-					this.total_pic = "无"
-				}
-			},
+			// 显示全图
+            show_pic:function(imgUrl){
+                if( imgUrl ){
+                    this.total_pic = imgUrl
+                    this.is_show_pic = true
+                }else{
+                    this.total_pic = ""
+                    this.warning_info("未找到原图")
+                }
+            },
 
 	        // 上传图片
             imgPreview:function(file,model){

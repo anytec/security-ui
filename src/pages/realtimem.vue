@@ -80,7 +80,7 @@
                                 <div class="photo_img" :title="item.cameraName">
                                     <div class="catch_message" v-show="is_trans">{{item.emotions}}</div>
                                     <div class="catch_message" v-show="!is_trans">{{item.time}}</div>
-                                    <img :src="item.img" style="width:100%;height:100%"/>
+                                    <img :src="item.img" style="width:100%;height:100%" @click="show_pic(item.wholePhoto)" title="点击显示原图"/>
                                 </div>
                                 <div class="photo_text" v-show="is_trans">
                                     <!-- <div class="new_photo_text">{{item.age}}岁    {{item.gender}}</div> -->
@@ -194,9 +194,9 @@
                 default_data:{
                     img: "",
                     time: "--:--:--",
-                    emotion: "无",
-                    age: "无",
-                    gender: "无",
+                    emotion: "",
+                    age: "",
+                    gender: "",
                 },
                 default_data1:{
                     cameraGroupName: '无',
@@ -298,7 +298,7 @@
 
                 // 原图
                 is_show_pic: false,
-                total_pic: "无",
+                total_pic: "",
             }
         },
         components: {
@@ -653,6 +653,14 @@
                     center: true
                 })
             },
+            warning_info:function(mes){
+                this.$message({
+                    type: 'warning',
+                    message: mes,
+                    showClose: true,
+                    center: true
+                })
+            },
 
             // 初始化请求
             // 抓拍
@@ -797,11 +805,12 @@
 
             // 显示全图
             show_pic:function(imgUrl){
-                this.is_show_pic = true
                 if( imgUrl ){
                     this.total_pic = imgUrl
+                    this.is_show_pic = true
                 }else{
-                    this.total_pic = "无"
+                    this.total_pic = ""
+                    this.warning_info("未找到原图")
                 }
             },
 

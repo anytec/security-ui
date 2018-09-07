@@ -172,17 +172,18 @@
 
                 // 原图
                 is_show_pic: false,
-                total_pic: "无",
+                total_pic: "",
             }
         },
         methods:{
             // 显示全图
             show_pic:function(imgUrl){
-                this.is_show_pic = true
                 if( imgUrl ){
                     this.total_pic = imgUrl
+                    this.is_show_pic = true
                 }else{
-                    this.total_pic = "无"
+                    this.total_pic = ""
+                    this.warning_info("未找到原图")
                 }
             },
 

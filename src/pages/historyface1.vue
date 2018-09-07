@@ -20,7 +20,7 @@
 						<option v-for="item in init_data.galleries" :value="item">{{ item.name }}</option>
 					</select>
 				</div>
-				<div class="input_box">
+				<div class="input_box" @keyup.enter="keyup_to_search">
 					<input class="center_input id_card" type="text" v-model="search_data.idNumber" placeholder="标识编码"/>
 					<select class="center_select" v-model="search_data.gender">
 						<option selected="selected">性别/不限</option>
@@ -56,7 +56,8 @@
 								<td class="td td4">相似度</td>
 								<td class="td td5">姓名</td>
 								<td class="td td6">性别</td>
-								<td class="td td7">抓拍时间</td>
+								<td class="td td8">标识编码</td>
+								<td class="td td4">抓拍时间</td>
 								<td class="td td8">所在底库</td>
 								<td class="td td9">设备信息</td>
 								<td class="td td10">操作</td>
@@ -73,7 +74,8 @@
 									<img class="td_img"  :src="item.snapshotUrl"  @click="show_pic(item.wholePhoto)" title="点击显示原图" />
 								</td>
 								<td class="td td3">
-									<img class="td_img"  :src="item.faceUrl"  @click="show_pic(item.photo)" title="点击显示原图"/>
+									<!-- <img class="td_img"  :src="item.faceUrl"  @click="show_pic(item.photo)" title="点击显示原图"/> -->
+									<img class="td_img"  :src="item.faceUrl" />
 								</td>
 								<td class="td td4">
 									<div class="table_text">
@@ -96,7 +98,14 @@
 										</div>
 									</div>
 								</td>
-								<td class="td td7">
+								<td class="td td8">
+									<div class="table_text">
+										<div class="cell_text">
+											{{item.idNumber}}
+										</div>
+									</div>
+								</td>
+								<td class="td td4">
 									<div class="table_text">
 										<div class="cell_text">
 											{{item.catchTime}}
@@ -230,7 +239,7 @@
 
 				// 原图
 				is_show_pic: false,
-				total_pic: "无",
+				total_pic: "",
 
 			}//返回数据最外围
 		},
@@ -291,6 +300,13 @@
 				for( let i = 0; i < this.tabledata.length; i++ ){
 					this.tabledata[i].ischecked = false
 				} 
+			},
+			// 键盘事件
+			// 键盘事件-回车搜索
+			keyup_to_search:function(){
+				// this.save_search_data = this.search_data
+				// this.post_to_change_page(this.search_data)
+				this.click_to_search(this.search_data)
 			},
 
 			// 页面跳转(操作)
@@ -367,7 +383,7 @@
                     }
                 }).catch((error) => {
                 	console.log(error)
-                	this.error_info('网络连接出错1')
+                	this.error_info('网络连接出错')
                     return ;
                 })
 
@@ -549,6 +565,14 @@
                     center: true
                 })
 			},
+			warning_info:function(mes){
+				this.$message({
+                    type: 'warning',
+                    message: mes,
+                    showClose: true,
+                    center: true
+                })
+			},
 			success_info:function(mes){
 				this.$message({
                     type: 'success',
@@ -559,14 +583,15 @@
 			},
 
 			// 显示全图
-			show_pic:function(imgUrl){
-				this.is_show_pic = true
-				if( imgUrl ){
-					this.total_pic = imgUrl
-				}else{
-					this.total_pic = "无"
-				}
-			},
+            show_pic:function(imgUrl){
+                if( imgUrl ){
+                    this.total_pic = imgUrl
+                    this.is_show_pic = true
+                }else{
+                    this.total_pic = ""
+                    this.warning_info("未找到原图")
+                }
+            },
 		},
 		mounted:function(){
 			this.get_init_data1()

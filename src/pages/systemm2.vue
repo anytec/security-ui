@@ -3,7 +3,7 @@
 		<div class="mask_box">
 			<div class="top_title">
 				<div class="sys_lefttext">操作记录</div>
-				<div class="sys_input" @keyup.enter="test('heh ')">
+				<div class="sys_input" @keyup.enter="keyup_to_search">
 					<input type="text" placeholder="搜索用户名" v-model="search_data.uname" />
 					<div class="sysSearch_box" @click="click_to_search">
 						<img :src="alert_src" @mouseover="alert_src=ale_imgsrc2" @mouseout="alert_src=ale_imgsrc1"/>
@@ -188,6 +188,7 @@
 
 			// 搜索事件
 			click_to_search:function(){
+				this.init_data.pageNum = 1
 				
 				let search_data = {}
 				if( this.search_data.operationType != "操作类型/全部" ){
@@ -199,6 +200,11 @@
 				this.save_search_data = search_data
 				this.get_init_data( search_data )
 			},
+			// 键盘事件
+			// 键盘事件-回车搜索
+			keyup_to_search:function(){
+				this.click_to_search()
+			},
 
 			// 请求
 			get_init_data:function( search_data = {} ){
@@ -209,9 +215,9 @@
                     	this.init_data.allnum = res.data.data.total
                 		this.tabledata = res.data.data.list
                 		for( let i = 0; i < this.tabledata.length; i++ ){
-                			let time_ymd = this.tabledata[i].operationTime.split("T")[0]
-                			let time_hms = this.tabledata[i].operationTime.split("T")[1].split(".")[0]
-                			this.tabledata[i].operationTime = time_ymd + " " + time_hms
+                			// let time_ymd = this.tabledata[i].operationTime.split("T")[0]
+                			// let time_hms = this.tabledata[i].operationTime.split("T")[1].split(".")[0]
+                			// this.tabledata[i].operationTime = time_ymd + " " + time_hms
                 			if(this.tabledata[i].operationResult){
                 				this.tabledata[i].operationResult = "操作成功"
                 			}else{

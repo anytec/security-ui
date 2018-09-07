@@ -1,63 +1,76 @@
 <template>
-    <div class="main_box">
-        <left-nav></left-nav>
-        <div class="map_bg" id="container_offline"></div>
-        <!--地图边框线-->
-        <div class="left_xian"></div>
-        <div class="top_xian"></div>
-        <!--右边上半部分-->
-        <div class="face_rightbox1">
-            <div class="faceleft_photo">
-                <div class="face_photoimg">
-                    <div class="faceshow_img" v-show="dataUrl"><img :src="dataUrl" v-show="dataUrl"></div>
-                    <img class="decoration_img" src="../assets/mmanage/add_file.png" v-show="!dataUrl"/>
-                    <input class="face_file" type="file" @change="handleFileChange" ref="inputer"/>
-                </div>
-                <div class="facephoto_text">检索对象</div>
-            </div>
-            <div class="face_fillbox">
-                <div class="face_timetext">时间范围</div>
-                <div class="face_timeinput">
-                    <el-date-picker
-                        v-model="datevalue"
-                        type="datetimerange"
-                        :picker-options="pickeroptions"
-                        range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期">
-                    </el-date-picker>
-                </div>
-                <div class="similar_box">
-                    <div class="similar_text">相似度</div>
-                    <div class="slider_box">
-                        <el-slider v-model="search_data.confidence"></el-slider>
+    <div style="width:100%;height:100%;">
+        <div class="main_box">
+            <left-nav></left-nav>
+            <div class="map_bg" id="container_offline"></div>
+            <!--地图边框线-->
+            <div class="left_xian"></div>
+            <div class="top_xian"></div>
+            <!--右边上半部分-->
+            <div class="face_rightbox1">
+                <div class="faceleft_photo">
+                    <div class="face_photoimg">
+                        <div class="faceshow_img" v-show="dataUrl"><img :src="dataUrl" v-show="dataUrl"></div>
+                        <img class="decoration_img" src="../assets/mmanage/add_file.png" v-show="!dataUrl"/>
+                        <input class="face_file" type="file" @change="handleFileChange" ref="inputer"/>
                     </div>
-                    <div class="percentage"><input type="text" v-model="search_data.confidence"/></div>
-                    <div class="percentage_text fp_percentage">%</div>
-                    <div class="search face_search" @click="click_to_search(search_data)">搜索</div>
+                    <div class="facephoto_text">检索对象</div>
                 </div>
-                <div class="results_box">
-                    <div class="results_text">发现{{init_data.allnum}}个结果</div>
-                    <div class="export_btn face_btn" @click="click_to_clear">清空</div>
-                    <div class="export_btn face_btn" @click="export_data2excel">导出</div>
+                <div class="face_fillbox">
+                    <div class="face_timetext">时间范围</div>
+                    <div class="face_timeinput">
+                        <el-date-picker
+                            v-model="datevalue"
+                            type="datetimerange"
+                            :picker-options="pickeroptions"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期">
+                        </el-date-picker>
+                    </div>
+                    <div class="similar_box">
+                        <div class="similar_text">相似度</div>
+                        <div class="slider_box">
+                            <el-slider v-model="search_data.confidence"></el-slider>
+                        </div>
+                        <div class="percentage"><input type="text" v-model="search_data.confidence"/></div>
+                        <div class="percentage_text fp_percentage">%</div>
+                        <div class="search face_search" @click="click_to_search(search_data)">搜索</div>
+                    </div>
+                    <div class="results_box">
+                        <div class="results_text">发现{{init_data.allnum}}个结果</div>
+                        <div class="export_btn face_btn" @click="click_to_clear">清空</div>
+                        <div class="export_btn face_btn" @click="export_data2excel">导出</div>
+                    </div>
+                </div>
+            </div>
+            <!--右边下半部分-->
+            <div class="face_rightbox2">
+                <div class="results_listbox">
+                    <div class="results_list" :style="{'border-left': item.mystyle}" v-for="item in tabledata">
+                        <div class="digital_bg" @click="change_map_center(item.location)">{{init_data.allnum - item.uuid}}</div>
+                        <div class="results_right">
+                            <div class="results_conter1">{{item.cameraName}}</div>
+                            <div class="re_conterbox1">
+                                <div class="results_conter2">{{item.nyr}}</div>
+                                <div class="results_conter2">{{item.sfm}}</div>
+                                <div class="results_conter2">相似度：{{ item.confidence }}</div>
+                            </div>
+                            <div class="re_conterbox2">
+                                <img :src="item.snapshotUrl"/>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <!--右边下半部分-->
-        <div class="face_rightbox2">
-            <div class="results_listbox">
-                <div class="results_list" :style="{'border-left': item.mystyle}" v-for="item in tabledata">
-                    <div class="digital_bg" @click="change_map_center(item.location)">{{init_data.allnum - item.uuid}}</div>
-                    <div class="results_right">
-                        <div class="results_conter1">{{item.cameraName}}</div>
-                        <div class="re_conterbox1">
-                            <div class="results_conter2">{{item.nyr}}</div>
-                            <div class="results_conter2">{{item.sfm}}</div>
-                            <div class="results_conter2">相似度：{{ item.confidence }}</div>
-                        </div>
-                        <div class="re_conterbox2">
-                            <img :src="item.snapshotUrl"/>
-                        </div>
+        <!--遮罩层-->
+        <div class="mack_box" v-show="is_show_pic" @click="is_show_pic = false"></div>
+        <div class="t_graphBox" v-show="is_show_pic" @click="is_show_pic = false">
+            <div class="t_graph" >
+                <div class="graph_table">
+                    <div class="graph_cell">
+                        <img style="max-width:800px; max-height:800px;margin:0 auto;" :src="total_pic" />
                     </div>
                 </div>
             </div>
@@ -168,10 +181,25 @@
                 tabledata: [],
                 infomycontent: [],
                 markers_list: [],
+
+                // 原图
+                is_show_pic: false,
+                total_pic: "",
             }
         },
 
         methods: {
+            // 显示全图
+            show_pic:function(imgUrl){
+                if( imgUrl ){
+                    this.total_pic = imgUrl
+                    this.is_show_pic = true
+                }else{
+                    this.total_pic = ""
+                    this.warning_info("未找到原图")
+                }
+            },
+            
             //初始化地图
             initMap: function (location = [39.895218, 116.419072]) {
                 this.map = L.map("container_offline", {

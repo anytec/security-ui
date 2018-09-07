@@ -62,8 +62,10 @@
                     params.append(item,search_data[item])
                 }
                 if( search_data.cameraSdkIds || search_data.cameraGroupIds ){
-                    params.append( "startTime", this.dateValue[0]-1)
-                    params.append( "endTime", this.dateValue[1]-1)
+                    if( this.dateValue ){
+                        params.append( "startTime", this.dateValue[0]-1)
+                        params.append( "endTime", this.dateValue[1]-1)
+                    }
                 }
                 this.$ajax.post("/data/peopleAnalysis",params).then((res) => {
                     if( res.data.status === 0){
@@ -188,9 +190,22 @@
         			this.post_to_change_page({ cameraGroupIds:this.searchData.cameraGroupIds.join(",")})
         		}else{
         			// console.log("null")
-        		}
-        		
-        	}
+        		}	
+        	},
+            'dateValue':function(newval,old){
+                if( newval ){
+                    if( this.searchData.cameraSdkIds ){
+                        this.post_to_change_page({ cameraSdkIds:this.searchData.cameraSdkIds.join(",")})
+                    }else if( this.searchData.cameraGroupIds ){
+                        this.post_to_change_page({ cameraGroupIds:this.searchData.cameraGroupIds.join(",")})
+                    }else{
+                        let search_data = {}
+                        search_data.startTime = this.dateValue[0]-1
+                        search_data.endTime = this.dateValue[1]-1
+                        this.post_to_change_page(search_data)
+                    }   
+                }
+            }
         }
     }
 </script>

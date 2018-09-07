@@ -7,7 +7,7 @@
                     <div class="sys_addicon" @click="AddPerson" title="添加用户">
                     	<img :src="sys_imgsrc" @mouseover="sys_imgsrc=sys_imgsrc2" @mouseout="sys_imgsrc=sys_imgsrc1"/>
                     </div>
-                    <div class="sys_input">
+                    <div class="sys_input" @keyup.enter="keyup_to_search">
                         <input type="text" placeholder="搜索用户名" v-model="search_name"/>
                         <div class="sysSearch_box" @click="click_to_search">
                             <img :src="alert_src" @mouseover="alert_src=ale_imgsrc2" @mouseout="alert_src=ale_imgsrc1"/>
@@ -291,6 +291,7 @@
 			},
 			// 搜素事件
 			click_to_search:function(){
+				this.init_data.pageNum = 1
 				this.save_search_data = this.search_name
 				this.get_init_data( {keyword:this.search_name} )
 			},
@@ -307,6 +308,13 @@
 				}).catch(() => {
 					;
 				})
+			},
+			// 键盘事件
+			// 键盘事件-回车搜索
+			keyup_to_search:function(){
+				// this.save_search_data = this.search_name
+				// this.get_init_data({keyword:this.search_name})
+				this.click_to_search()
 			},
 
 			// 请求

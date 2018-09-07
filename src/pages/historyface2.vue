@@ -55,7 +55,7 @@
 									<input class="checkbox_box" type="checkbox" :checked="item.ischecked" v-model="item.ischecked" @click="click_to_checkedone(item.uuid)"/>
 								</td>
 								<td class="td td2">
-									<img class="td_img"  :src="item.snapshotUrl" @click="show_pic(item.wholePhoto)" title="点击显示原图"/>
+									<img class="td_img" :src="item.snapshotUrl" @click="show_pic(item.wholePhoto)" title="点击显示原图" />
 								</td>
 								<td class="td td2">
 										{{item.gender}}
@@ -178,7 +178,7 @@
 
 				// 原图
 				is_show_pic: false,
-				total_pic: "无",
+				total_pic: "",
 
 			}//返回数据最外围
 		}, // data end
@@ -420,6 +420,14 @@
                     center: true
                 })
 			},
+			warning_info:function(mes){
+				this.$message({
+                    type: 'warning',
+                    message: mes,
+                    showClose: true,
+                    center: true
+                })
+			},
 			success_info:function(mes){
 				this.$message({
                     type: 'success',
@@ -429,15 +437,16 @@
                 })
 			},
 
-			// 显示原图
-			show_pic:function(imgUrl){
-				this.is_show_pic = true
-				if( imgUrl ){
-					this.total_pic = imgUrl
-				}else{
-					this.total_pic = "无"
-				}
-			},
+			// 显示全图
+            show_pic:function(imgUrl){
+                if( imgUrl ){
+                    this.total_pic = imgUrl
+                    this.is_show_pic = true
+                }else{
+                    this.total_pic = ""
+                    this.warning_info("未找到原图")
+                }
+            },
 		},// methods end
 		mounted:function(){
 			this.get_init_data()

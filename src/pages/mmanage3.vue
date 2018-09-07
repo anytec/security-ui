@@ -6,7 +6,7 @@
 					<div class="title_lefttext">设备组配置</div>
 					<div class="title_righttext">结果{{init_data.allnum}}个</div>
 				</div>
-				<div class="input_box">
+				<div class="input_box" @keyup.enter="keyup_to_search">
 					<div class="export_btn" @click="click_to_add_info">添加</div>
 					<div class="export_btn" @click="click_to_delete">删除</div>
 					<div class="right_btn h2_right_btn m3_right_box">
@@ -280,7 +280,14 @@
 				this.is_request2add = false
 				this.is_request2change = false
 				this.change_data = {}
-				this.add_data = { name: "", remarks: "--" }
+				this.add_data = { name: "", remarks: "" }
+			},
+			// 键盘事件
+			// 键盘事件-回车搜索
+			keyup_to_search:function(){
+				// this.save_search_data = this.search_data
+				// this.post_to_change_page(this.search_data)
+				this.click_to_search(this.search_data)
 			},
 
 			// 页面跳转

@@ -7,7 +7,7 @@
 					<div class="title_lefttext">底库配置</div>
 					<div class="title_righttext">结果{{init_data.allnum}}个</div>
 				</div>
-				<div class="input_box">
+				<div class="input_box" @keyup.enter="keyup_to_search">
 					<div class="export_btn" @click="click_to_add_info">添加</div>
 					<div class="export_btn" @click="click_to_delete">删除</div>
 					<div class="right_btn h2_right_btn">
@@ -409,6 +409,13 @@
 			close_change_persongroup:function(){
 				this.clear_data()
 			},
+			// 键盘事件
+			// 键盘事件-回车搜索
+			keyup_to_search:function(){
+				// this.save_search_data = this.search_data
+				// this.post_to_change_page(this.search_data)
+				this.click_to_search(this.search_data)
+			},
 
 			// 页面跳转
 			skip_to_mmanage2:function(num){
@@ -537,7 +544,7 @@
             		this.error_info("请选择底库颜色")
             		return ;
             	}
-            	params.append( "colorLabel", add_data.colorLabel )
+            	// params.append( "colorLabel", add_data.colorLabel )
             	params.append( "remarks", add_data.remarks)
 
                 // 请求人员数据
