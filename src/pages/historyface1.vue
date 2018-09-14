@@ -21,7 +21,7 @@
 					</select>
 				</div>
 				<div class="input_box" @keyup.enter="keyup_to_search">
-					<input class="center_input id_card" type="text" v-model="search_data.idNumber" placeholder="标识编码"/>
+					<input class="center_input id_card" type="text" v-model="search_data.idNumber" placeholder="标识编码" />
 					<select class="center_select" v-model="search_data.gender">
 						<option selected="selected">性别/不限</option>
 						<option>男</option>
@@ -108,7 +108,9 @@
 								<td class="td td4">
 									<div class="table_text">
 										<div class="cell_text">
-											{{item.catchTime}}
+											{{ item.catchTime.split(" ")[0] }}
+											<br>
+											{{ item.catchTime.split(" ")[1] }}
 										</div>
 									</div>
 								</td>
@@ -127,7 +129,7 @@
 									</div>
 								</td>
 								<td class="td td10">
-									<div class="td_icon1 icon1" title="跳转到人脸检索" @click="skip_to_facepath(item.faceUrl)">
+									<div class="td_icon1 icon1" title="跳转到人脸检索" @click="skip_to_facepath(item.snapshotUrl)">
 										<!-- <img src="../assets/historyface/icon1.png" /> -->
 									</div>
 									<div class="td_icon2 icon5" title="跳转到底库人员" @click="skip_to_mmanage2(item.uuid)">
@@ -249,12 +251,14 @@
 		methods: {
 			handleSizeChange:function(val) {
 				// 单页面显示数量
+				this.isallchecked = false
 				this.init_data.pageSize = val
 				this.post_to_change_page(this.save_search_data)
 			},
 			handleCurrentChange:function(val) {
 				// 页面切换
 				// console.log(val);
+				this.isallchecked = false
 				this.init_data.pageNum = val
 				this.post_to_change_page(this.save_search_data)
 			},
@@ -293,6 +297,10 @@
 				}
 			},
 			click_to_search:function(search_data){
+				if( !this.check_idNumber(search_data.idNumber) ){
+					this.warning_info("标识编码应输入字母、数字;长度小于20")
+					return ;
+				}
 				this.init_data.pageNum = 1
 				this.save_search_data = JSON.parse(JSON.stringify(search_data))
 				this.post_to_change_page(search_data)
@@ -300,6 +308,11 @@
 				for( let i = 0; i < this.tabledata.length; i++ ){
 					this.tabledata[i].ischecked = false
 				} 
+			},
+			check_idNumber:function(idNumber){
+				let reg = /^[a-zA-Z0-9]{0,30}$/
+
+                return reg.test(idNumber)
 			},
 			// 键盘事件
 			// 键盘事件-回车搜索
@@ -324,7 +337,7 @@
 			skip_to_mmanage2:function(num){
 				this.$store.state.search_data.groupName = this.tabledata[num].personGroupName
 				this.$store.state.search_data.groupId = this.tabledata[num].personGroupId
-				this.$store.state.search_data.name = this.tabledata[num].personName
+				this.$store.state.search_data.faceSdkId = this.tabledata[num].faceSdkId
 				this.$store.state.is_search_data = true
 				this.$router.push('/mmanage2')
 			},
@@ -360,6 +373,25 @@
 			},
 
 			// 数据初始化请求数据
+			mes_handling:function(status, msg){
+                if( status === 1 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 2 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 10 ){
+                    this.error_info('请先登录')
+                    return ;
+                }else{
+                    if( status === 401 && msg === "未登录" ){
+                        this.error_info(msg)
+                        this.$router.push("/login")
+                    }else{
+                        this.error_info(status + "  " + msg)
+                    }
+                }
+            },
 			get_init_data1:function(){
 				// 请求库名
 				var params = new URLSearchParams()
@@ -369,17 +401,8 @@
                     	for( let i = 0; i < res.data.data.list.length; i++ ){
                     		this.init_data.galleries.splice(i, 0, { name:res.data.data.list[i].name, id:res.data.data.list[i].id })
                     	}
-                    }else if( res.data.status === 1 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status + "  " + res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -401,17 +424,8 @@
 							}
 						}
 						this.get_init_data3()
-			        }else if( res.data.status === 1 ){
-			            this.error_info(res.data.msg)
-			        	return ;
-			        }else if( res.data.status === 2 ){
-			            this.error_info(res.data.msg)
-			        	return ;
-			        }else if( res.data.status === 10 ){
-			            this.error_info('请先登录')
-			        	return ;
 			        }else{
-                    	this.error_info(res.data.status + "  " + res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
 			    }).catch((error) => {
 			    	console.log(error)
@@ -463,17 +477,8 @@
 		                	this.tabledata[i].ischecked = false
 		                	this.tabledata[i].confidence = Math.round(this.tabledata[i].confidence * 100)
 		                }
-                    }else if( res.data.status === 1 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status + "  " + res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -537,17 +542,8 @@
 		                	this.tabledata[i].ischecked = false
 		                	this.tabledata[i].confidence = Math.round(this.tabledata[i].confidence *100)
 		                }
-                    }else if( res.data.status === 1 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status + "  " + res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -625,6 +621,11 @@
 							cameraSdkId: this.init_data.video_names[active_groups_num][i].sdkId,					
 						}
 					)
+				}
+			},
+			'search_data.idNumber':function(newval,old){
+				if( newval === "" ){
+					this.click_to_search(this.search_data)
 				}
 			},
 		},

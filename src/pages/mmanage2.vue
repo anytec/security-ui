@@ -108,7 +108,8 @@
 			</div>
 		</div>
 		<!--添加窗口-->
-		<div class="mack_box" v-show="is_request2add" @click="click_to_clear"></div>
+		<div class="mack_box" v-show="is_request2add || is_request2add_batch" @click="click_to_clear" v-if="!uploading"></div>
+		<div class="mack_box" v-else="uploading"></div>
 		<div class="bounced_add" v-show="is_request2add">
 			<div class="bounced_box">
 				<div class="file_box">
@@ -117,6 +118,7 @@
 				<div class="file_img" v-show="!add_data.dataUrl"><img src="../assets/mmanage/add_file.png"/></div>
 				<input class="input_file" @change="handleFileChange" ref="inputer" type="file"></input>
 				<div class="bounced_top">
+					<div class="batch_title" @click="add_batch_data_">批量添加>></div>
 					<div class="bounced_title">添加人员</div>
 				</div>
 				<div class="choose_input">
@@ -137,6 +139,32 @@
 				</div>
 				<div class="mmbottom_input">
 					<input type="text" placeholder="备注" v-model="add_data.remarks"/>
+				</div>
+			</div>
+		</div>
+		<!--批量添加-->
+		<div class="bounced_add" v-show="is_request2add_batch">
+			<div class="bounced_box">
+				<div class="bounced_top">
+					<div class="batch_title2">批量添加</div>
+					<div class="bounced_title bounced_title2" @click="add_one_data" v-if="!uploading">单个添加>></div>
+				</div>
+				<div class="mm2_leftbox">
+					<select class="center_select input_right" v-model="add_data_batch.groupName">
+						<option v-for="item in init_data.galleries">{{ item }}</option>
+					</select>
+					<div class="mm2_no " @click="click_to_clear" v-if="false">暂不添加</div>
+				</div>
+				<div class="mm2_leftbox mm2_leftbox2">
+					<div class="mm2_file">
+						<input type="file" multiple = "multiple" webkitdirectory @change="fileChange($event)" ref="inputer_batch"/>
+					</div>
+					<div class="mm2_no mm2_no2" v-if="false">确认上传</div>
+					<div class="mm2_no" @click="click_to_clear" v-if="!uploading">暂不添加</div>
+					<div class="mm2_no" style="cursor: not-allowed;" v-if="uploading">暂不添加</div>
+				</div>
+				<div class="loading_box">
+					{{ uploading }}
 				</div>
 			</div>
 		</div>
@@ -228,6 +256,16 @@
 					idNumber: "",
 				},
 
+				// 批量上传图片
+				add_data_batch:{
+					groupName: null,
+				},
+				photoPathList: null,
+				uploading: "",
+				biggist_pic_list: [],
+				files: [],
+				pic_num: [],
+
 				tabledata: null,
 				
 				// 复选框
@@ -236,13 +274,14 @@
 				// 弹窗
 				is_request2add: false,
 				is_request2change: false,
+				is_request2add_batch: false,
 
 				// 避免重复确认
 				is_confirm_show: true,
 
 				// 原图
 				is_show_pic: false,
-				total_pic: "无",
+				total_pic: "",
 
 			} //返回数据最外围
 		},
@@ -259,6 +298,20 @@
 				// 页面切换
 				this.init_data.pageNum = val
 				this.post_to_change_page(this.save_search_data)
+			},
+
+			// 输入-正则化
+			check_input:function(input_data,model=""){
+				let reg = /^.{0,30}$/
+				if( model === "name" ){
+					reg = /^[\u4e00-\u9fa5]{0,10}$/
+				}else if( model === "remarks" ){
+					reg = /^[\u4e00-\u9fa5]{0,20}$/
+				}else if( model === "idNumber" ){
+					reg = /^[a-zA-Z0-9_-]{0,30}$/
+				}
+
+                return reg.test(input_data)
 			},
 
 			// 复选框函数
@@ -292,6 +345,10 @@
 
 			// 搜索按钮
 			click_to_search:function(search_data){
+				if( !this.check_input(search_data.idNumber) ){
+					this.warning_info("标识编码应输入字母、数字、_、- 或过长")
+					return ;
+				}
 				this.init_data.pageNum = 1
 				this.save_search_data = JSON.parse(JSON.stringify(search_data))
 				this.post_to_change_page(search_data)
@@ -329,6 +386,23 @@
 				this.is_request2add = false
 				this.is_request2change = false
 				this.is_confirm_show = true
+				this.is_request2add_batch = false
+				this.uploading = ""
+				this.$refs.inputer_batch.value = ''
+				this.files = []
+                this.biggist_pic_list = []
+                this.pic_num = []
+			},
+			// 单个添加切换到批量添加
+			add_batch_data_:function(){
+				this.is_request2add = false
+				this.is_request2add_batch = true
+			},
+			// 批量添加切换到单个添加
+			add_one_data:function(){
+				this.is_request2add = true
+				this.is_request2add_batch = false
+				this.add_data_batch.groupName = this.init_data.galleries[0]
 			},
 			// 键盘事件
 			// 键盘事件-回车搜索
@@ -368,6 +442,25 @@
 			},
 
 			// 请求数据
+			mes_handling:function(status, msg){
+                if( status === 1 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 2 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 10 ){
+                    this.error_info('请先登录')
+                    return ;
+                }else{
+                    if( status === 401 && msg === "未登录" ){
+                        this.error_info(msg)
+                        this.$router.push("/login")
+                    }else{
+                        this.error_info(status + "  " + msg)
+                    }
+                }
+            },
 			get_init_data1:function(){
 				// 请求库名
 				var params = new URLSearchParams()
@@ -378,18 +471,10 @@
                 			this.init_data.galleries_id.push(item.id)
                 			this.init_data.is_get_init_data = true
                 			this.add_data.groupName = this.init_data.galleries[0]
+                			this.add_data_batch.groupName = this.init_data.galleries[0]
                     	}
-                    }else if( res.data.status === 1 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status + "  " + res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -413,6 +498,7 @@
 					this.add_data.dataUrl = temp_data.photo
 					// this.add_data.photo = temp_data.photo
 					this.add_data.groupName = this.init_data.galleries[0]
+					this.add_data_batch.groupName = this.init_data.galleries[0]
 
 					this.init_data.is_get_init_data = false
 					this.$store.state.add_data = null
@@ -435,17 +521,8 @@
 		                	this.tabledata[i].ischecked = false
 		                }
                     	// console.log(this.tabledata)
-                    }else if( res.data.status === 1 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status + "  " + res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -465,9 +542,13 @@
                 	}
                 	if( search_data.idNumber ){
                 		params.append( "idNumber", search_data.idNumber )   // 搜索身份证号 该三个信息不一定有，且可能只有其中一个
-                	}else{
-                    	this.error_info(res.data.status + "  " + res.data.msg)
-                    }
+                	}
+                	if( search_data.faceSdkId ){
+                		params.append( "faceSdkId", search_data.faceSdkId )
+                	}
+                	// else{
+                 //    	this.error_info("标志编码不能为空")
+                 //    }
                 }else if( change_page ){
                 	for(let key in search_data ){
                 		if( key != "groupName" ){
@@ -486,15 +567,8 @@
 		                	this.tabledata[i].uuid = i
 		                	this.tabledata[i].ischecked = false
 		                }
-                    }else if( res.data.status === 1 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
+                    }else{
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -512,17 +586,8 @@
 	                    this.success_info('删除成功')
 	                    this.isallchecked = false
 	                    this.post_to_change_page(this.save_search_data)
-                    }else if( res.data.status === 1 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status + "  " + res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -579,17 +644,8 @@
 							groupName: this.init_data.galleries[0],
 							dataUrl: "",
 	                    }
-                    }else if( res.data.status === 1 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status + "  " + res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                     this.is_confirm_show = true
                 }).catch((error) => {
@@ -621,19 +677,74 @@
                     	this.change_data = { photo: "",dataUrl:"",name:"", idNumber:"" },
                     	this.success_info("修改成功")
 	                    this.post_to_change_page(this.save_search_data)
-                    }else if( res.data.status === 1 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status + "  " + res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                     this.is_confirm_show = true
+                }).catch((error) => {
+                	console.log(error)
+                	this.error_info('网络连接出错')
+                    return ;
+                })
+			},
+			// 批量添加请求
+			require_to_upload_batch_people:function( files ){
+				var params = new FormData()
+				for( let i = 0; i < files.length; i ++ ){
+					params.append( "photos" , files[i], files[i].name )
+				}
+
+				this.$ajax.post("/uploadPhotos",params,{headers: {'Content-Type': 'multipart/form-data'}}).then((res) => {
+                    if( res.data.status === 0){
+                    	this.photoPathList = res.data.data
+
+                    	this.require_to_add_batch_people()
+                    }else{
+                    	this.uploading = ""
+						this.$refs.inputer_batch.value = ""
+
+                        this.mes_handling(res.data.status,res.data.msg)
+                	}
+                }).catch((error) => {
+                	console.log(error)
+                	this.uploading = ""
+					this.$refs.inputer_batch.value = ""
+                	this.error_info('网络连接出错')
+                    return ;
+                })
+			},
+			require_to_add_batch_people:function(){
+				// 请求库名
+				var params = new URLSearchParams()
+
+				if( this.init_data.galleries_id[this.init_data.galleries.indexOf(this.add_data_batch.groupName)] ){
+            		params.append( "personGroupName", this.add_data_batch.groupName)
+            		params.append( "personGroupId", this.init_data.galleries_id[this.init_data.galleries.indexOf(this.add_data_batch.groupName)]) // 搜索底库名
+            	}
+				// params.append( "personGroupId", personGroupId )
+				// params.append( "personGroupName", personGroupName )
+				params.append( "photoPathList", this.photoPathList )
+
+				this.$ajax.post("/addPhotos",params).then((res) => {
+                    if( res.data.status === 0){
+                    	let big_msg = ""
+                    	if( this.biggist_pic_list.length ){
+                    		big_msg = " 超过10M,未上传照片：" + this.biggist_pic_list.join(",")
+                    	}
+                    	if( res.data.msg ){
+
+                    		this.success_info(res.data.msg + "  " + big_msg)
+                    	}else{
+                    		this.success_info("录入成功"+ "  " + big_msg)
+                    	}
+	                    this.post_to_change_page(this.save_search_data)
+	                    this.click_to_clear()
+                    }else{
+                    	this.uploading = ""
+						this.$refs.inputer_batch.value = ''
+
+                        this.mes_handling(res.data.status,res.data.msg)
+	                }
                 }).catch((error) => {
                 	console.log(error)
                 	this.error_info('网络连接出错')
@@ -769,9 +880,90 @@
                 }
                 return new Blob([ab], {type: mimeString});
             },
+            // 图片大小限制
+            pic_astrict:function(file,index){
+            	let name = file.name
+            	// 创建一个reader
+                var reader = new FileReader()
+                // 将图片将转成 base64 格式
+                reader.readAsDataURL(file)
+                // 读取成功后的回调
+                reader.onloadend =  (e) => {
+                    let image = new Image()
+                    let Maxpic = 4000
+                    image.onload = () => {
+                        let width = image.width
+                        let height = image.height
+                        if( width > Maxpic || height > Maxpic ){
+                        	// console.log( name )
+                            let PicBaseText = this.compress(image,width*0.5,height*0.5,1)
+                            let temp_data = this.dataURItoBlob(PicBaseText)
+                            temp_data.name = name
+                            this.files.splice( index, 1, temp_data )
+                        }else{
+                        	this.files.push( file )
+                        }
+                        this.pic_num[index].flag = true
+                        for( let file_num = 0; file_num < this.pic_num.length; file_num++ ){
+                        	if( !this.pic_num[file_num].flag ){
+                        		break
+                        	}
+                        	if( file_num === (this.pic_num.length - 1) ){
+                        		this.uploading = "请勿操作,人脸入库中......"
+                        		this.require_to_upload_batch_people(this.files)
+                        		// console.log(this.files)
+                        	}
+                        }
+                    }
+                    image.src = e.target.result
+                }
+            },
+            // 文件改变执行函数
+            fileChange(e){
+                if ( !e.target.files.length){
+                	this.warning_info("文件夹下无文件,请重新选择文件夹")
+                }
+                this.files = []
+                this.biggist_pic_list = []
+                this.pic_num = []
+                for( let i = 0; i < e.target.files.length; i++ ){
+                	if( e.target.files[i].type.indexOf("image") != -1 ){
+                		if( e.target.files[i].size > 10*1024*1024 ){
+                			this.biggist_pic_list.push(e.target.files[i].name)
+                			continue
+                		}else{
+                			this.pic_num.push({ flag:false, num: i })
+                		}
+                	}
+                }
+                console.log(this.pic_num.length)
+                if( !this.pic_num.length ){
+                	this.uploading = ""
+					this.$refs.inputer_batch.value = ''
+					if( this.biggist_pic_list ){
+						this.warning_info("图片大小不超过10M")
+					}else{
+						this.warning_info("文件夹下未包含图片")
+					}
+                	return ;
+                }
+                for( let file_num = 0; file_num < this.pic_num.length; file_num++ ){
+                	this.pic_astrict( e.target.files[this.pic_num[file_num].num], file_num )
+                }
+            },
 
 			// 弹窗事件-添加人员
 			click_to_addinfo_data:function(){
+				if( !this.check_input(this.add_data.idNumber,"idNumber") ){
+					this.warning_info("标识编码应输入字母、数字、_、- 或过长")
+					return ;
+				}else if( !this.check_input(this.add_data.remarks,"remarks") ){
+					this.warning_info( "备注应输入中文且不超过20个字" )
+					return ;
+				}else if( !this.check_input(this.add_data.name,"name") ){
+					this.warning_info( "姓名应输入中文且不超过10个字" )
+					return ;
+				}
 				// this.add_data.dataUrl = ""
 				this.require_to_addpeople(this.add_data)
 			},
@@ -780,6 +972,17 @@
 			},
 			// 弹窗事件-修改人员
 			click_to_change_infodata:function(){
+				if( !this.check_input(this.change_data.idNumber,"idNumber") ){
+					this.warning_info("标识编码应输入字母、数字、_、- 或过长")
+					return ;
+				}else if( !this.check_input(this.change_data.remarks,"remarks") ){
+					this.warning_info( "备注应输入中文且不超过20个字" )
+					return ;
+				}else if( !this.check_input(this.change_data.name,"name") ){
+					this.warning_info( "姓名应输入中文且不超过10个字" )
+					return ;
+				}
+
 				let photo_flag = false
 				if( this.change_data.dataUrl != this.tabledata[this.change_data.uuid].thumbnail ){
 					photo_flag = true
@@ -796,6 +999,8 @@
 					this.warning_info("标识编码不能为空")
 				}else if( this.change_data.name === ""){
 					this.warning_info("姓名不能为空")
+				}else if( this.change_data.gender === ""){
+					this.warning_info("性别不能为空")
 				}else{
 					this.is_confirm_show = false
 					this.require_to_change_people(this.change_data,photo_flag)
@@ -813,7 +1018,12 @@
 				if(	newval ){
 					this.get_push_page()
 				}
-			}
+			},
+			'search_data.idNumber':function(newval,old){
+				if( newval === "" ){
+					this.click_to_search(this.search_data)
+				}
+			},
 		},
 		beforeRouteLeave(to, from, next) {
 			if( to.path === "/facepath" && this.$store.state.is_search_data_facepath ){

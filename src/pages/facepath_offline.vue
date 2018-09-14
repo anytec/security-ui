@@ -57,7 +57,7 @@
                                 <div class="results_conter2">相似度：{{ item.confidence }}</div>
                             </div>
                             <div class="re_conterbox2">
-                                <img :src="item.snapshotUrl"/>
+                                <img :src="item.snapshotUrl" @click="show_pic(item.wholePhoto)" title="点击显示原图" />
                             </div>
                         </div>
                     </div>
@@ -270,7 +270,7 @@
                                             '+ camerastatus +'\
                                             '+ eye_div +'\
                                             <div class="face_icon2 face_icon2_img face_icon_fpath" onclick="skip_to_mmanage4(\''
-                                            + add_data[i].groupName +'\',\'' + add_data[i].sdkId + '\')" title="跳转到设备配置"></div>\
+                                            + add_data[i].groupName +'\',\'' + add_data[i].name + '\')" title="跳转到设备配置"></div>\
                                         </div>\
                                         <div class="face_camera">'+add_data[i].name+'</div>\
                                         <div class="face_conter"></div>\
@@ -412,7 +412,7 @@
                                 '+ camerastatus +'\
                                 '+ eye_div +'\
                                 <div class="face_icon2 face_icon2_img face_icon_fpath" onclick="skip_to_mmanage4(\''
-                                + this.tabledata[this.markers_list[i]].cameraGroupName +'\',\'' + this.tabledata[this.markers_list[i]].sdkId + '\')" title="跳转到设备配置"></div>\
+                                + this.tabledata[this.markers_list[i]].cameraGroupName +'\',\'' + this.tabledata[this.markers_list[i]].cameraName + '\')" title="跳转到设备配置"></div>\
                             </div>\
                             <div class="face_camera">'+ this.tabledata[this.markers_list[i]].cameraName +'</div>\
                             <div class="face_conter">'
@@ -517,6 +517,25 @@
 
             // 初始化请求数据
             // 请求数据
+            mes_handling:function(status, msg){
+                if( status === 1 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 2 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 10 ){
+                    this.error_info('请先登录')
+                    return ;
+                }else{
+                    if( status === 401 && msg === "未登录" ){
+                        this.error_info(msg)
+                        this.$router.push("/login")
+                    }else{
+                        this.error_info(status + "  " + msg)
+                    }
+                }
+            },
             get_init_data: function () {
                 this.add_markers_all(this.allcamera_list)
             },
@@ -593,17 +612,8 @@
                         this.map_info()
                         this.add_markers() // 添加标记
                         this.add_line() // 添加轨迹
-                    } else if (res.data.status === 1) {
-                        this.error_info('图片未检测到人脸或格式错误')
-                        return;
-                    } else if (res.data.status === 2) {
-                        this.error_info('参数错误 ' + res.msg)
-                        return;
-                    } else if (res.data.status === 10) {
-                        this.error_info('请先登录')
-                        return;
                     }else{
-                        this.error_info(res.data.status + "  " + res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                     console.log(error)
@@ -714,11 +724,11 @@
                 this.$store.state.is_search_data = true
                 this.$router.push('/realtimem')
             },
-            skip_to_mmanage4(groupName,sdkId){
+            skip_to_mmanage4(groupName,name){
                 this.$store.state.search_data.groupId = groupName
-                this.$store.state.search_data.sdkId = sdkId
+                this.$store.state.search_data.name = name
                 this.$store.state.is_search_data = true
-                this.$router.push('/mmanage4')
+                this.$router.push('/mmanage4_offline')
             },
         },
         mounted: function () {
@@ -738,8 +748,8 @@
             window['skip_to_realtimem'] = (sdkId,name) => {
                 this.skip_to_realtimem(sdkId,name)
             }
-            window['skip_to_mmanage4'] = (groupName,sdkId) => {
-                this.skip_to_mmanage4(groupName,sdkId)
+            window['skip_to_mmanage4'] = (groupName,name) => {
+                this.skip_to_mmanage4(groupName,name)
             }
         },
         beforeRouteLeave(to, from, next) {
@@ -779,25 +789,27 @@
             '$store.state.facepath_search_data.allcamera_list': function (newVal, old) {
                 if( this.$store.state.facepath_model === "offline" ){
                     this.allcamera_list = this.$store.state.facepath_search_data.allcamera_list
-                    if (this.allcamera_list.length) {
-                        this.initMap(this.allcamera_list[0].location)
-                    } else {
-                        this.initMap(this.map_config.center)
-                    }
-                    // console.log("offline")
-                    if (this.$store.state.is_search_data_facepath) {
-                        this.search_data.photoUrl = this.$store.state.facepath_data.photo
-                        this.dataUrl = this.search_data.photoUrl
-                        if( this.group ){
-                            this.group.clearLayers()
+                    setTimeout(()=>{
+                        if (this.allcamera_list.length) {
+                            this.initMap(this.allcamera_list[0].location)
+                        } else {
+                            this.initMap(this.map_config.center)
                         }
-                        this.post_to_get_facepath(this.search_data, "skip")
+                        // console.log("offline")
+                        if (this.$store.state.is_search_data_facepath) {
+                            this.search_data.photoUrl = this.$store.state.facepath_data.photo
+                            this.dataUrl = this.search_data.photoUrl
+                            if( this.group ){
+                                this.group.clearLayers()
+                            }
+                            this.post_to_get_facepath(this.search_data, "skip")
 
-                        this.$store.state.is_search_data_facepath = false
-                        this.$store.state.facepath_data.photo = ""
-                    } else {
-                        this.get_init_data()
-                    }
+                            this.$store.state.is_search_data_facepath = false
+                            this.$store.state.facepath_data.photo = ""
+                        } else {
+                            this.get_init_data()
+                        }
+                    },10)
                 }
             }
         }

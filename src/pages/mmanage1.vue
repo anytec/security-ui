@@ -250,6 +250,13 @@
 				this.post_to_change_page(this.save_search_data)
 			},
 
+			// 输入-正则化
+			check_input:function(input_data){
+				let reg = /^[\u4e00-\u9fa50-9a-zA-Z]{0,20}$/
+
+                return reg.test(input_data)
+			},
+
 			// 复选框函数
 			click_to_checkedall: function() {
 				if(!this.isallchecked) {
@@ -282,11 +289,13 @@
 
 			// 搜索按钮
 			click_to_search:function(search_data){
+				if( !this.check_input(search_data.groupName) ){
+					this.warning_info( "底库名称不超过20个字" )
+				}
 				this.init_data.pageNum = 1
 				this.save_search_data = JSON.parse(JSON.stringify(search_data))
 				this.post_to_change_page(search_data)
 			},
-
 			// 添加删除事件
 			click_to_delete:function(){
 				for ( let i = 0; i < this.tabledata.length; i++){
@@ -339,6 +348,14 @@
 			},
 			// 添加事件-弹窗事件
 			request_add_persongroup:function(){
+				if( !this.check_input(this.add_data.name) ){
+					this.warning_info( "底库名称不超过20个字" )
+					return ;
+				}else if( !this.check_input(this.add_data.remarks) ){
+					this.warning_info( "备注不超过20个字" )
+					return ;
+				}
+
 				this.is_confirm_show = false
 				this.require_to_add_group(this.add_data)
 				// this.clear_data()
@@ -396,6 +413,14 @@
 			},
 			// 修改事件-弹窗事件
 			request_change_persongroup:function(){
+				if( !this.check_input(this.change_data.name) ){
+					this.warning_info( "底库名称不超过20个字" )
+					return ;
+				}else if( !this.check_input(this.change_data.remarks) ){
+					this.warning_info( "备注不超过20个字" )
+					return ;
+				}
+
 				if( this.change_data.colorLabel === this.tabledata[this.change_data.uuid].colorLabel &&
 					this.change_data.name === this.tabledata[this.change_data.uuid].name &&
 					this.change_data.remarks === this.tabledata[this.change_data.uuid].remarks ){
@@ -436,6 +461,25 @@
 			},
 
 			// 请求数据
+			mes_handling:function(status, msg){
+                if( status === 1 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 2 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 10 ){
+                    this.error_info('请先登录')
+                    return ;
+                }else{
+                    if( status === 401 && msg === "未登录" ){
+                        this.error_info(msg)
+                        this.$router.push("/login")
+                    }else{
+                        this.error_info(status + "  " + msg)
+                    }
+                }
+            },
 			get_init_data:function(){
 				// 请求库名
 				var params = new URLSearchParams()
@@ -447,17 +491,8 @@
 		                	this.tabledata[i].uuid = i
 		                	this.tabledata[i].ischecked = false
 		                }
-                    }else if( res.data.status === 1 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status + "  " + res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -482,17 +517,8 @@
 		                	this.tabledata[i].uuid = i
 		                	this.tabledata[i].ischecked = false
 		                }
-                    }else if( res.data.status === 1 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status + "  " + res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -510,17 +536,8 @@
 	                    this.success_info('删除成功')
 	                    this.isallchecked = false
 	                    this.post_to_change_page(this.save_search_data)
-                    }else if( res.data.status === 1 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status + "  " + res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -554,17 +571,8 @@
                     	this.success_info("添加成功")
 	                    this.post_to_change_page(this.save_search_data)
 	                    this.clear_data()
-                    }else if( res.data.status === 1 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status + "  " + res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                     this.is_confirm_show = true
                 }).catch((error) => {
@@ -598,17 +606,8 @@
 	                    this.post_to_change_page(this.save_search_data)
 	                    // this.tabledata.splice(change_data.uuid,1,change_data)
 	                    this.clear_data()
-                    }else if( res.data.status === 1 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status + "  " + res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                     this.is_confirm_show = true
                 }).catch((error) => {
@@ -650,6 +649,13 @@
 		mounted:function(){
 			this.get_init_data()
 		},
+		watch:{
+			'search_data.groupName':function(newval,old){
+				if( newval === "" ){
+					this.click_to_search(this.search_data)
+				}
+			},
+		}
 	}
 </script>
 

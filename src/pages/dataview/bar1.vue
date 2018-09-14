@@ -73,7 +73,8 @@
 				    toolbox: {
 				        show : true,
 				        // orient : 'vertical', // 垂直显示
-		                x: 'right', 
+		                x: '1150px',
+		                // x: 'right', 
 		                // y: 'center',
 				        feature : {
 				            mark : {show: true}, // 

@@ -122,8 +122,8 @@
                     </table>
                 </div>
             </div>
-            <div class="cancel" @click="is_show_info = false" title="关闭"></div>
-            <div class="confirm" @click="confirm_search" title="确认"></div>
+            <div class="se_cancel" @click="is_show_info = false" title="关闭"></div>
+            <div class="se_confirm" @click="confirm_search" title="确认"></div>
         </div>
     </div>
 </template>
@@ -234,7 +234,7 @@
                 }, 5000);
 
                 this.get_init_data()
-                this.search_data = {}
+                // this.search_data = {}
 
                 this.change_mynav_active()
             },
@@ -403,6 +403,25 @@
                 },
 
                 // 请求数据
+                mes_handling:function(status, msg){
+                    if( status === 1 ){
+                        this.error_info(msg)
+                        return ;
+                    }else if( status === 2 ){
+                        this.error_info(msg)
+                        return ;
+                    }else if( status === 10 ){
+                        this.error_info('请先登录')
+                        return ;
+                    }else{
+                        if( status === 401 && msg === "未登录" ){
+                            this.error_info(msg)
+                            this.$router.push("/login")
+                        }else{
+                            this.error_info(status + "  " + msg)
+                        }
+                    }
+                },
                 get_init_data:function(){
                     // 请求设备组列表
                     var params = new URLSearchParams()
@@ -421,15 +440,8 @@
                             }
                             this.choose_groupName = this.groupNames[0].name
                             this.groupNames.splice(0,0,{name:"设备组选择"})
-                        }else if( res.data.status === 1 ){
-                            this.error_info('请求失败 ' + res.msg)
-                            return ;
-                        }else if( res.data.status === 2 ){
-                            this.error_info('参数错误 ' + res.msg)
-                            return ;
-                        }else if( res.data.status === 10 ){
-                            this.error_info('请先登录')
-                            return ;
+                        }else{
+                            this.mes_handling(res.data.status,res.data.msg)
                         }
                     }).catch((error) => {
                         console.log(error)
@@ -447,17 +459,8 @@
                             if( res.data.data.warningCount ){
                                 this.warningCount = res.data.data.warningCount
                             }                    
-                        }else if( res.data.status === 1 ){
-                            // this.error_info('请求失败 ' + res.msg)
-                            return ;
-                        }else if( res.data.status === 2 ){
-                            // this.error_info('参数错误 ' + res.msg)
-                            return ;
-                        }else if( res.data.status === 10 ){
-                            // this.error_info('请先登录')
-                            return ;
                         }else{
-                            this.error_info(res.data.status + "  " + res.data.msg)
+                            this.mes_handling(res.data.status,res.data.msg)
                         }
                     }).catch((error) => {
                         console.log(error)
@@ -470,15 +473,8 @@
                     this.$ajax.post("/person/list").then((res) => {
                         if( res.data.status === 0){
                             this.person_total = res.data.data.total
-                        }else if( res.data.status === 1 ){
-                            // this.error_info('请求失败 ' + res.msg)
-                            return ;
-                        }else if( res.data.status === 2 ){
-                            // this.error_info('参数错误 ' + res.msg)
-                            return ;
-                        }else if( res.data.status === 10 ){
-                            // this.error_info('请先登录')
-                            return ;
+                        }else{
+                            this.mes_handling(res.data.status,res.data.msg)
                         }
                     }).catch((error) => {
                         console.log(error)

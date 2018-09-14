@@ -1831,6 +1831,35 @@ to {height: 373px;opacity: 1;}
 	margin-left: 10px;
 	border: 1px solid #00fcff;
 }
+.rowselect_select{
+	width: 60px;
+	height: 23px;
+	float: left;
+}
+.face_rowselect{
+	width: 120px;
+	height: 30px;
+	margin-left: 25px;
+	float: left;
+}
+.face_rowselect select{
+	width: 100%;
+	height: 100%;
+	margin-top: 5px;
+	color: white;
+	border: none;
+	background-color:rgba(255,255,255,0.1);
+}
+.face_rowselect select option{
+	background-color: #3D4857;
+}
+.rowselect_text{
+	float: left;
+	color: #00fcff;
+	width: 40px;
+	height: 30px;
+	line-height: 30px;
+}
 .map_bg{
 	width: 100%;
 	height: 100%;
@@ -2205,7 +2234,7 @@ to {height: 373px;opacity: 1;}
 /*.ale_delete img{
 	
 }*/
-.cancel{
+.se_cancel{
 	cursor: pointer;
 	position: absolute;
 	top: 42px;
@@ -2214,10 +2243,10 @@ to {height: 373px;opacity: 1;}
 	height: 40px;
 	background: url(../assets/index/cancel.svg) no-repeat;
 }
-.cancel:hover{
+.se_cancel:hover{
 	background: url(../assets/index/cancel_1.svg) no-repeat;
 }
-.confirm{
+.se_confirm{
 	cursor: pointer;
 	position: absolute;
 	top: 94px;
@@ -2226,7 +2255,7 @@ to {height: 373px;opacity: 1;}
 	height: 40px;
 	background: url(../assets/index/refresh_icon.svg) no-repeat;
 }
-.confirm{
+.se_confirm{
 	background: url(../assets/index/refresh_icon_1.svg) no-repeat;
 }
 
@@ -2371,10 +2400,10 @@ to {height: 373px;opacity: 1;}
 /*弹窗*/
 .sysadd_user{
 	position: absolute;
-	top: 35%;
+	top: 32%;
 	left: 38%;
-	width:570px;
-	height: 180px;
+	width: 570px;
+	height: 220px;
 	z-index: 999;
 	background-color: rgba(31,112,183,1);
 }
@@ -2619,3 +2648,86 @@ to {height: 373px;opacity: 1;}
 .icon_trash:hover{
 	background: url(../assets/system/trash_1.svg) no-repeat;
 }
+
+/* manage2 2018-09-10 批量添加  start */
+/*新增*/
+     .batch_title{
+	position: absolute;
+	left: 240px;
+	width: 150px;
+	height: 38px;
+	line-height: 38px;
+     color: #00ffff;
+     cursor: pointer;
+ }
+.batch_title:hover{
+	text-decoration: underline
+ }
+.batch_title2{
+	position: absolute;
+	left: 20px;
+	height: 38px;
+	line-height: 38px;
+	color: #00ffff;
+	/*cursor: pointer;*/
+}
+.bounced_title2{
+	cursor: pointer;
+}
+.bounced_title2:hover{
+	text-decoration: underline
+}
+.mm2_leftbox{
+	width:70%;
+	margin-left: 15%;
+	margin-top: 45px;
+	height: 30px;
+}
+.mm2_leftbox2{
+	margin-top: 20px;
+}
+.mm2_leftbox select{
+	width: 40%;
+	height: 100%;
+	float: left;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	padding-left: 5px;
+}
+.loading_box{
+	width: 300px;
+	height: 30px;
+	color: red;
+	font-weight: bold;
+	font-size: 18px;
+	margin-left: 15%;
+	margin-top: 10px;
+	border-radius: 5px;
+}
+.mm2_no{
+	float: right;
+	width: 90px;
+	height: 24px;
+	line-height: 24px;
+	background-color: #626262;
+	color: white;
+	text-align: center;
+	font-size: 14px;
+	border-radius: 5px;
+	cursor: pointer;
+	/*margin-top:6px;*/
+}
+.mm2_file{
+	float: left;
+	width:60%;
+	height: 100%;
+}
+.mm2_file input{
+	cursor: pointer;
+	color: white;
+}
+.mm2_no2{
+	margin-top: 1px;
+	background-color: #0068B7;
+}
+/* 批量添加 end */

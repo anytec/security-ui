@@ -28,6 +28,25 @@
 		},
 		methods:{
 			// 请求数据
+			mes_handling:function(status, msg){
+                if( status === 1 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 2 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 10 ){
+                    this.error_info('请先登录')
+                    return ;
+                }else{
+                    if( status === 401 && msg === "未登录" ){
+                        this.error_info(msg)
+                        this.$router.push("/login")
+                    }else{
+                        this.error_info(status + "  " + msg)
+                    }
+                }
+            },
 			get_init_data:function(){
 				// 请求设备组列表
 				var params = new URLSearchParams()
@@ -51,17 +70,8 @@
 						}
 						this.$store.state.realtime_data.groupNames = this.groupNames
 						this.$store.state.realtime_data.video_names = this.video_names
-			        }else if( res.data.status === 1 ){
-			            this.error_info(res.data.msg)
-			        	return ;
-			        }else if( res.data.status === 2 ){
-			            this.error_info(res.data.msg)
-			        	return ;
-			        }else if( res.data.status === 10 ){
-			            this.error_info('请先登录')
-			        	return ;
 			        }else{
-                        this.error_info(res.data.status + "  " + res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
 			    }).catch((error) => {
 			    	// console.log(error)

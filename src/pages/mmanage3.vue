@@ -11,7 +11,7 @@
 					<div class="export_btn" @click="click_to_delete">删除</div>
 					<div class="right_btn h2_right_btn m3_right_box">
 						<div class="search h2_search" @click="click_to_search(search_data)">搜索</div>
-						<input class="center_input id_card input_right" type="text" v-model="search_data.groupName" placeholder="通过摄像机组名称搜索"/>
+						<input class="center_input id_card input_right" type="text" v-model="search_data.groupName" placeholder="通过设备组名称搜索"/>
 					</div>
 				</div>
 				<div class="table_box h2_table_box">
@@ -75,7 +75,7 @@
 									<div class="td_icon">
 										<div class="m_icon icon9" @click="skip_to_camera(item.uuid)" title="跳转到设备配置"></div>
 										<div class="m_icon icon6" @click="skip_to_historyface1(item.uuid)" title="跳转到历史报警"></div>
-										<div class="m_icon icon2" @click="click_to_change_gallery(item.uuid)" title="修改该人员信息"></div>
+										<div class="m_icon icon2" @click="click_to_change_gallery(item.uuid)" title="修改设备组信息"></div>
 									</div>
 								</td>
 							</tr>
@@ -183,6 +183,13 @@
 				this.post_to_change_page(this.save_search_data)
 			},
 
+			// 输入-正则化
+			check_input:function(input_data){
+				let reg = /^[\u4e00-\u9fa5]{0,20}$/
+
+                return reg.test(input_data)
+			},
+
 			// 复选框函数
 			click_to_checkedall: function() {
 				if(!this.isallchecked) {
@@ -214,6 +221,11 @@
 
 			// 搜索事件
 			click_to_search:function(search_data){
+				if( !this.check_input(search_data.groupName) ){
+					this.warning_info("设备组名应输入中文且不超过20个字")
+					return ;
+				}
+
 				this.init_data.pageNum = 1
 				this.save_search_data = JSON.parse(JSON.stringify(search_data))
 				this.post_to_change_page(search_data)
@@ -225,6 +237,13 @@
 			},
 			// 添加事件-弹窗
 			click_to_addinfo_data:function(){
+				if( !this.check_input(this.add_data.name) ){
+					this.warning_info("设备组名应输入中文且不超过20个字")
+					return ;
+				}else if( !this.check_input(this.add_data.remarks) ){
+					this.warning_info("备注应输入中文且不超过20个字")
+					return ;
+				}
 				this.is_confirm_show = false
 				this.require_to_add(this.add_data)
 			},
@@ -238,6 +257,14 @@
 			},
 			// 修改事件-弹窗
 			click_to_change_infodata:function(){
+				if( !this.check_input(this.change_data.name) ){
+					this.warning_info("设备组名应输入中文且不超过20个字")
+					return ;
+				}else if( !this.check_input(this.change_data.remarks) ){
+					this.warning_info("备注应输入中文且不超过20个字")
+					return ;
+				}
+
 				if( this.change_data.remarks === this.tabledata[this.change_data.uuid].remarks &&
 					this.change_data.name === this.tabledata[this.change_data.uuid].name ){
 					this.error_info("信息未更改")
@@ -340,6 +367,25 @@
 			},
 
 			// 请求数据
+			mes_handling:function(status, msg){
+                if( status === 1 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 2 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 10 ){
+                    this.error_info('请先登录')
+                    return ;
+                }else{
+                    if( status === 401 && msg === "未登录" ){
+                        this.error_info(msg)
+                        this.$router.push("/login")
+                    }else{
+                        this.error_info(status + "  " + msg)
+                    }
+                }
+            },
 			get_init_data:function(){
 				// 请求设备组列表
 				var params = new URLSearchParams()
@@ -358,17 +404,8 @@
 		                	this.tabledata[i].ischecked = false
 		                	this.tabledata[i].ischange = false
 		                }
-                    }else if( res.data.status === 1 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status + "  " + res.data.msg,uuid)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -399,17 +436,8 @@
 		                	this.tabledata[i].uuid = i
 		                	this.tabledata[i].ischecked = false
 		                }
-                    }else if( res.data.status === 1 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status + "  " + res.data.msg,uuid)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -427,17 +455,8 @@
 	                    this.success_info('删除成功')
 	                    this.isallchecked = false
 	                    this.post_to_change_page(this.save_search_data)
-                    }else if( res.data.status === 1 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status + "  " + res.data.msg,uuid)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -463,17 +482,8 @@
                     	this.success_info("添加成功")
 	                    this.post_to_change_page(this.save_search_data)
 	                    this.clear_data()
-                    }else if( res.data.status === 1 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status + "  " + res.data.msg,uuid)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                     this.is_confirm_show = true
                 }).catch((error) => {
@@ -502,23 +512,11 @@
                     	}
                     	this.tabledata[uuid].ischange = false
 						this.tabledata.splice(uuid,1,this.tabledata[uuid])
-                    }else if( res.data.status === 1 ){
-                    	if( model === "status" ){
-                    		this.tabledata[uuid].groupStatus = !this.tabledata[uuid].groupStatus
-                    	}
-	                    this.error_info(res.data.msg,uuid)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-                    	if( model === "status" ){
-                    		this.tabledata[uuid].groupStatus = !this.tabledata[uuid].groupStatus
-                    	}
-	                    this.error_info(res.data.msg,uuid)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录',uuid)
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status + "  " + res.data.msg,uuid)
+                    	if( model === "status" ){
+                    		this.tabledata[uuid].groupStatus = !this.tabledata[uuid].groupStatus
+                    	}
+	                    this.mes_handling(res.data.status,res.data.msg)
                     }
                     this.is_confirm_show = true
                 }).catch((error) => {
@@ -567,6 +565,13 @@
 		},
 		mounted:function(){
 			this.get_init_data()
+		},
+		watch:{
+			'search_data.groupName':function(newval,old){
+				if( newval === "" ){
+					this.click_to_search(this.search_data)
+				}
+			},
 		},
 	}
 </script>

@@ -83,23 +83,33 @@
 			},
 
 			// 获取阈值
+			mes_handling:function(status, msg){
+                if( status === 1 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 2 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 10 ){
+                    this.error_info('请先登录')
+                    return ;
+                }else{
+                    if( status === 401 && msg === "未登录" ){
+                        this.error_info(msg)
+                        this.$router.push("/login")
+                    }else{
+                        this.error_info(status + "  " + msg)
+                    }
+                }
+            },
 			get_confidence:function(){
 				var params = new URLSearchParams()
 
 				this.$ajax.post("/getWarningThreshold",params).then((res) => {
                     if( res.data.status === 0){
                     	this.confidence = res.data.data
-                    }else if( res.data.status === 1 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status + "  " + res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -115,17 +125,8 @@
                     if( res.data.status === 0){
                     	this.success_info("修改阈值成功")
                     	this.syshidden = false
-                    }else if( res.data.status === 1 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status + "  " + res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)

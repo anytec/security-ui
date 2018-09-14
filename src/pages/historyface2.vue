@@ -289,7 +289,28 @@
     				this.post_to_change_page( {} )
     			}
 			},
-			// 数据初始化请求数据
+
+			// 请求数据
+			mes_handling:function(status, msg){
+                if( status === 1 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 2 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 10 ){
+                    this.error_info('请先登录')
+                    return ;
+                }else{
+                    if( status === 401 && msg === "未登录" ){
+                        this.error_info(msg)
+                        this.$router.push("/login")
+                    }else{
+                        this.error_info(status + "  " + msg)
+                    }
+                }
+            },
+            // 数据初始化请求数据
 			get_init_data:function(){
                 // 请求设备组列表
 				var params = new URLSearchParams()
@@ -306,17 +327,8 @@
 						}
 
 						this.skip_from_other()
-			        }else if( res.data.status === 1 ){
-			            this.error_info(res.data.msg)
-			        	return ;
-			        }else if( res.data.status === 2 ){
-			            this.error_info(res.data.msg)
-			        	return ;
-			        }else if( res.data.status === 10 ){
-			            this.error_info('请先登录')
-			        	return ;
 			        }else{
-                    	this.error_info(res.data.status + "  " + res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
 			    }).catch((error) => {
 			    	console.log(error)
@@ -370,17 +382,8 @@
 		                		this.tabledata[i].gender = "男"
 		                	}
 		                }
-                    }else if( res.data.status === 1 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status + "  " + res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)

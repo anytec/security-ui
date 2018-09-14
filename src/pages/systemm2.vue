@@ -24,7 +24,7 @@
 							<td class="td td1">操作时间</td>
 							<td class="td td1">操作类型</td>
 							<td class="td td1">操作对象</td>
-							<td class="td td1">操作内容</td>
+							<!-- <td class="td td1">操作内容</td> -->
 							<td class="td td1">操作结果</td>
 						</tr>
 					</table>
@@ -60,10 +60,10 @@
 									</div>
 								</div>
 							</td>
-							<td class="td td1">
+							<!-- <td class="td td1">
 								<div class="td_icon2 sys2_tdtext" :title="item.objId" v-if="item.objId"> 查看详情 </div>
 								<div class="td_icon2 sys2_tdtext" title="无内容" v-if="!item.objId"> 查看详情 </div>
-							</td>
+							</td> -->
 							<td class="td td1">
 								<div class="td_icon2 sys2_tdtext">
 									{{item.operationResult}}
@@ -172,6 +172,14 @@
 				this.init_data.pageNum = val
 				this.get_init_data( this.save_search_data )
 			},
+
+			// 输入-校验
+            check_input:function(input_data,model=""){
+                let reg = /^.{0,20}$/
+
+                return reg.test(input_data)
+            },
+
 			click_to_checkedall:function(){
 				if(!this.isallchecked){
 					this.isallchecked = true
@@ -188,6 +196,11 @@
 
 			// 搜索事件
 			click_to_search:function(){
+				if(!this.check_input(this.search_name)){
+					this.warning_info("用户名应输入不超过20个字或字符")
+					return ;
+				}
+
 				this.init_data.pageNum = 1
 				
 				let search_data = {}
@@ -207,6 +220,25 @@
 			},
 
 			// 请求
+			mes_handling:function(status, msg){
+                if( status === 1 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 2 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 10 ){
+                    this.error_info('请先登录')
+                    return ;
+                }else{
+                    if( status === 401 && msg === "未登录" ){
+                        this.error_info(msg)
+                        this.$router.push("/login")
+                    }else{
+                        this.error_info(status + "  " + msg)
+                    }
+                }
+            },
 			get_init_data:function( search_data = {} ){
     			search_data.pageNum = this.init_data.pageNum
     			search_data.pageSize = this.init_data.pageSize
@@ -224,17 +256,8 @@
                 				this.tabledata[i].operationResult = "操作失败"
                 			}
                 		}
-                    }else if( res.data.status === 1 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info(res.data.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status,res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -263,6 +286,13 @@
 		mounted(){
 			this.get_init_data()
 		},
+		watch:{
+			'search_data.uname':function(newval,old){
+				if( newval === "" ){
+					this.click_to_search()
+				}
+			},
+		}
 	}
 	
 </script>

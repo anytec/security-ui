@@ -80,7 +80,7 @@
                                 <div class="photo_img" :title="item.cameraName">
                                     <div class="catch_message" v-show="is_trans">{{item.emotions}}</div>
                                     <div class="catch_message" v-show="!is_trans">{{item.time}}</div>
-                                    <img :src="item.img" style="width:100%;height:100%" @click="show_pic(item.wholePhoto)" title="点击显示原图"/>
+                                    <img :src="item.img" style="width:100%;height:100%" @click="show_pic(item.wholePhoto)"/>
                                 </div>
                                 <div class="photo_text" v-show="is_trans">
                                     <!-- <div class="new_photo_text">{{item.age}}岁    {{item.gender}}</div> -->
@@ -147,7 +147,8 @@
                 </div>
                 <div class="real_similarity">
                     <div class="similarity_number">{{alarm_new_data.confidence}}%</div>
-                    <div class="similarity_text">非常相似</div>
+                    <div class="similarity_text" v-if="alarm_new_data.confidence > 76">非常相似</div>
+                    <div class="similarity_text" v-else>比较相似</div>
                 </div>
                 <div class="right_information">
                     <div class="right_font">{{alarm_new_data.name}}    {{alarm_new_data.gender}}   {{alarm_new_data.age}}岁</div>
@@ -197,6 +198,7 @@
                     emotion: "",
                     age: "",
                     gender: "",
+                    wholePhoto: "",
                 },
                 default_data1:{
                     cameraGroupName: '无',
@@ -210,6 +212,7 @@
                     personGroupName: '无',
                     snapshotUrl: '',
                     faceUrl: '',
+                    wholePhoto: "",
                 },
                 show_data:[],
                 alarm_showdata:[],
@@ -357,7 +360,7 @@
                 // console.log(item.sdkId)
                 this.open_flag = false
                 this.$store.state.search_data.groupId = item.groupName
-                this.$store.state.search_data.sdkId = item.sdkId
+                this.$store.state.search_data.name = item.name
                 this.$store.state.is_search_data = true
                 this.$router.push('/mmanage4')
             },
@@ -482,6 +485,7 @@
                             temp_data.img = jsonData.data.snapshotUrl
                             temp_data.faceSdkId = jsonData.data.faceSdkId
                             temp_data.cameraName = jsonData.data.cameraName
+                            temp_data.wholePhoto = jsonData.data.wholePhoto
                             if( jsonData.data.emotions ){
                                 temp_data.emotions = this.emotion_analysis(jsonData.data.emotions)
                             }
@@ -492,7 +496,7 @@
                             }
                             // this.show_face_list.push(JSON.parse(JSON.stringify(temp_data)))
                             // console.log("temp_data")
-                            // console.log(temp_data)
+                            console.log(temp_data)
                             this.rolling_picture(temp_data)
                         }
                     }
@@ -511,6 +515,7 @@
                     this.show_data[0].emotions = temp_data.emotions
                     this.show_data[0].cameraName = temp_data.cameraName
                     this.show_data[0].faceSdkId = temp_data.faceSdkId
+                    this.show_data[0].wholePhoto = temp_data.wholePhoto
                     this.show_data[0].translatetime = 0.5
                     // temp_data.translatetime = 0.5
                     // temp_data.move_pix = this.show_data[0].move_pix
@@ -522,6 +527,7 @@
                     this.show_data[this.end_id+1].emotions = temp_data.emotions
                     this.show_data[this.end_id+1].cameraName = temp_data.cameraName
                     this.show_data[this.end_id+1].faceSdkId = temp_data.faceSdkId
+                    this.show_data[this.end_id+1].wholePhoto = temp_data.wholePhoto
                     this.show_data[this.end_id+1].translatetime = 0.5
                     // temp_data.translatetime = 0.5
                     // temp_data.move_pix = this.show_data[this.end_id+1].move_pix
@@ -663,6 +669,25 @@
             },
 
             // 初始化请求
+            mes_handling:function(status, msg){
+                if( status === 1 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 2 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 10 ){
+                    this.error_info('请先登录')
+                    return ;
+                }else{
+                    if( status === 401 && msg === "未登录" ){
+                        this.error_info(msg)
+                        this.$router.push("/login")
+                    }else{
+                        this.error_info(status + "  " + msg)
+                    }
+                }
+            },
             // 抓拍
             get_init_data:function(){
                 var params = new URLSearchParams()
@@ -705,17 +730,8 @@
                             this.show_data[i].translatetime = 0.5
                         }
 
-                    }else if( res.data.status === 1 ){
-                        this.error_info('请求失败 ' + res.msg)
-                        return ;
-                    }else if( res.data.status === 2 ){
-                        this.error_info('参数错误 ' + res.msg)
-                        return ;
-                    }else if( res.data.status === 10 ){
-                        this.error_info('请先登录')
-                        return ;
                     }else{
-                        this.error_info(res.data.status + "  " + res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                     console.log(error)
@@ -762,17 +778,8 @@
                             this.alarm_showdata[i].move_pix = 0
                             this.alarm_showdata[i].translatetime = 0.5
                         }
-                    }else if( res.data.status === 1 ){
-                        this.error_info('请求失败 ' + res.msg)
-                        return ;
-                    }else if( res.data.status === 2 ){
-                        this.error_info('参数错误 ' + res.msg)
-                        return ;
-                    }else if( res.data.status === 10 ){
-                        this.error_info('请先登录')
-                        return ;
                     }else{
-                        this.error_info(res.data.status + "  " + res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                     console.log(error)

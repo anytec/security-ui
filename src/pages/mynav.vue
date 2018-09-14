@@ -206,7 +206,7 @@
 			
 			// 页面直接进入拦截
 			if( !sessionStorage.username ){
-                console.log(this.$route.path)
+                // console.log(this.$route.path)
                 this.$router.push("/login")
                 this.$message({
                     type: 'warning',

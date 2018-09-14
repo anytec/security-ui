@@ -39,6 +39,16 @@
                     </div>
                     <div class="results_box">
                         <div class="results_text">发现{{init_data.allnum}}个结果</div>
+                        <div class="face_rowselect" v-show="false">
+                            <div class="rowselect_text">限制</div>
+                            <div class="rowselect_select">
+                                <select>
+                                    <option>10条</option>
+                                    <option>20条</option>
+                                    <option>30条</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="export_btn face_btn" @click="click_to_clear">清空</div>
                         <div class="export_btn face_btn" @click="export_data2excel">导出</div>
                     </div>
@@ -291,7 +301,7 @@
                                                 '+ camerastatus +'\
                                                 '+ eye_div +'\
                                                 <div class="face_icon2 face_icon2_img face_icon_fpath" onclick="skip_to_mmanage4(\''
-                                                + add_data[i].groupName +'\',\'' + add_data[i].sdkId + '\')" title="跳转到设备配置"></div>\
+                                                + add_data[i].groupName +'\',\'' + add_data[i].name + '\')" title="跳转到设备配置"></div>\
                                             </div>\
                                             <div class="face_camera">'+add_data[i].name+'</div>\
                                             <div class="face_conter"></div>\
@@ -423,6 +433,25 @@
 
             // 初始化请求数据
             // 请求数据
+            mes_handling:function(status, msg){
+                if( status === 1 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 2 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 10 ){
+                    this.error_info('请先登录')
+                    return ;
+                }else{
+                    if( status === 401 && msg === "未登录" ){
+                        this.error_info(msg)
+                        this.$router.push("/login")
+                    }else{
+                        this.error_info(status + "  " + msg)
+                    }
+                }
+            },
             get_init_data:function(){
                 this.add_markers_all(this.allcamera_list)
             },
@@ -503,17 +532,8 @@
                         this.map_info() // 组装窗口
                         this.add_markers() // 添加标记
                         this.add_line() // 添加轨迹
-                    }else if( res.data.status === 1 ){
-                        this.error_info('图片未检测到人脸或格式错误')
-                        return ;
-                    }else if( res.data.status === 2 ){
-                        this.error_info('参数错误 ' + res.msg)
-                        return ;
-                    }else if( res.data.status === 10 ){
-                        this.error_info('请先登录')
-                        return ;
                     }else{
-                        this.error_info(res.data.status + "  " + res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                     console.log(error)
@@ -658,7 +678,7 @@
                                 '+ camerastatus +'\
                                 '+ eye_div +'\
                                 <div class="face_icon2 face_icon2_img face_icon_fpath" onclick="skip_to_mmanage4(\''
-                                + this.tabledata[this.markers_list[i]].cameraGroupName +'\',\'' + this.tabledata[this.markers_list[i]].sdkId + '\')" title="跳转到设备配置"></div>\
+                                + this.tabledata[this.markers_list[i]].cameraGroupName +'\',\'' + this.tabledata[this.markers_list[i]].cameraName + '\')" title="跳转到设备配置"></div>\
                             </div>\
                             <div class="face_camera">'+ this.tabledata[this.markers_list[i]].cameraName +'</div>\
                             <div class="face_conter">'
@@ -691,9 +711,9 @@
                 this.$store.state.is_search_data = true
                 this.$router.push('/realtimem')
             },
-            skip_to_mmanage4(groupName,sdkId){
+            skip_to_mmanage4(groupName,name){
                 this.$store.state.search_data.groupId = groupName
-                this.$store.state.search_data.sdkId = sdkId
+                this.$store.state.search_data.name = name
                 this.$store.state.is_search_data = true
                 this.$router.push('/mmanage4')
             },
