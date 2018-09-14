@@ -144,7 +144,7 @@
 				tabledata: [],
 
 				operands: [ "操作对象/全部","底库","底库人员","设备组","设备" ],
-				optypes: [ "操作类型/全部","添加","删除","查找","修改" ],
+				optypes: [ "操作类型/全部","添加","修改","删除","注册"],
 				search_data: {
 					operationObj: "操作对象/全部",
 					operationType: "操作类型/全部",

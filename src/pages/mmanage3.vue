@@ -22,7 +22,7 @@
 									<input class="checkbox_box" type="checkbox" :checked="isallchecked" v-model="isallchecked" @click="click_to_checkedall" />
 								</td>
 								<td class="td td4">组名称</td>
-								<td class="td td4">区域</td>
+								<td class="td td4" v-if="false">区域</td>
 								<td class="td td4">状态</td>
 								<td class="td td4">备注</td>
 								<td class="td td4">操作</td>
@@ -42,7 +42,7 @@
 										</div>
 									</div>
 								</td>
-								<td class="td td4">
+								<td class="td td4" v-if="false">
 									<div class="table_text">
 										<div class="cell_text">
 											{{item.area}}

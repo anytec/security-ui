@@ -899,11 +899,12 @@
                             let PicBaseText = this.compress(image,width*0.5,height*0.5,1)
                             let temp_data = this.dataURItoBlob(PicBaseText)
                             temp_data.name = name
-                            this.files.splice( index, 1, temp_data )
+                            this.files.splice( this.files.length, 1, temp_data )
                         }else{
                         	this.files.push( file )
                         }
-                        this.pic_num[index].flag = true
+                        // this.pic_num[index].flag = true
+                        this.pic_num.splice( index, 1, {flag:true, num:index} )
                         for( let file_num = 0; file_num < this.pic_num.length; file_num++ ){
                         	if( !this.pic_num[file_num].flag ){
                         		break
@@ -932,11 +933,10 @@
                 			this.biggist_pic_list.push(e.target.files[i].name)
                 			continue
                 		}else{
-                			this.pic_num.push({ flag:false, num: i })
+                			this.pic_num.splice(i,0,{ flag:false, num: i })
                 		}
                 	}
                 }
-                console.log(this.pic_num.length)
                 if( !this.pic_num.length ){
                 	this.uploading = ""
 					this.$refs.inputer_batch.value = ''

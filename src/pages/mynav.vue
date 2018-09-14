@@ -112,6 +112,14 @@
 
                 })
 			},
+			warning_info:function(mes){
+				this.$message({
+                    type: 'warning',
+                    message: mes,
+                    showClose: true,
+                    center: true
+                })
+			},
 			success_info:function(mes){
 				this.$message({
                     type: 'success',
@@ -187,6 +195,8 @@
             // }
         },
         mounted(){
+        	this.change_mynav_active()
+
         	this.username = sessionStorage.username
         	this.$store.state.user.uname = sessionStorage.username
 
@@ -224,6 +234,10 @@
 			},
         	$route(to,from){
 				this.change_mynav_active()
+				if( sessionStorage.role != "管理员" && ( to.path.indexOf("mmanage") != -1 || to.path.indexOf("systemm") != -1 ) ){
+					this.warning_info("权限不足")
+					this.$router.push(from.path)
+				}
 			},
         },
 	}

@@ -56,7 +56,8 @@ const store = new Vuex.Store({
             state.user = payload
         },
         logout (state) {
-            sessionStorage.setItem("username","");
+            sessionStorage.setItem("username","")
+            sessionStorage.setItem("role","")
             state.user = {username:""}
         },
         page1_change(state,change_num){

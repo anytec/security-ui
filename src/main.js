@@ -39,6 +39,24 @@ router.beforeEach((to, from, next) => {
 			})
 		}else{
 			next()
+			// console.log(sessionStorage.role)
+			// console.log(sessionStorage.username)
+			// console.log(to.path,from.path)
+			// if( sessionStorage.role != "管理员" && to.path.indexOf("mmanage") != -1 ){
+			// 	console.log("ahhaha")
+			// 	Vue.prototype.$message({
+			// 		type: 'warning',
+			// 		message: "权限不足",
+			// 		showClose: true,
+			// 		center: true
+			// 	})
+			// 	next({
+			// 		path: from.path,
+
+			// 	})
+			// }else{
+			// 	next()
+			// }
 		}
 	}else{
 		next()

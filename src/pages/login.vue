@@ -121,6 +121,8 @@
                 this.$ajax.post("/user/login",params).then((res) => {
                     if( res.data.status === 0){
                         sessionStorage.setItem("username", res.data.data.uname)
+                        sessionStorage.setItem("role", res.data.data.role)
+                        // console.log(res.data.data.role)
                         this.$store.dispatch('login', res.data.data)
                         // console.log(this.$store.state.user.role)
                         this.$notify({

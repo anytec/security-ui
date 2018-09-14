@@ -39,6 +39,16 @@
                     </div>
                     <div class="results_box">
                         <div class="results_text">发现{{init_data.allnum}}个结果</div>
+                        <div class="face_rowselect">
+                            <div class="rowselect_text">限制</div>
+                            <div class="rowselect_select">
+                                <select v-model="search_data.identifyNumber">
+                                    <option>10</option>
+                                    <option>20</option>
+                                    <option>30</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="export_btn face_btn" @click="click_to_clear">清空</div>
                         <div class="export_btn face_btn" @click="export_data2excel">导出</div>
                     </div>
@@ -138,6 +148,7 @@
                     confidence: 75,
                     startTime: "",
                     endTime: "",
+                    identifyNumber: 10,
                 },
                 input_confidence: 0,
                 same_confidence: 0,
@@ -555,6 +566,9 @@
                 } else {
                     params.append("cameraIds", "")
                 }
+                if( search_data.identifyNumber ){
+                    params.append( "identifyNumber", search_data.identifyNumber )
+                }
 
                 if (this.datevalue) {
                     // console.log(this.datevalue)
@@ -686,6 +700,7 @@
                         confidence: 75,
                         startTime: "",
                         endTime: "",
+                        identifyNumber: 10,
                     }
                     this.add_markers_all(this.allcamera_list)
                 }

@@ -11,9 +11,12 @@
 					<div class="export_btn" @click="click_to_delete">删除</div>
 					<div class="right_btn h2_right_btn m3_right_box">
 						<div class="search h2_search" @click="click_to_search(search_data)">搜索</div>
-						<select class="center_select input_right" v-model="search_data.groupId">
-							<option selected="selected">选择组/不限</option>
-							<option v-for="item in init_data.video_groups">{{ item.name }}</option>
+						<select class="center_select input_right" v-model="search_data.serverLabel" v-if="search_data.type === '视频流'">
+							<option selected="selected">地址标识/不限</option>
+							<option v-for="item in init_data.serverLabels">{{ item }}</option>
+						</select>
+						<select class="center_select input_right" v-model="search_data.cameraSdkId" v-if="search_data.type === '抓拍机'">
+							<option v-for="item in init_data.mac_serverLabels">{{ item }}</option>
 						</select>
 						<select class="center_select input_right" v-model="search_data.type">
 							<option selected="selected">类型/不限</option>
@@ -23,12 +26,9 @@
 							<option selected="selected">摄像头状态/不限</option>
 							<option v-for="item in init_data.status">{{ item }}</option>
 						</select>
-						<select class="center_select input_right" v-model="search_data.serverLabel" v-if="search_data.type === '视频流'">
-							<option selected="selected">地址标识/不限</option>
-							<option v-for="item in init_data.serverLabels">{{ item }}</option>
-						</select>
-						<select class="center_select input_right" v-model="search_data.serverLabel" v-if="search_data.type === '抓拍机'">
-							<option v-for="item in init_data.mac_serverLabels">{{ item }}</option>
+						<select class="center_select input_right" v-model="search_data.groupId">
+							<option selected="selected">选择组/不限</option>
+							<option v-for="item in init_data.video_groups">{{ item.name }}</option>
 						</select>
 						<input class="center_input id_card input_right" type="text" v-model="search_data.name" placeholder="通过设备名称搜索"/>
 					</div>
@@ -148,7 +148,7 @@
 						<select class="mm4_select" v-model="add_data.serverLabel" v-show="add_data.cameraType === '视频流'">
 							<option v-for="item in map_serverLabels_list">{{ item }}</option>
 						</select>
-						<select class="mm4_select" v-model="add_data.serverLabel" v-show="add_data.cameraType === '抓拍机'">
+						<select class="mm4_select" v-model="add_data.cameraSdkId" v-show="add_data.cameraType === '抓拍机'">
 							<option v-for="item in init_data.mac_serverLabels">{{ item }}</option>
 						</select>
 						<select class="mm4_select" v-model="add_data.cameraType">
@@ -223,6 +223,7 @@
 					type: "类型/不限",
 					status: "摄像头状态/不限",
 					serverLabel: "地址标识/不限",
+					cameraSdkId: "",
 				},
 				save_search_data:{
 
@@ -231,6 +232,7 @@
 				add_data:{
 					location: "",
 					serverLabel: "",
+					cameraSdkId: "",
 					cameraType: "视频流",
 					name: "",
 					remarks: "",
@@ -283,7 +285,7 @@
 					// reg = /^[rtsp://][0-9\.\:\@\\\-\_]{0,100}$/
 					// rtsp://amdin:password@0.0.0.0:554/Streaming/Channels/1
 				}else if( model === "location" ){
-					reg = /^[0-9]{1,3}\.[0-9]{5,6}\,[0-9]{1,2}\.[0-9]{5,6}$/
+					reg = /^[0-9]{1,3}\.[0-9]{5,7}\,[0-9]{1,2}\.[0-9]{5,7}$/
 				}
 
                 return reg.test(input_data)
@@ -400,7 +402,7 @@
 				this.map = new AMap.Map('container', {
 				        resizeEnable: true,
 				        zoom:16,
-				        center: [114.059777,22.541492],
+				        center: [116.3979149,39.9148837],
 				        mapStyle: 'amap://styles/darkblue',
 				 })
 				this.map.on('click', (e) => {
@@ -458,20 +460,24 @@
 						}else if( item === "location" ){
 							this.warning_info("设备坐标不能为空")
 							return ;
+						}else{
+							// console.log()
+							continue
 						}
 					}
-					temp_data[item] =  this.add_data[item]
 					if( item === "groupName" ){
 						for( let i = 0; i < this.init_data.video_groups.length; i++ ){
-							if( this.init_data.video_groups[i].name === temp_data[item] ){
+							if( this.init_data.video_groups[i].name === this.add_data[item] ){
 								temp_data.groupId = this.init_data.video_groups[i].id
-								break
 							}
 						}
+					}else{
+						temp_data[item] = this.add_data[item]
 					}
 				}
 				this.is_confirm_show = false
-				this.require_to_add(this.add_data)
+				// this.require_to_add(this.add_data)
+				this.require_to_add(temp_data)
 			},
 			// 添加事件-清除数据
 			clear_show_data:function(){
@@ -480,6 +486,7 @@
 				this.add_data = {
 					location: "",
 					serverLabel: "",
+					cameraSdkId: "",
 					cameraType: "视频流",
 					name: "",
 					remarks: "",
@@ -528,14 +535,17 @@
 
 				let temp_data = {}
 				for( let item in this.add_data ){
-					if( this.add_data[item] === "" && item != "remarks"){
+					if( this.add_data[item] === "" && item != "remarks" && item != "serverLabel" && item != "cameraSdkId"){
 						this.error_info("修改信息不能为空")
 						return ;
 					}
 				}
 
-				let name_list = ["groupName","name","serverLabel","cameraType","location","streamAddress","remarks"]
+				let name_list = ["groupName","name","serverLabel","cameraSdkId","cameraType","location","streamAddress","remarks"]
 				for( let item1 of name_list ){
+					if( this.add_data[item1] === "" && item1 != "remarks" ){
+						continue
+					}
 					if( this.add_data[item1] != this.tabledata[this.add_data.uuid][item1] ){
 						if( item1 === "groupName" ){
 							for( let i = 0; i < this.init_data.video_groups.length; i++ ){
@@ -550,7 +560,7 @@
 				if( JSON.stringify(temp_data) != "{}"){
 					temp_data.id = this.tabledata[this.add_data.uuid].id
 					this.is_confirm_show = false
-					this.require_to_change(temp_data)
+					this.require_to_change(temp_data,this.add_data.uuid)
 				}else{
 					this.is_confirm_show = true
 					this.error_info("未修改信息")
@@ -798,6 +808,7 @@
                     	}else{
                     		this.success_info('修改设备状态成功')
                     	}
+                    	console.log(this.tabledata)
                     	this.tabledata[uuid].ischange = false
 						this.tabledata.splice(uuid,1,this.tabledata[uuid])
                     	this.clear_show_data()
@@ -883,18 +894,23 @@
 					this.click_to_search(this.search_data)
 				}
 			},
+			// cameraSdkId
 			'add_data.cameraType':function(newval,old){
 				if( newval === "抓拍机" ){
-					this.add_data.serverLabel = this.init_data.mac_serverLabels[0]
+					this.add_data.cameraSdkId = this.init_data.mac_serverLabels[0]
+					this.add_data.serverLabel = ""
 				}else{
 					this.add_data.serverLabel = this.init_data.serverLabels[0]
+					this.add_data.cameraSdkId = ""
 				}
 			},
 			'search_data.type':function(newval,old){
 				if( newval === "抓拍机" ){
-					this.search_data.serverLabel = this.init_data.mac_serverLabels[0]
+					this.search_data.cameraSdkId = this.init_data.mac_serverLabels[0]
+					this.search_data.serverLabel = ""
 				}else{
 					this.search_data.serverLabel = this.init_data.serverLabels[0]
+					this.search_data.cameraSdkId = ""
 				}
 			},
 		},
