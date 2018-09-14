@@ -34,21 +34,33 @@
             // }, 1000);
         },
         methods: {
+            mes_handling:function(status, msg){
+                if( status === 1 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 2 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 10 ){
+                    this.error_info('请先登录')
+                    return ;
+                }else{
+                    if( status === 401 && msg === "未登录" ){
+                        this.error_info(msg)
+                        this.$router.push("/login")
+                    }else{
+                        this.error_info(status + "  " + msg)
+                    }
+                }
+            },
             post_to_change_cpu:function(  ){
                 this.$ajax.get("/actuator/metrics/system.cpu.usage").then((res) => {
                     if( res.data){
                         let percent = res.data.measurements[0].value
 
                         this.cpuData = (percent.toFixed(4)*100).toFixed(2)
-                    }else if( res.data.status === 1 ){
-                        this.error_info('请求失败 ' + res.msg)
-                        return ;
-                    }else if( res.data.status === 2 ){
-                        this.error_info('参数错误 ' + res.msg)
-                        return ;
-                    }else if( res.data.status === 10 ){
-                        this.error_info('请先登录')
-                        return ;
+                    }else{
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                     console.log(error)
@@ -64,15 +76,8 @@
                         let percent = (total - free)/total
 
                         this.hardDisk = (percent.toFixed(4)*100).toFixed(2)
-                    }else if( res.data.status === 1 ){
-                        this.error_info('请求失败 ' + res.msg)
-                        return ;
-                    }else if( res.data.status === 2 ){
-                        this.error_info('参数错误 ' + res.msg)
-                        return ;
-                    }else if( res.data.status === 10 ){
-                        this.error_info('请先登录')
-                        return ;
+                    }else{
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                     console.log(error)
@@ -86,15 +91,8 @@
                         let percent = res.data.data.split("%")[0]
 
                         this.ROM = percent
-                    }else if( res.data.status === 1 ){
-                        this.error_info('请求失败 ' + res.msg)
-                        return ;
-                    }else if( res.data.status === 2 ){
-                        this.error_info('参数错误 ' + res.msg)
-                        return ;
-                    }else if( res.data.status === 10 ){
-                        this.error_info('请先登录')
-                        return ;
+                    }else{
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                     console.log(error)

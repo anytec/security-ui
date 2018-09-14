@@ -15,12 +15,13 @@
 		top: 0;
 		width: 100%;
 	    min-width: 1920px;
-		box-shadow: 5px 0px 5px #0c0e12;
+	    background: url(../assets/toolbox_bg.png) no-repeat;
+		/*box-shadow: 5px 0px 5px #0c0e12;
 		background: linear-gradient(left, rgba(30,49,88,0.8) 0%, rgba(13,23,42,0.9) 100%) ;
 		background: -webkit-linear-gradient(left, rgba(30,49,88,0.8), rgba(13,23,42,0.9) 100%) ;
 		background: -moz-linear-gradient(left, rgba(30,49,88,0.8) 0%, rgba(13,23,42,0.9) 100%) ;
 		background: -ms-linear-gradient(left, rgba(30,49,88,0.8) 0%, rgba(13,23,42,0.9) 100%) ;
-		background: -o-linear-gradient(left, rgba(30,49,88,0.8) 0%, rgba(13,23,42,0.9) 100%) ;
+		background: -o-linear-gradient(left, rgba(30,49,88,0.8) 0%, rgba(13,23,42,0.9) 100%) ;*/
 		z-index: 99;
 	}
     .left_logo{
@@ -32,11 +33,19 @@
     	height: 90%;
     	margin-left: 20px;
     }
+
 	.right_user{
-		width: 10%;
+		width: 14%;
 		height: 100%;
+		float: right;
+	}
+	.map_model_box{
+		color: white;
 		float: left;
-		margin-left: 9%;
+		width: 70px;
+		height: 60px;
+		line-height: 60px;
+		cursor: pointer;
 	}
 	.center{
 	    	width: 60%;
@@ -130,7 +139,7 @@
 			top: 0;
 		}
 		.user_box{
-			width: 60%;
+			width: 45%;
 			height: 100%;
 			float: left;
 		}

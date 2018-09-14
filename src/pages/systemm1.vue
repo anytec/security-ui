@@ -7,7 +7,7 @@
                     <div class="sys_addicon" @click="AddPerson" title="添加用户">
                     	<img :src="sys_imgsrc" @mouseover="sys_imgsrc=sys_imgsrc2" @mouseout="sys_imgsrc=sys_imgsrc1"/>
                     </div>
-                    <div class="sys_input">
+                    <div class="sys_input" @keyup.enter="keyup_to_search">
                         <input type="text" placeholder="搜索用户名" v-model="search_name"/>
                         <div class="sysSearch_box" @click="click_to_search">
                             <img :src="alert_src" @mouseover="alert_src=ale_imgsrc2" @mouseout="alert_src=ale_imgsrc1"/>
@@ -59,11 +59,17 @@
                                 </td>
                                 <td class="td td10">
                                     <div class="icon_fa">
-                                    	<div class="td_icon2 systd_icon2" @click="click_to_update_person(item.id,index)">
-	                                        <img src="../assets/historyface/icon2.png"/>
+                                    	<div class="td_icon2 systd_icon2 icon2" @click="click_to_update_person(item.id,index)" title="修改用户信息"></div>
+	                                    <div class="td_icon2 systd_icon2 icon_trash" 
+	                                    	 title="管理员信息不可删除"
+	                                    	 v-if="item.role === '管理员' "
+	                                    	 style="cursor: not-allowed;">
 	                                    </div>
-	                                    <div class="td_icon2 systd_icon2" @click="click_to_delete_person(index)">
-	                                        <img src="../assets/system/trash.svg"/>
+	                                    <div class="td_icon2 systd_icon2 icon_trash" 
+	                                    	 @click="click_to_delete_person(index)" 
+	                                    	 title="删除用户信息"
+	                                    	 v-if="item.role != '管理员' "
+	                                    	 >
 	                                    </div>
                                     </div>   
                                 </td>
@@ -93,10 +99,18 @@
                 <div class="systitle_text">添加用户</div>
                 <div class="sysconter_box">
                     <div class="sys_maxbox">
-                        <div class="sysleft_text">用户名：</div>
-                        <div class="sysleft_input"><input type="text" v-model="showData.uname" /></div>
+                    	<div class="sysleft_text">账号：</div>
+                        <div class="sysleft_input"><input type="text" v-model="showData.account" /></div>
                         <div class="sysleft_text">密码：</div>
                         <div class="sysleft_input"><input type="text" v-model="showData.upass"/></div>
+                    </div>
+                    <!-- <div class="sys_maxbox">
+                        <div class="sysleft_text">账号：</div>
+                        <div class="sysleft_input"><input type="text" v-model="showData.account" /></div>
+                    </div> -->
+                    <div class="sys_maxbox">
+                    	<div class="sysleft_text">用户名：</div>
+                        <div class="sysleft_input"><input type="text" v-model="showData.uname" /></div>
                     </div>
                     <div class="sys_maxbox">
                         <div class="sysleft_text">备注：</div>
@@ -112,13 +126,13 @@
             </div>  
         </div>
         <!--弹窗2-->
-        <div class="sysadd_user" v-show="is_click_to_set">
+        <div class="sysadd_user" v-show="is_click_to_set" style="height:180px">
             <div class="systitle_user">
                 <div class="systitle_text">编辑用户</div>
                 <div class="sysconter_box">
                     <div class="sys_maxbox">
                         <div class="sysleft_text">用户名：</div>
-                        <div class="sysleft_input"><input readonly="readonly" type="text" v-model="showData.uname"/></div>
+                        <div class="sysleft_input"><input type="text" v-model="showData.uname"/></div>
                         <div class="sysleft_text">密码：</div>
                         <div class="sysleft_input"><input type="text" v-model="showData.upass"/></div>
                     </div>
@@ -211,8 +225,10 @@
 				delete_data: [],
 				// 弹窗
 				showData:{
+					account: "",
 					uname: "",
 					upass: "",
+					notes: "",
 				},
 				// 添加用户
 				is_click_to_add: false,
@@ -230,6 +246,20 @@
 				this.init_data.pageNum = val
 				this.get_init_data( {keyword:this.save_search_data} )
 			},
+
+			// 输入-校验
+            check_input:function(input_data,model=""){
+                let reg = /^.{4,20}$/
+                if( model === "account" ){
+                	reg = /^[a-zA-Z0-9_]{4,20}$/
+                }else if( model === "notes" ){
+					reg = /^[\u4e00-\u9fa5]{0,20}$/
+				}else if( model === "search" ){
+					reg = /^.{0,20}$/
+				}
+                return reg.test(input_data)
+            },
+
 			click_to_checkedall:function(){
 				if(!this.isallchecked){
 					this.isallchecked = true
@@ -250,7 +280,23 @@
 				this.is_click_to_add = true
 			},
 			confirm_add_data:function(){
-				if( this.showData.uname === "" ){
+				if( !this.check_input(this.showData.account,"account") ){
+					this.warning_info("账户只能输入4~20位字母、数字、下划线")
+					return ;
+				}else if(!this.check_input(this.showData.notes,"notes")){
+					this.warning_info("备注应输入中文且不超过20个字")
+					return ;
+				}else if(!this.check_input(this.showData.uname)){
+					this.warning_info("用户名应输入4~20个字或字符")
+					return ;
+				}else if(!this.check_input(this.showData.upass)){
+					this.warning_info("密码应输入4~20个字或字符")
+					return ;
+				}
+
+				if( this.showData.account === ""){
+					this.warning_info("账号不能为空")
+				}else if( this.showData.uname === "" ){
 					this.warning_info("用户名不能为空")
 				}else if( this.showData.upass === ""){
 					this.warning_info("密码不能为空")
@@ -260,8 +306,10 @@
 			},
 			close_add_info:function(){
 				this.showData = {
+					account: "",
 					uname: "",
 					upass: "",
+					notes: "",
 				}
 				this.is_click_to_add = false
 				this.is_click_to_set = false
@@ -272,25 +320,38 @@
 			},
 			confirm_set_data:function(){
 				let update_date = {}
-				let items = ["upass","notes"]
+				let items = ["uname","upass","notes"]
 				for( let i = 0; i < items.length; i++ ){
 					if( this.showData[items[i]] != this.tabledata[this.showData.uuid][items[i]] ){
 						update_date[items[i]] = this.showData[items[i]]
 					}
 				}
-				update_date.id = this.tabledata[this.showData.uuid].id
+				// for( let item in  this.showData ){
+				// 	if( item === 'uuid' ){
+				// 		continue
+				// 	}else{
+				// 		update_date[item] = this.showData[item]
+				// 	}
+				// }
+				update_date.id = this.showData.id
 				this.require_to_update( update_date )
 
 				this.is_click_to_set = false
 			},
 			// 搜素事件
 			click_to_search:function(){
+				if(!this.check_input(this.search_name,"search")){
+					this.warning_info("用户名应输入不超过20个字或字符")
+					return ;
+				}
+
+				this.init_data.pageNum = 1
 				this.save_search_data = this.search_name
 				this.get_init_data( {keyword:this.search_name} )
 			},
 			// 删除事件
 			click_to_delete_person:function(index){
-				this.$confirm('是否删除该数据？','提示',{
+				this.$confirm('是否删除该用户及用户数据？','提示',{
 					confirmButtonText: '是',
 		            cancelButtonText: '否',
 		            type: 'warning'
@@ -302,8 +363,34 @@
 					;
 				})
 			},
+			// 键盘事件
+			// 键盘事件-回车搜索
+			keyup_to_search:function(){
+				// this.save_search_data = this.search_name
+				// this.get_init_data({keyword:this.search_name})
+				this.click_to_search()
+			},
 
 			// 请求
+			mes_handling:function(status, msg){
+                if( status === 1 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 2 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 10 ){
+                    this.error_info('请先登录')
+                    return ;
+                }else{
+                    if( status === 401 && msg === "未登录" ){
+                        this.error_info(msg)
+                        this.$router.push("/login")
+                    }else{
+                        this.error_info(status + "  " + msg)
+                    }
+                }
+            },
 			get_init_data:function( search_data = {} ){
 				// 请求库名
 				var params = new URLSearchParams()
@@ -316,17 +403,8 @@
                     if( res.data.status === 0){
                     	this.init_data.allnum = res.data.data.total
                 		this.tabledata = res.data.data.list
-                    }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status,res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -343,17 +421,8 @@
                     	this.showData = JSON.parse(JSON.stringify(res.data.data))
 						this.showData.uuid = index
 						this.is_click_to_set = true
-                    }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status,res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -372,17 +441,8 @@
                     	this.success_info("添加用户成功")
                     	this.close_add_info()
                     	this.get_init_data()
-                    }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status,res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -399,17 +459,8 @@
                     if( res.data.status === 0){
                     	this.success_info('删除成功')
 	                    this.get_init_data(this.save_search_data)
-                    }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status,res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -428,17 +479,8 @@
                     	this.success_info("修改用户信息成功")
                     	this.close_add_info()
                     	this.get_init_data()
-                    }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status,res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -474,7 +516,14 @@
 		},
 		mounted(){
 			this.get_init_data()
-		}
+		},
+		watch:{
+			'search_name':function(newval,old){
+				if( newval === "" ){
+					this.click_to_search()
+				}
+			},
+		},
 	}
 	
 </script>

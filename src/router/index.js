@@ -57,24 +57,6 @@ const  routes=[
 			keep_alive: false, // 是否缓存
 		},
 	},
-	// {
-	// 	path: '/list',
-	// 	name: 'mylist',
-	// 	component: mylist,
-	// 	meta:{
-	// 		title: 'mylist',
-	// 		index: 2,
-	// 	},
-	// },
-	// {
-	// 	path: '/history2',
-	// 	name: 'history2',
-	// 	component: history2,
-	// 	meta:{
-	// 		title: 'history2',
-	// 		index: 2,
-	// 	},
-	// },
 	{
 		path: '/homepage',
 		name: 'homepage',

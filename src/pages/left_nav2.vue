@@ -99,6 +99,25 @@
 			},
 
 			// 请求数据
+			mes_handling:function(status, msg){
+                if( status === 1 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 2 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 10 ){
+                    this.error_info('请先登录')
+                    return ;
+                }else{
+                    if( status === 401 && msg === "未登录" ){
+                        this.error_info(msg)
+                        this.$router.push("/login")
+                    }else{
+                        this.error_info(status + "  " + msg)
+                    }
+                }
+            },
 			get_init_data:function(){
 				// 请求设备组列表
 				var params = new URLSearchParams()
@@ -109,36 +128,30 @@
 							this.groupNames.push( {"name":name,"id":id} )
 							this.video_names.push( res.data.data[item] )
 						}
+						this.$store.state.facepath_search_data.allcamera_list = []
 						for( let i = 0; i < this.video_names.length; i++ ){
 							for( let j = 0; j < this.video_names[i].length; j++ ){
 								this.video_names[i][j].uuid = j
 								this.video_names[i][j].ischecked = 0
-								this.video_names[i][j].location = [this.video_names[i][j].location.split(",")[0],this.video_names[i][j].location.split(",")[1]]
-								// if( this.video_names[i][j].cameraStatus ){
-								// 	this.video_names[i][j].cameraStatus = "正常"
-								// }else{
-								// 	this.video_names[i][j].cameraStatus = "关闭"
-								// }
+								if( this.$store.state.facepath_model === "online" ){
+									this.video_names[i][j].location = [this.video_names[i][j].location.split(",")[0],this.video_names[i][j].location.split(",")[1]]
+								}else if( this.$store.state.facepath_model === "offline" ){
+									this.video_names[i][j].location = [this.video_names[i][j].location.split(",")[1],this.video_names[i][j].location.split(",")[0]]
+								}
 								// console.log(this.video_names[i][j].location)
 								this.$store.state.facepath_search_data.allcamera_list.splice(-1,0,this.video_names[i][j])
 							}
 						}
+						// console.log(this.$store.state.facepath_search_data.allcamera_list)
 						// console.log(this.$store.state.facepath_search_data.allcamera_list)
 						for (let i = 0; i < this.groupNames.length; i++) {
 							this.groupNames[i].uuid = i + ""
 							this.groupNames[i].ischecked = 0
 						}
 						// console.log(this.video_names)
-			        }else if( res.data.status === 1 ){
-			            this.error_info('请求失败 ' + res.msg)
-			        	return ;
-			        }else if( res.data.status === 2 ){
-			            this.error_info('参数错误 ' + res.msg)
-			        	return ;
-			        }else if( res.data.status === 10 ){
-			            this.error_info('请先登录')
-			        	return ;
-			        }
+			        }else{
+                        this.mes_handling(res.data.status,res.data.msg)
+                    }
 			    }).catch((error) => {
 			    	console.log(error)
 			    	this.error_info('网络连接出错')

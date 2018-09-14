@@ -1,63 +1,86 @@
 <template>
-    <div class="main_box">
-        <left-nav></left-nav>
-        <div class="map_bg" id="container"></div>
-        <!--地图边框线-->
-        <div class="left_xian"></div>
-        <div class="top_xian"></div>
-        <!--右边上半部分-->
-        <div class="face_rightbox1">
-            <div class="faceleft_photo">
-                <div class="face_photoimg">
-                    <div class="faceshow_img" v-show="dataUrl"><img :src="dataUrl" v-show="dataUrl"></div>
-                    <img class="decoration_img" src="../assets/mmanage/add_file.png"  v-show="!dataUrl" />
-                    <input class="face_file" type="file" @change="handleFileChange" ref="inputer" />
-                </div>
-                <div class="facephoto_text">检索对象</div>
-            </div>
-            <div class="face_fillbox">
-                <div class="face_timetext">时间范围</div>
-                <div class="face_timeinput">
-                    <el-date-picker 
-                      v-model="datevalue"
-                      type="datetimerange"
-                      :picker-options="pickeroptions"
-                      range-separator="至"
-                      start-placeholder="开始日期"
-                      end-placeholder="结束日期">
-                    </el-date-picker>
-                </div>
-                <div class="similar_box">
-                    <div class="similar_text">相似度</div>
-                    <div class="slider_box">
-                        <el-slider v-model="search_data.confidence"></el-slider>
+    <div style="width:100%;height:100%;">
+        <div class="main_box">
+            <left-nav></left-nav>
+            <div class="map_bg" id="container"></div>
+            <!--地图边框线-->
+            <div class="left_xian"></div>
+            <div class="top_xian"></div>
+            <!--右边上半部分-->
+            <div class="face_rightbox1">
+                <div class="faceleft_photo">
+                    <div class="face_photoimg">
+                        <div class="faceshow_img" v-show="dataUrl"><img :src="dataUrl" v-show="dataUrl"></div>
+                        <img class="decoration_img" src="../assets/mmanage/add_file.png"  v-show="!dataUrl" />
+                        <input class="face_file" type="file" @change="handleFileChange" ref="inputer" />
                     </div>
-                    <div class="percentage"><input type="text" v-model="search_data.confidence"/></div>
-                    <div class="percentage_text fp_percentage">%</div>
-                    <div class="search face_search" @click="click_to_search(search_data)">搜索</div>
+                    <div class="facephoto_text">检索对象</div>
                 </div>
-                <div class="results_box">
-                    <div class="results_text">发现{{init_data.allnum}}个结果</div>
-                    <div class="export_btn face_btn" @click="click_to_clear">清空</div>
-                    <div class="export_btn face_btn" @click="export_data2excel">导出</div>
+                <div class="face_fillbox">
+                    <div class="face_timetext">时间范围</div>
+                    <div class="face_timeinput">
+                        <el-date-picker 
+                          v-model="datevalue"
+                          type="datetimerange"
+                          :picker-options="pickeroptions"
+                          range-separator="至"
+                          start-placeholder="开始日期"
+                          end-placeholder="结束日期">
+                        </el-date-picker>
+                    </div>
+                    <div class="similar_box">
+                        <div class="similar_text">相似度</div>
+                        <div class="slider_box">
+                            <el-slider v-model="search_data.confidence"></el-slider>
+                        </div>
+                        <div class="percentage"><input type="text" v-model="search_data.confidence"/></div>
+                        <div class="percentage_text fp_percentage">%</div>
+                        <div class="search face_search" @click="click_to_search(search_data)">搜索</div>
+                    </div>
+                    <div class="results_box">
+                        <div class="results_text">发现{{init_data.allnum}}个结果</div>
+                        <div class="face_rowselect" v-show="false">
+                            <div class="rowselect_text">限制</div>
+                            <div class="rowselect_select">
+                                <select>
+                                    <option>10条</option>
+                                    <option>20条</option>
+                                    <option>30条</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="export_btn face_btn" @click="click_to_clear">清空</div>
+                        <div class="export_btn face_btn" @click="export_data2excel">导出</div>
+                    </div>
+                </div>
+            </div>
+            <!--右边下半部分-->
+            <div class="face_rightbox2">
+                <div class="results_listbox">
+                    <div class="results_list" :style="{'border-left': item.mystyle}" v-for="item in tabledata">
+                        <div class="digital_bg" @click="change_map_center(item.location)">{{init_data.allnum - item.uuid}}</div>
+                        <div class="results_right">
+                            <div class="results_conter1">{{item.cameraName}}</div>
+                            <div class="re_conterbox1">
+                                <div class="results_conter2">{{item.nyr}}</div>
+                                <div class="results_conter2">{{item.sfm}}</div>
+                                <div class="results_conter2">相似度：{{ item.confidence }}</div>
+                            </div>
+                            <div class="re_conterbox2">
+                                <img :src="item.snapshotUrl" @click="show_pic(item.wholePhoto)" title="点击显示原图" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <!--右边下半部分-->
-        <div class="face_rightbox2">
-            <div class="results_listbox">
-                <div class="results_list" :style="{'border-left': item.mystyle}" v-for="item in tabledata">
-                    <div class="digital_bg" @click="change_map_center(item.location)">{{init_data.allnum - item.uuid}}</div>
-                    <div class="results_right">
-                        <div class="results_conter1">{{item.cameraName}}</div>
-                        <div class="re_conterbox1">
-                            <div class="results_conter2">{{item.nyr}}</div>
-                            <div class="results_conter2">{{item.sfm}}</div>
-                            <div class="results_conter2">相似度：{{ item.confidence }}</div>
-                        </div>
-                        <div class="re_conterbox2">
-                            <img :src="item.snapshotUrl" />
-                        </div>
+        <!--遮罩层-->
+        <div class="mack_box" v-show="is_show_pic" @click="is_show_pic = false"></div>
+        <div class="t_graphBox" v-show="is_show_pic" @click="is_show_pic = false">
+            <div class="t_graph" >
+                <div class="graph_table">
+                    <div class="graph_cell">
+                        <img style="max-width:800px; max-height:800px;margin:0 auto;" :src="total_pic" />
                     </div>
                 </div>
             </div>
@@ -82,6 +105,7 @@
                 // 地图数据
                 map: null,
                 markers : [],
+                circleMarker: null,
                 polyline : null,
                 center_xy: [114.059648,22.543665],
                 locations: [],
@@ -155,9 +179,24 @@
                 tabledata:[
                    
                 ],
+
+                // 原图
+                is_show_pic: false,
+                total_pic: "",
             }
         },
         methods:{
+            // 显示全图
+            show_pic:function(imgUrl){
+                if( imgUrl ){
+                    this.total_pic = imgUrl
+                    this.is_show_pic = true
+                }else{
+                    this.total_pic = ""
+                    this.warning_info("未找到原图")
+                }
+            },
+
             // 地图初始化
             init:function(location){
                 // console.log(location)
@@ -169,6 +208,30 @@
                 })
             },
             change_map_center:function(location){
+                if( this.circleMarker ){
+                    this.circleMarker.setMap(null)
+                }
+                // 半径为米，随地图变化
+                this.circleMarker = new AMap.Circle({
+                    map: this.map,
+                    center: location,
+                    radius: 10,  //半径
+                    strokeColor: "#fefefe",  //线颜色
+                    strokeWeight: 1,  //线粗细度
+                    fillColor: '#1CC7FF',  //填充颜色
+                    fillOpacity: 0.8 ,//填充透明度
+                })
+
+                // this.circleMarker = new AMap.CircleMarker({
+                //     map: this.map,
+                //     center: location,
+                //     radius: 15,  //半径
+                //     strokeColor: "#fefefe",  //线颜色
+                //     strokeWeight: 1,  //线粗细度
+                //     fillColor: '#1CC7FF',  //填充颜色
+                //     fillOpacity: 0.8 ,//填充透明度
+                // })
+                // this.circleMarker.setMap(this.map)
                 this.map.setCenter(location);
             },
             // 地图添加标志
@@ -183,7 +246,7 @@
                             //添加自定义点标记
                             map: this.map,
                             position: this.tabledata[this.markers_list[i]].location, //基点位置
-                            offset: new AMap.Pixel(-22, -57), //相对于基点的偏移位置
+                            offset: new AMap.Pixel(-22, -50), //相对于基点的偏移位置
                             draggable: false,  //是否可拖动
                             // icon : "/static/logo2.png",
                             content: this.mycontent_marker[i],
@@ -222,11 +285,11 @@
                     let camerastatus = '',eye_div = ''
                     if( add_data[i].cameraStatus ){
                         camerastatus = '<div class="state state1">正常</div>'
-                        eye_div = '<div class="face_icon1"><img src="'+this.icon_eye+'" onclick="skip_to_realtimem(\''
-                                   + add_data[i].sdkId +'\',\'' + add_data[i].name + '\' )" title="跳转实时监控"/></div>'
+                        eye_div = '<div class="face_icon1 face_icon1_img face_icon_fpath" onclick="skip_to_realtimem(\''
+                                   + add_data[i].sdkId +'\',\'' + add_data[i].name + '\' )" title="跳转实时监控"></div>'
                     }else{
                         camerastatus = '<div class="state state2">闲置</div>'
-                        eye_div = '<div class="face_icon1"><img src="'+this.icon_eye+'"  style="cursor: not-allowed;" title="闲置状态不可跳转"/></div>'
+                        eye_div = '<div class="face_icon1 face_icon1_img face_icon_fpath" style="cursor: not-allowed;" title="闲置状态不可跳转"></div>'
                     }
 
                     let infomycontent = '<div class="face_infobox">\
@@ -237,8 +300,8 @@
                                                 </div>\
                                                 '+ camerastatus +'\
                                                 '+ eye_div +'\
-                                                <div class="face_icon2"><img src="'+this.icon_setting+'" onclick="skip_to_mmanage4(\''
-                                                + add_data[i].groupName +'\',\'' + add_data[i].sdkId + '\')"/></div>\
+                                                <div class="face_icon2 face_icon2_img face_icon_fpath" onclick="skip_to_mmanage4(\''
+                                                + add_data[i].groupName +'\',\'' + add_data[i].name + '\')" title="跳转到设备配置"></div>\
                                             </div>\
                                             <div class="face_camera">'+add_data[i].name+'</div>\
                                             <div class="face_conter"></div>\
@@ -248,7 +311,7 @@
                             //添加自定义点标记
                             map: this.map,
                             position: add_data[i].location, //基点位置
-                            offset: new AMap.Pixel(-22, -57), //相对于基点的偏移位置
+                            offset: new AMap.Pixel(-22, -50), //相对于基点的偏移位置
                             draggable: false,  //是否可拖动
                             // icon : "/static/logo2.png",
                             content: allcamera_marker_icon,
@@ -370,6 +433,25 @@
 
             // 初始化请求数据
             // 请求数据
+            mes_handling:function(status, msg){
+                if( status === 1 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 2 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 10 ){
+                    this.error_info('请先登录')
+                    return ;
+                }else{
+                    if( status === 401 && msg === "未登录" ){
+                        this.error_info(msg)
+                        this.$router.push("/login")
+                    }else{
+                        this.error_info(status + "  " + msg)
+                    }
+                }
+            },
             get_init_data:function(){
                 this.add_markers_all(this.allcamera_list)
             },
@@ -424,7 +506,7 @@
                 // this.$ajax.post("",params).then((res) => {
                     if( res.data.status === 0){
 
-                        if( !res.data.data ){
+                        if( !res.data.data.total ){
                             this.$message({
                                 type: 'warning',
                                 message: '无对应数据',
@@ -450,17 +532,8 @@
                         this.map_info() // 组装窗口
                         this.add_markers() // 添加标记
                         this.add_line() // 添加轨迹
-                    }else if( res.data.status === 1 ){
-                        this.error_info('图片未检测到人脸或格式错误')
-                        return ;
-                    }else if( res.data.status === 2 ){
-                        this.error_info('参数错误 ' + res.msg)
-                        return ;
-                    }else if( res.data.status === 10 ){
-                        this.error_info('请先登录')
-                        return ;
                     }else{
-                        this.error_info(res.data.status)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                     console.log(error)
@@ -499,7 +572,6 @@
             // 搜索按钮
             click_to_search:function(search_data){
                 this.click_to_clear(false)
-                // console.log("ha")
                 this.post_to_get_facepath(search_data)
             },
             // 清空事件
@@ -590,11 +662,11 @@
                     let camerastatus = '', eye_div = ''
                     if( this.tabledata[this.markers_list[i]].cameraStatus ){
                         camerastatus = '<div class="state state1">正常</div>'
-                        eye_div = '<div class="face_icon1" ><img src="'+this.icon_eye+'" onclick="skip_to_realtimem(\''
-                                + this.tabledata[this.markers_list[i]].cameraSdkId +'\',\'' + this.tabledata[this.markers_list[i]].cameraName + '\')" title="跳转实时监控"/></div>'
+                        eye_div = '<div class="face_icon1 face_icon1_img face_icon_fpath" " onclick="skip_to_realtimem(\''
+                                + this.tabledata[this.markers_list[i]].cameraSdkId +'\',\'' + this.tabledata[this.markers_list[i]].cameraName + '\')" title="跳转实时监控"></div>'
                     }else{
                         camerastatus = '<div class="state state2">闲置</div>'
-                        eye_div = '<div class="face_icon1"><img src="'+this.icon_eye+'" style="cursor: not-allowed;" title="闲置状态不可跳转"/></div>'
+                        eye_div = '<div class="face_icon1 face_icon1_img face_icon_fpath" style="cursor: not-allowed;" title="闲置状态不可跳转"></div>'
                     }
                     this.infomycontent.push(
                         '<div class="face_infobox">\
@@ -605,8 +677,8 @@
                                 </div>\
                                 '+ camerastatus +'\
                                 '+ eye_div +'\
-                                <div class="face_icon2"><img src="'+this.icon_setting+'" onclick="skip_to_mmanage4(\''
-                                + this.tabledata[this.markers_list[i]].cameraGroupName +'\',\'' + this.tabledata[this.markers_list[i]].sdkId + '\')"/></div>\
+                                <div class="face_icon2 face_icon2_img face_icon_fpath" onclick="skip_to_mmanage4(\''
+                                + this.tabledata[this.markers_list[i]].cameraGroupName +'\',\'' + this.tabledata[this.markers_list[i]].cameraName + '\')" title="跳转到设备配置"></div>\
                             </div>\
                             <div class="face_camera">'+ this.tabledata[this.markers_list[i]].cameraName +'</div>\
                             <div class="face_conter">'
@@ -639,9 +711,9 @@
                 this.$store.state.is_search_data = true
                 this.$router.push('/realtimem')
             },
-            skip_to_mmanage4(groupName,sdkId){
+            skip_to_mmanage4(groupName,name){
                 this.$store.state.search_data.groupId = groupName
-                this.$store.state.search_data.sdkId = sdkId
+                this.$store.state.search_data.name = name
                 this.$store.state.is_search_data = true
                 this.$router.push('/mmanage4')
             },
@@ -655,6 +727,12 @@
                 this.skip_to_mmanage4(groupName,sdkId)
             }
         },
+        beforeRouteLeave(to, from, next) {
+            if( from.path === "/facepath" && to.path === "/facepath_offline"){
+                to.meta.keepAlive = false; 
+            }
+            next()
+        },
         watch:{
             'search_data.confidence':function (newVal,oldVal) {
                 if( newVal === "" ){
@@ -666,7 +744,7 @@
             },
 
             '$store.state.is_search_data_facepath':function(newVal,old){
-                if ( newVal ){
+                if ( newVal  && this.$store.state.facepath_model === "online" ){
                     this.search_data.photo = ""
                     this.search_data.photoUrl = this.$store.state.facepath_data.photo
                     this.dataUrl = this.search_data.photoUrl
@@ -679,23 +757,24 @@
             },
 
             '$store.state.facepath_search_data.allcamera_list':function(newVal,old){
-                this.allcamera_list = this.$store.state.facepath_search_data.allcamera_list
-                if( this.allcamera_list.length ){
-                    this.init( this.allcamera_list[0].location )
-                }else{
-                    this.init( this.center_xy )
-                }
-                // console.log(this.$store.state.is_search_data_facepath)
-                if ( this.$store.state.is_search_data_facepath ){
-                    this.search_data.photoUrl = this.$store.state.facepath_data.photo
-                    this.dataUrl = this.search_data.photoUrl
-                    this.map.clearMap()
-                    this.post_to_get_facepath(this.search_data,"skip")
+                if( this.$store.state.facepath_model === "online" ){
+                    this.allcamera_list = this.$store.state.facepath_search_data.allcamera_list
+                    if( this.allcamera_list.length ){
+                        this.init( this.allcamera_list[0].location )
+                    }else{
+                        this.init( this.center_xy )
+                    }
+                    if ( this.$store.state.is_search_data_facepath ){
+                        this.search_data.photoUrl = this.$store.state.facepath_data.photo
+                        this.dataUrl = this.search_data.photoUrl
+                        this.map.clearMap()
+                        this.post_to_get_facepath(this.search_data,"skip")
 
-                    this.$store.state.is_search_data_facepath = false
-                    this.$store.state.facepath_data.photo = ""
-                }else{
-                    this.get_init_data()
+                        this.$store.state.is_search_data_facepath = false
+                        this.$store.state.facepath_data.photo = ""
+                    }else{
+                        this.get_init_data()
+                    }
                 }
             }
         }

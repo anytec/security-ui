@@ -54,7 +54,8 @@
                           :picker-options="pickerOptions">
                         </el-date-picker>
                     </div>
-                    <div class="index_btn" v-show="false">数据生成</div>
+                    <div class="index_cam" v-show="$route.path != '/dataview3' " :title="info_cam_data"> {{info_cam_data}} </div>
+                    <!-- <div class="index_btn" v-show="false">数据生成</div> -->
                     <div class="index_btn" @click="is_show_info = true" v-show="is_show_choose">设备选择</div>
                 </div>
             </div>
@@ -65,6 +66,7 @@
             </transition>
         </div>
         <!--弹出框-->
+        <div class="mack_box" v-show="is_show_info" @click="clear_search_data"></div>
         <div class="alert_Box" id="alert_Box" v-show="is_show_info">
             <div class="ale_leftbox">
                 <div class="ale_topinput">
@@ -120,8 +122,8 @@
                     </table>
                 </div>
             </div>
-            <div class="cancel" @click="is_show_info = false" title="关闭"></div>
-            <div class="confirm" @click="confirm_search" title="确认"></div>
+            <div class="se_cancel" @click="is_show_info = false" title="关闭"></div>
+            <div class="se_confirm" @click="confirm_search" title="确认"></div>
         </div>
     </div>
 </template>
@@ -156,6 +158,7 @@
                     // 弹窗
                     cameraName: "",
                     choose_groupName: null,
+                    info_cam_data: "",
                     info_show_data: [],
                     info_search_data: [],
                     info_search_data_group: [],
@@ -229,12 +232,9 @@
                 this.timer_num = setInterval(() => {
                     this.get_snapCounting()
                 }, 5000);
-                // setInterval(() => {
-                //     this.get_mmanage_people_num()
-                // }, 10000);
 
                 this.get_init_data()
-                this.search_data = {}
+                // this.search_data = {}
 
                 this.change_mynav_active()
             },
@@ -373,22 +373,55 @@
                         let search_data = {
                             cameraSdkIds: [],
                         }
+                        let temp_data = []
                         for( let i = 0; i < this.info_search_data.length; i++ ){
                             search_data.cameraSdkIds.push(this.info_search_data[i].sdkId)
+                            temp_data.push(this.info_search_data[i].name)
                         }
-                        this.search_data = search_data
+                        this.info_cam_data = temp_data.join("/")
+                        if( search_data.cameraSdkIds.length ){
+                            this.search_data = search_data
+                        }else{
+                            this.warning_info("未选择设备")
+                        }
                     }else{
                         let search_data = {
                             cameraGroupIds: [],
                         }
+                        let temp_data = []
                         for( let i = 0; i < this.info_search_data_group.length; i++ ){
                             search_data.cameraGroupIds.push(this.info_search_data_group[i].sdkId)
+                           temp_data.push(this.info_search_data_group[i].name)
                         }
-                        this.search_data = search_data
+                        this.info_cam_data = temp_data.join("/")
+                        if( search_data.cameraGroupIds.length ){
+                            this.search_data = search_data
+                        }else{
+                            this.warning_info("未选择设备组")
+                        }
                     }
                 },
 
                 // 请求数据
+                mes_handling:function(status, msg){
+                    if( status === 1 ){
+                        this.error_info(msg)
+                        return ;
+                    }else if( status === 2 ){
+                        this.error_info(msg)
+                        return ;
+                    }else if( status === 10 ){
+                        this.error_info('请先登录')
+                        return ;
+                    }else{
+                        if( status === 401 && msg === "未登录" ){
+                            this.error_info(msg)
+                            this.$router.push("/login")
+                        }else{
+                            this.error_info(status + "  " + msg)
+                        }
+                    }
+                },
                 get_init_data:function(){
                     // 请求设备组列表
                     var params = new URLSearchParams()
@@ -407,15 +440,8 @@
                             }
                             this.choose_groupName = this.groupNames[0].name
                             this.groupNames.splice(0,0,{name:"设备组选择"})
-                        }else if( res.data.status === 1 ){
-                            this.error_info('请求失败 ' + res.msg)
-                            return ;
-                        }else if( res.data.status === 2 ){
-                            this.error_info('参数错误 ' + res.msg)
-                            return ;
-                        }else if( res.data.status === 10 ){
-                            this.error_info('请先登录')
-                            return ;
+                        }else{
+                            this.mes_handling(res.data.status,res.data.msg)
                         }
                     }).catch((error) => {
                         console.log(error)
@@ -433,15 +459,8 @@
                             if( res.data.data.warningCount ){
                                 this.warningCount = res.data.data.warningCount
                             }                    
-                        }else if( res.data.status === 1 ){
-                            // this.error_info('请求失败 ' + res.msg)
-                            return ;
-                        }else if( res.data.status === 2 ){
-                            // this.error_info('参数错误 ' + res.msg)
-                            return ;
-                        }else if( res.data.status === 10 ){
-                            // this.error_info('请先登录')
-                            return ;
+                        }else{
+                            this.mes_handling(res.data.status,res.data.msg)
                         }
                     }).catch((error) => {
                         console.log(error)
@@ -454,15 +473,8 @@
                     this.$ajax.post("/person/list").then((res) => {
                         if( res.data.status === 0){
                             this.person_total = res.data.data.total
-                        }else if( res.data.status === 1 ){
-                            // this.error_info('请求失败 ' + res.msg)
-                            return ;
-                        }else if( res.data.status === 2 ){
-                            // this.error_info('参数错误 ' + res.msg)
-                            return ;
-                        }else if( res.data.status === 10 ){
-                            // this.error_info('请先登录')
-                            return ;
+                        }else{
+                            this.mes_handling(res.data.status,res.data.msg)
                         }
                     }).catch((error) => {
                         console.log(error)
@@ -498,7 +510,7 @@
                 
                 // 弹窗关闭清除
                 clear_search_data:function(){
-                    this.info_search_data = []
+                    // this.info_search_data = []
                     this.is_show_info = false
                 },
 

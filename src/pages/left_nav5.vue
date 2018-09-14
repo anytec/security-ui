@@ -19,7 +19,8 @@
 				</template>
 				<el-menu-item-group>
 					<el-menu-item index="/mmanage3">设备组配置</el-menu-item>
-					<el-menu-item index="/mmanage4_offline">设备配置</el-menu-item>
+					<el-menu-item index="/mmanage4" v-if="$store.state.facepath_model === 'online'">设备配置</el-menu-item>
+					<el-menu-item index="/mmanage4_offline" v-if="$store.state.facepath_model === 'offline'">设备配置</el-menu-item>
 				</el-menu-item-group>
 			</el-submenu>
 		</el-menu>

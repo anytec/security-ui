@@ -16,6 +16,8 @@
     "echarts": "^4.1.0",
     "element-ui": "^2.4.4",
     "file-saver": "^1.3.8",
+    "leaflet": "^1.3.4",
+    "leaflet-ant-path": "^1.1.2",
     "script-loader": "^0.7.2",
     "sockjs": "^0.3.19",
     "stompjs": "^2.3.3",

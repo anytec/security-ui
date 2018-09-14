@@ -3,7 +3,7 @@
 		<div class="mask_box">
 			<div class="top_title">
 				<div class="sys_lefttext">操作记录</div>
-				<div class="sys_input" @keyup.enter="test('heh ')">
+				<div class="sys_input" @keyup.enter="keyup_to_search">
 					<input type="text" placeholder="搜索用户名" v-model="search_data.uname" />
 					<div class="sysSearch_box" @click="click_to_search">
 						<img :src="alert_src" @mouseover="alert_src=ale_imgsrc2" @mouseout="alert_src=ale_imgsrc1"/>
@@ -24,7 +24,7 @@
 							<td class="td td1">操作时间</td>
 							<td class="td td1">操作类型</td>
 							<td class="td td1">操作对象</td>
-							<td class="td td1">操作内容</td>
+							<!-- <td class="td td1">操作内容</td> -->
 							<td class="td td1">操作结果</td>
 						</tr>
 					</table>
@@ -60,11 +60,10 @@
 									</div>
 								</div>
 							</td>
-							<td class="td td1">
-								<div class="td_icon2 sys2_tdtext" :title="item.objId">
-									查看详情
-								</div>
-							</td>
+							<!-- <td class="td td1">
+								<div class="td_icon2 sys2_tdtext" :title="item.objId" v-if="item.objId"> 查看详情 </div>
+								<div class="td_icon2 sys2_tdtext" title="无内容" v-if="!item.objId"> 查看详情 </div>
+							</td> -->
 							<td class="td td1">
 								<div class="td_icon2 sys2_tdtext">
 									{{item.operationResult}}
@@ -103,14 +102,6 @@
 				ale_imgsrc2:require('../assets/system/sys_search_1.svg'),
 				pickeroptions:{
 					shortcuts: [{
-						// text: '最近一天',
-						// onClick(picker) {
-						// 	const end = new Date();
-						// 	const start = new Date();
-						// 	start.setTime(start.getTime() - 3600 * 1000 * 24 * 1);
-						// 	picker.$emit('pick', [start, end]);
-						// }
-						// },{
 						text: '最近三天',
 						onClick(picker) {
 							const end = new Date();
@@ -181,6 +172,14 @@
 				this.init_data.pageNum = val
 				this.get_init_data( this.save_search_data )
 			},
+
+			// 输入-校验
+            check_input:function(input_data,model=""){
+                let reg = /^.{0,20}$/
+
+                return reg.test(input_data)
+            },
+
 			click_to_checkedall:function(){
 				if(!this.isallchecked){
 					this.isallchecked = true
@@ -197,6 +196,12 @@
 
 			// 搜索事件
 			click_to_search:function(){
+				if(!this.check_input(this.search_name)){
+					this.warning_info("用户名应输入不超过20个字或字符")
+					return ;
+				}
+
+				this.init_data.pageNum = 1
 				
 				let search_data = {}
 				if( this.search_data.operationType != "操作类型/全部" ){
@@ -208,38 +213,51 @@
 				this.save_search_data = search_data
 				this.get_init_data( search_data )
 			},
+			// 键盘事件
+			// 键盘事件-回车搜索
+			keyup_to_search:function(){
+				this.click_to_search()
+			},
 
 			// 请求
+			mes_handling:function(status, msg){
+                if( status === 1 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 2 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 10 ){
+                    this.error_info('请先登录')
+                    return ;
+                }else{
+                    if( status === 401 && msg === "未登录" ){
+                        this.error_info(msg)
+                        this.$router.push("/login")
+                    }else{
+                        this.error_info(status + "  " + msg)
+                    }
+                }
+            },
 			get_init_data:function( search_data = {} ){
-				// 请求库名
-				var params = new URLSearchParams()
-				for( let item in search_data ){
-					params.append( item,search_data[item] )
-				}
-				params.append("pageNum",this.init_data.pageNum)
-                params.append("pageSize",this.init_data.pageSize)
-				this.$ajax.get("/log/operationRecordList",params).then((res) => {
+    			search_data.pageNum = this.init_data.pageNum
+    			search_data.pageSize = this.init_data.pageSize
+				this.$ajax.get("/log/operationRecordList",{params: search_data }).then((res) => {
                     if( res.data.status === 0){
                     	this.init_data.allnum = res.data.data.total
                 		this.tabledata = res.data.data.list
                 		for( let i = 0; i < this.tabledata.length; i++ ){
+                			// let time_ymd = this.tabledata[i].operationTime.split("T")[0]
+                			// let time_hms = this.tabledata[i].operationTime.split("T")[1].split(".")[0]
+                			// this.tabledata[i].operationTime = time_ymd + " " + time_hms
                 			if(this.tabledata[i].operationResult){
                 				this.tabledata[i].operationResult = "操作成功"
                 			}else{
                 				this.tabledata[i].operationResult = "操作失败"
                 			}
                 		}
-                    }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
                     }else{
-                    	this.error_info(res.data.status,res.data.msg)
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -268,6 +286,13 @@
 		mounted(){
 			this.get_init_data()
 		},
+		watch:{
+			'search_data.uname':function(newval,old){
+				if( newval === "" ){
+					this.click_to_search()
+				}
+			},
+		}
 	}
 	
 </script>

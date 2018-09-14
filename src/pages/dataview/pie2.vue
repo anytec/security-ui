@@ -100,6 +100,7 @@
 				        },
 				    }, 
 				    toolbox: {
+				    	x: '1150px',
 				        show : true,
 				        feature : {
 				            mark : {show: false},

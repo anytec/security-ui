@@ -37,18 +37,14 @@
                     <div class="information_box">
                         <div class="info_alarm">
                             <div class="info_minbox" v-for="item in alarm_showdata" :style="{'transform':'translateY('+item.move_pix+'px)','transition-duration':item.translatetime+'s'}" @click="click_to_move()">
-                                <div class="re_toptitle">
+                                <div class="re_toptitle" :style="{'background-color':item.colorLabel}">
                                     <!-- <div class="re_lefttext">{{item.personName}}  {{item.gender}}  {{item.age}}岁  {{item.personGroupName}}</div> -->
-                                    <div class="re_lefttext">{{item.personName}}  {{item.gender}}  {{item.personGroupName}}</div>
+                                    <div class="re_lefttext" >{{item.personName}}  {{item.gender}}  {{item.personGroupName}}</div>
                                     <div class="icon_bg">
-                                        <div class="re_lefticon" title="跳转到人脸检索">
-                                            <img src="../assets/historyface/icon1.png"  @click="skip_to_facepath(item.snapshotUrl)"/>
-                                        </div>
+                                        <div class="re_lefticon_img" title="跳转到人脸检索" @click="skip_to_facepath(item.snapshotUrl)"></div>
                                     </div>
                                     <div class="re_icon">
-                                        <div class="re_righticon" title="跳转到底库人员">
-                                            <img src="../assets/historyface/icon5.png"  @click="skip_to_mmanage2(item.personGroupName,item.personGroupId,item.faceSdkId)"/>
-                                        </div>
+                                        <div class="re_righticon_img" title="跳转到底库人员" @click="skip_to_mmanage2(item.personGroupName,item.personGroupId,item.faceSdkId)"></div>
                                     </div>
                                 </div>
                                 <div class="re_infotext">
@@ -59,7 +55,7 @@
                                 </div>
                                 <div class="re_photoinfo">
                                     <div class="re_photobox" >
-                                        <img :src="item.snapshotUrl" style="width:100px;height:100px"/>
+                                        <img :src="item.snapshotUrl" style="width:100px;height:100px" @click="show_pic(item.wholePhoto)" title="点击显示原图"/>
                                         <div class="re_icontext">{{item.confidence}}%</div>
                                     </div>
                                     <div class="re_photobox" >
@@ -84,19 +80,15 @@
                                 <div class="photo_img" :title="item.cameraName">
                                     <div class="catch_message" v-show="is_trans">{{item.emotions}}</div>
                                     <div class="catch_message" v-show="!is_trans">{{item.time}}</div>
-                                    <img :src="item.img" style="width:100%;height:100%"/>
+                                    <img :src="item.img" style="width:100%;height:100%" @click="show_pic(item.wholePhoto)"/>
                                 </div>
                                 <div class="photo_text" v-show="is_trans">
                                     <!-- <div class="new_photo_text">{{item.age}}岁    {{item.gender}}</div> -->
                                     <div class="new_photo_text">{{item.gender}}</div>
                                 </div>
                                 <div class="photo_text" v-show="!is_trans">
-                                    <div class="small_icon" title="跳转到人脸检索">
-                                        <img style="width:100%" src="../assets/historyface/icon1.png"  @click="skip_to_facepath(item.img)"/>
-                                    </div>
-                                    <div class="small_icon1" title="跳转到历史抓拍">
-                                        <img style="width:100%" src="../assets/historyface/icon6.png"  @click="skip_to_historyface2(item.faceSdkId)"/>
-                                    </div>
+                                    <div class="small_icon" title="跳转到人脸检索" @click="skip_to_facepath(item.img)"></div>
+                                    <div class="small_icon1" title="跳转到历史抓拍" @click="skip_to_historyface2(item.faceSdkId)"></div>
                                 </div>
                             </div>
                         </div>
@@ -135,12 +127,8 @@
             <div class="real_conter">
                 <div class="real_ConterText" v-for="item in info_show_data" @dblclick="choose_this_url(item.sdkId,item.name)" v-show="item.isshow">
                     <div class="real_text">{{ item.name }}</div>
-                    <div class="face_icon1" @click="choose_this_url(item.sdkId,item.name)" title="选择该设备显示">
-                        <img src="../assets/historyface/icon7.png"/>
-                    </div>
-                    <div class="face_icon2" @click="skip_to_mmanage4(item)" title="跳转到设备配置">
-                        <img src="../assets/historyface/icon2.png"/>
-                    </div>
+                    <div class="face_icon1 face_icon1_img" @click="choose_this_url(item.sdkId,item.name)" title="选择该设备显示"></div>
+                    <div class="face_icon2 face_icon2_img" @click="skip_to_mmanage4(item)" title="跳转到设备配置"></div>
                 </div>
             </div>
             <div class="bottom_bg">
@@ -159,7 +147,8 @@
                 </div>
                 <div class="real_similarity">
                     <div class="similarity_number">{{alarm_new_data.confidence}}%</div>
-                    <div class="similarity_text">非常相似</div>
+                    <div class="similarity_text" v-if="alarm_new_data.confidence > 76">非常相似</div>
+                    <div class="similarity_text" v-else>比较相似</div>
                 </div>
                 <div class="right_information">
                     <div class="right_font">{{alarm_new_data.name}}    {{alarm_new_data.gender}}   {{alarm_new_data.age}}岁</div>
@@ -172,6 +161,17 @@
                 <div class="real_mark2">目标人脸</div>
                 <div class="real_mark3">相似度</div>
                 <div class="real_mark4">具体信息</div>
+            </div>
+        </div>
+        <!--遮罩层 原图-->
+        <div class="mack_box" v-show="is_show_pic" @click="is_show_pic = false"></div>
+        <div class="t_graphBox" v-show="is_show_pic" @click="is_show_pic = false">
+            <div class="t_graph" >
+                <div class="graph_table">
+                    <div class="graph_cell">
+                        <img style="max-width:800px; max-height:800px;margin:0 auto;" :src="total_pic" />
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -195,9 +195,10 @@
                 default_data:{
                     img: "",
                     time: "--:--:--",
-                    emotion: "无",
-                    age: "无",
-                    gender: "无",
+                    emotion: "",
+                    age: "",
+                    gender: "",
+                    wholePhoto: "",
                 },
                 default_data1:{
                     cameraGroupName: '无',
@@ -211,6 +212,7 @@
                     personGroupName: '无',
                     snapshotUrl: '',
                     faceUrl: '',
+                    wholePhoto: "",
                 },
                 show_data:[],
                 alarm_showdata:[],
@@ -296,6 +298,10 @@
 
                 // 第一次进入页面标志
                 first_flag: true,
+
+                // 原图
+                is_show_pic: false,
+                total_pic: "",
             }
         },
         components: {
@@ -337,7 +343,11 @@
                 // 人脸轨迹
                 this.$store.state.facepath_data.photo = img
                 this.$store.state.is_search_data_facepath = true
-                this.$router.push('/facepath')
+                if( this.$store.state.facepath_model === "online" ){
+                    this.$router.push('/facepath')
+                }else{
+                    this.$router.push('/facepath_offline')
+                }
             },
             skip_to_mmanage2:function(personGroupName,personGroupId,faceSdkId){
                 this.$store.state.search_data.groupName = personGroupName
@@ -350,7 +360,7 @@
                 // console.log(item.sdkId)
                 this.open_flag = false
                 this.$store.state.search_data.groupId = item.groupName
-                this.$store.state.search_data.sdkId = item.sdkId
+                this.$store.state.search_data.name = item.name
                 this.$store.state.is_search_data = true
                 this.$router.push('/mmanage4')
             },
@@ -475,6 +485,7 @@
                             temp_data.img = jsonData.data.snapshotUrl
                             temp_data.faceSdkId = jsonData.data.faceSdkId
                             temp_data.cameraName = jsonData.data.cameraName
+                            temp_data.wholePhoto = jsonData.data.wholePhoto
                             if( jsonData.data.emotions ){
                                 temp_data.emotions = this.emotion_analysis(jsonData.data.emotions)
                             }
@@ -485,7 +496,7 @@
                             }
                             // this.show_face_list.push(JSON.parse(JSON.stringify(temp_data)))
                             // console.log("temp_data")
-                            // console.log(temp_data)
+                            console.log(temp_data)
                             this.rolling_picture(temp_data)
                         }
                     }
@@ -504,6 +515,7 @@
                     this.show_data[0].emotions = temp_data.emotions
                     this.show_data[0].cameraName = temp_data.cameraName
                     this.show_data[0].faceSdkId = temp_data.faceSdkId
+                    this.show_data[0].wholePhoto = temp_data.wholePhoto
                     this.show_data[0].translatetime = 0.5
                     // temp_data.translatetime = 0.5
                     // temp_data.move_pix = this.show_data[0].move_pix
@@ -515,6 +527,7 @@
                     this.show_data[this.end_id+1].emotions = temp_data.emotions
                     this.show_data[this.end_id+1].cameraName = temp_data.cameraName
                     this.show_data[this.end_id+1].faceSdkId = temp_data.faceSdkId
+                    this.show_data[this.end_id+1].wholePhoto = temp_data.wholePhoto
                     this.show_data[this.end_id+1].translatetime = 0.5
                     // temp_data.translatetime = 0.5
                     // temp_data.move_pix = this.show_data[this.end_id+1].move_pix
@@ -607,10 +620,10 @@
             // sockJS、Stomp
             // 请求初始化
             initSocket:function(){
-                // let socket = new SockJS('http://192.168.10.158:9999/gee');
-                let socket = new SockJS('http://192.168.10.126:9990/gee');
+                // let socket = new SockJS('http://192.168.10.62:9999/gee');
+                // let socket = new SockJS('http://192.168.10.126:9990/gee');
                 // let socket = new SockJS('http://192.168.10.132:9999/gee');
-                // let socket = new SockJS('gee');
+                let socket = new SockJS('gee');
                 this.stompClient = Stomp.over(socket);
                 this.stompClient.connect({}, (frame) =>{
                     this.stompClient.subscribe('/topic/camera/warning', (data) => {
@@ -646,8 +659,35 @@
                     center: true
                 })
             },
+            warning_info:function(mes){
+                this.$message({
+                    type: 'warning',
+                    message: mes,
+                    showClose: true,
+                    center: true
+                })
+            },
 
             // 初始化请求
+            mes_handling:function(status, msg){
+                if( status === 1 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 2 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 10 ){
+                    this.error_info('请先登录')
+                    return ;
+                }else{
+                    if( status === 401 && msg === "未登录" ){
+                        this.error_info(msg)
+                        this.$router.push("/login")
+                    }else{
+                        this.error_info(status + "  " + msg)
+                    }
+                }
+            },
             // 抓拍
             get_init_data:function(){
                 var params = new URLSearchParams()
@@ -668,6 +708,7 @@
                             }else if( this.default_show_data[i].gender === "male" ){
                                 this.default_show_data[i].gender = "男"
                             }
+                            this.default_show_data[i].time = this.default_show_data[i].catchTime.split(" ")[1]
                             // this.default_show_data[i].confidence = Math.round(this.default_show_data[i].confidence)
                         }
                         for ( let i = 0; i < 13; i++){
@@ -689,15 +730,8 @@
                             this.show_data[i].translatetime = 0.5
                         }
 
-                    }else if( res.data.status === 1 ){
-                        this.error_info('请求失败 ' + res.msg)
-                        return ;
-                    }else if( res.data.status === 2 ){
-                        this.error_info('参数错误 ' + res.msg)
-                        return ;
-                    }else if( res.data.status === 10 ){
-                        this.error_info('请先登录')
-                        return ;
+                    }else{
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                     console.log(error)
@@ -744,15 +778,8 @@
                             this.alarm_showdata[i].move_pix = 0
                             this.alarm_showdata[i].translatetime = 0.5
                         }
-                    }else if( res.data.status === 1 ){
-                        this.error_info('请求失败 ' + res.msg)
-                        return ;
-                    }else if( res.data.status === 2 ){
-                        this.error_info('参数错误 ' + res.msg)
-                        return ;
-                    }else if( res.data.status === 10 ){
-                        this.error_info('请先登录')
-                        return ;
+                    }else{
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                     console.log(error)
@@ -782,15 +809,30 @@
                 }
                 return emotions_new.join(',')
             },
+
+            // 显示全图
+            show_pic:function(imgUrl){
+                if( imgUrl ){
+                    this.total_pic = imgUrl
+                    this.is_show_pic = true
+                }else{
+                    this.total_pic = ""
+                    this.warning_info("未找到原图")
+                }
+            },
+
             beforeRouteLeave(to, from, next) {
                 if( to.path === "/facepath" && this.$store.state.is_search_data_facepath ){
                     to.meta.keepAlive = false; 
                 }
                 next()
-            }
+            },
         },
         mounted:function(){
-            this.get_init_data1()
+            this.initSocket()
+            setTimeout(() => {
+                this.get_init_data1()
+            }, 500)
             // if( this.first_flag ){
             //     this.get_init_data()
             //     this.get_init_data2()
@@ -844,7 +886,7 @@
                         vm.get_init_data2()
 
                         vm.init_video()
-                        vm.initSocket()
+                        // vm.initSocket()
                         vm.myID = vm.guid()
 
                         vm.first_flag = false
@@ -870,14 +912,13 @@
                         vm.get_init_data2()
 
                         vm.init_video()
-                        vm.initSocket()
+                        // vm.initSocket()
                         vm.myID = vm.guid()
 
                         vm.first_flag = false
                     }
                 })
             }
-            
         }
     }
 </script>

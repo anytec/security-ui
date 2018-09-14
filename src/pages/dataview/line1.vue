@@ -96,12 +96,13 @@
 						    toolbox: {
 						        show : true,
 						        orient : 'vertical',
+				                // x: '700px',
 				                x: 'right', 
 				                // y: 'center',
 						        feature : {
 						            mark : {show: true}, // 
 						            dataView : {show: false, readOnly: false},
-						            magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+						            magicType : {show: false, type: ['line', 'bar', 'stack', 'tiled']},
 						            restore : {show: true},
 						            saveAsImage : {show: true}
 						        }
@@ -278,7 +279,8 @@
 				    toolbox: {
 				        show : true,
 				        // orient : 'vertical', // 垂直显示
-		                x: 'right', 
+		                x: '1100px',
+		                // x: 'right', 
 		                // y: 'center',
 				        feature : {
 				            mark : {show: true}, // 

@@ -45,9 +45,37 @@
         },
         mounted() {
             this._myinit()
-            this.post_to_change_page({})
+            // this.post_to_change_page({})
+
+            if( this.searchData.cameraSdkIds ){
+                this.post_to_change_page({ cameraSdkIds:this.searchData.cameraSdkIds.join(",")})
+            }else if( this.searchData.cameraGroupIds ){
+                this.post_to_change_page({ cameraGroupIds:this.searchData.cameraGroupIds.join(",")})
+            }else{
+                this.post_to_change_page({})
+            }
+           
         },
         methods: {
+            mes_handling:function(status, msg){
+                if( status === 1 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 2 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 10 ){
+                    this.error_info('请先登录')
+                    return ;
+                }else{
+                    if( status === 401 && msg === "未登录" ){
+                        this.error_info(msg)
+                        this.$router.push("/login")
+                    }else{
+                        this.error_info(status + "  " + msg)
+                    }
+                }
+            },
             post_to_change_page:function( search_data ){
                 var params = new URLSearchParams()
 
@@ -96,15 +124,8 @@
                         }
                         this.update_flag = !this.update_flag
                         this.$store.state.dataview_data.update_flag1 = !this.$store.state.dataview_data.update_flag1
-                    }else if( res.data.status === 1 ){
-                        this.error_info('请求失败 ' + res.msg)
-                        return ;
-                    }else if( res.data.status === 2 ){
-                        this.error_info('参数错误 ' + res.msg)
-                        return ;
-                    }else if( res.data.status === 10 ){
-                        this.error_info('请先登录')
-                        return ;
+                    }else{
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                     console.log(error)

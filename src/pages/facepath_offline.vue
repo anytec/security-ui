@@ -1,63 +1,76 @@
 <template>
-    <div class="main_box">
-        <left-nav></left-nav>
-        <div class="map_bg" id="container"></div>
-        <!--地图边框线-->
-        <div class="left_xian"></div>
-        <div class="top_xian"></div>
-        <!--右边上半部分-->
-        <div class="face_rightbox1">
-            <div class="faceleft_photo">
-                <div class="face_photoimg">
-                    <div class="faceshow_img" v-show="dataUrl"><img :src="dataUrl" v-show="dataUrl"></div>
-                    <img class="decoration_img" src="../assets/mmanage/add_file.png" v-show="!dataUrl"/>
-                    <input class="face_file" type="file" @change="handleFileChange" ref="inputer"/>
-                </div>
-                <div class="facephoto_text">检索对象</div>
-            </div>
-            <div class="face_fillbox">
-                <div class="face_timetext">时间范围</div>
-                <div class="face_timeinput">
-                    <el-date-picker
-                        v-model="datevalue"
-                        type="datetimerange"
-                        :picker-options="pickeroptions"
-                        range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期">
-                    </el-date-picker>
-                </div>
-                <div class="similar_box">
-                    <div class="similar_text">相似度</div>
-                    <div class="slider_box">
-                        <el-slider v-model="search_data.confidence"></el-slider>
+    <div style="width:100%;height:100%;">
+        <div class="main_box">
+            <left-nav></left-nav>
+            <div class="map_bg" id="container_offline"></div>
+            <!--地图边框线-->
+            <div class="left_xian"></div>
+            <div class="top_xian"></div>
+            <!--右边上半部分-->
+            <div class="face_rightbox1">
+                <div class="faceleft_photo">
+                    <div class="face_photoimg">
+                        <div class="faceshow_img" v-show="dataUrl"><img :src="dataUrl" v-show="dataUrl"></div>
+                        <img class="decoration_img" src="../assets/mmanage/add_file.png" v-show="!dataUrl"/>
+                        <input class="face_file" type="file" @change="handleFileChange" ref="inputer"/>
                     </div>
-                    <div class="percentage"><input type="text" v-model="search_data.confidence"/></div>
-                    <div class="percentage_text">%</div>
-                    <div class="search face_search" @click="click_to_search(search_data)">搜索</div>
+                    <div class="facephoto_text">检索对象</div>
                 </div>
-                <div class="results_box">
-                    <div class="results_text">发现{{init_data.allnum}}个结果</div>
-                    <div class="export_btn face_btn" @click="click_to_clear">清空</div>
-                    <div class="export_btn face_btn" @click="export_data2excel">导出</div>
+                <div class="face_fillbox">
+                    <div class="face_timetext">时间范围</div>
+                    <div class="face_timeinput">
+                        <el-date-picker
+                            v-model="datevalue"
+                            type="datetimerange"
+                            :picker-options="pickeroptions"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期">
+                        </el-date-picker>
+                    </div>
+                    <div class="similar_box">
+                        <div class="similar_text">相似度</div>
+                        <div class="slider_box">
+                            <el-slider v-model="search_data.confidence"></el-slider>
+                        </div>
+                        <div class="percentage"><input type="text" v-model="search_data.confidence"/></div>
+                        <div class="percentage_text fp_percentage">%</div>
+                        <div class="search face_search" @click="click_to_search(search_data)">搜索</div>
+                    </div>
+                    <div class="results_box">
+                        <div class="results_text">发现{{init_data.allnum}}个结果</div>
+                        <div class="export_btn face_btn" @click="click_to_clear">清空</div>
+                        <div class="export_btn face_btn" @click="export_data2excel">导出</div>
+                    </div>
+                </div>
+            </div>
+            <!--右边下半部分-->
+            <div class="face_rightbox2">
+                <div class="results_listbox">
+                    <div class="results_list" :style="{'border-left': item.mystyle}" v-for="item in tabledata">
+                        <div class="digital_bg" @click="change_map_center(item.location)">{{init_data.allnum - item.uuid}}</div>
+                        <div class="results_right">
+                            <div class="results_conter1">{{item.cameraName}}</div>
+                            <div class="re_conterbox1">
+                                <div class="results_conter2">{{item.nyr}}</div>
+                                <div class="results_conter2">{{item.sfm}}</div>
+                                <div class="results_conter2">相似度：{{ item.confidence }}</div>
+                            </div>
+                            <div class="re_conterbox2">
+                                <img :src="item.snapshotUrl" @click="show_pic(item.wholePhoto)" title="点击显示原图" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <!--右边下半部分-->
-        <div class="face_rightbox2">
-            <div class="results_listbox">
-                <div class="results_list" :style="{'border-left': item.mystyle}" v-for="item in tabledata">
-                    <div class="digital_bg" @click="change_map_center(item.location)">{{init_data.allnum - item.uuid}}</div>
-                    <div class="results_right">
-                        <div class="results_conter1">{{item.cameraName}}</div>
-                        <div class="re_conterbox1">
-                            <div class="results_conter2">{{item.nyr}}</div>
-                            <div class="results_conter2">{{item.sfm}}</div>
-                            <div class="results_conter2">相似度：{{ item.confidence }}</div>
-                        </div>
-                        <div class="re_conterbox2">
-                            <img :src="item.snapshotUrl"/>
-                        </div>
+        <!--遮罩层-->
+        <div class="mack_box" v-show="is_show_pic" @click="is_show_pic = false"></div>
+        <div class="t_graphBox" v-show="is_show_pic" @click="is_show_pic = false">
+            <div class="t_graph" >
+                <div class="graph_table">
+                    <div class="graph_cell">
+                        <img style="max-width:800px; max-height:800px;margin:0 auto;" :src="total_pic" />
                     </div>
                 </div>
             </div>
@@ -68,6 +81,7 @@
 <script>
     import LeftNav from "./left_nav2"
     import Vue from 'vue'
+    import {AntPath, antPath} from "leaflet-ant-path"
     // import * as L from "../../static/offlineMap/leaflet/leaflet-src";
 
     export default {
@@ -90,6 +104,7 @@
                 layers: [],
                 group: null,
                 circle: null,
+                path: null,
                 init_map_data: null,
                 popup: null,
                 polyline: null,
@@ -97,7 +112,7 @@
                 locations: [],
                 popup_content: null,
                 map_config: {
-                    zoom: 13,
+                    zoom: 16,
                     center: [39.895218, 116.419072],
                     minZoom: 12,
                     maxZoom: 16,
@@ -126,7 +141,7 @@
                 },
                 input_confidence: 0,
                 same_confidence: 0,
-                datevalue: [(new Date() - 3600 * 1000 * 24 * 1), new Date() - 1],
+                datevalue: [(new Date() - 3600 * 1000 * 24 * 15), new Date() - 1],
                 pickeroptions: {
                     shortcuts: [{
                         text: '最近三天',
@@ -166,13 +181,28 @@
                 tabledata: [],
                 infomycontent: [],
                 markers_list: [],
+
+                // 原图
+                is_show_pic: false,
+                total_pic: "",
             }
         },
 
         methods: {
+            // 显示全图
+            show_pic:function(imgUrl){
+                if( imgUrl ){
+                    this.total_pic = imgUrl
+                    this.is_show_pic = true
+                }else{
+                    this.total_pic = ""
+                    this.warning_info("未找到原图")
+                }
+            },
+            
             //初始化地图
             initMap: function (location = [39.895218, 116.419072]) {
-                this.map = L.map("container", {
+                this.map = L.map("container_offline", {
                     center: location,
                     zoom: this.map_config.zoom,
                     minZoom: this.map_config.minZoom,
@@ -184,11 +214,11 @@
                     bounds = L.latLngBounds(corner1, corner2);
                 this.map.setMaxBounds(bounds)
                 let map_url = '/static/offlineMap/{z}/{x}/{y}.png'
-                // if( this.$ajax.defaults.baseURL ){
-                //     map_url = this.$ajax.defaults.baseURL + '/static/offlineMap/{z}/{x}/{y}.png'
-                // }else{
-                //     map_url = '/static/offlineMap/{z}/{x}/{y}.png'
-                // }
+                if( this.$ajax.defaults.baseURL ){
+                    map_url = this.$ajax.defaults.baseURL + '/static/offlineMap/{z}/{x}/{y}.png'
+                }else{
+                    map_url = '/static/offlineMap/{z}/{x}/{y}.png'
+                }
                 L.tileLayer(map_url,
                     {attribution: this.map_config.attribution}).addTo(this.map);
                 this.popup = L.popup({
@@ -214,16 +244,24 @@
             add_markers_all: function (add_data) {
                 for (let i = 0; i < add_data.length; i++) {
                     let camerastatus = '', eye_div = ''
+                    // if( add_data[i].cameraStatus ){
+                    //     camerastatus = '<div class="state state1">正常</div>'
+                    //     eye_div = '<div class="face_icon1"><img src="'+this.icon_eye+'" onclick="skip_to_realtimem(\''
+                    //                + add_data[i].sdkId +'\',\'' + add_data[i].name + '\' )" title="跳转实时监控"/></div>'
+                    // }else{
+                    //     camerastatus = '<div class="state state2">闲置</div>'
+                    //     eye_div = '<div class="face_icon1"><img src="'+this.icon_eye+'"  style="cursor: not-allowed;" title="闲置状态不可跳转"/></div>'
+                    // }
                     if( add_data[i].cameraStatus ){
                         camerastatus = '<div class="state state1">正常</div>'
-                        eye_div = '<div class="face_icon1"><img src="'+this.icon_eye+'" onclick="skip_to_realtimem(\''
-                                   + add_data[i].sdkId +'\',\'' + add_data[i].name + '\' )" title="跳转实时监控"/></div>'
+                        eye_div = '<div class="face_icon1 face_icon1_img face_icon_fpath" onclick="skip_to_realtimem(\''
+                                   + add_data[i].sdkId +'\',\'' + add_data[i].name + '\' )" title="跳转实时监控"></div>'
                     }else{
                         camerastatus = '<div class="state state2">闲置</div>'
-                        eye_div = '<div class="face_icon1"><img src="'+this.icon_eye+'"  style="cursor: not-allowed;" title="闲置状态不可跳转"/></div>'
+                        eye_div = '<div class="face_icon1 face_icon1_img face_icon_fpath" style="cursor: not-allowed;" title="闲置状态不可跳转"></div>'
                     }
                     // console.log(add_data[i].snapCount)
-                    let contect =   '<div class="face_infobox" onmouseleave="test_leave()" onmouseenter="test_enter()">\
+                    let contect =   '<div class="face_infobox offline_infobox" onmouseleave="test_leave()" onmouseenter="test_enter()">\
                                         <div class="face_title">\
                                             <div class="snap">\
                                                 <div class="snap_text1">抓拍:</div>\
@@ -231,8 +269,8 @@
                                             </div>\
                                             '+ camerastatus +'\
                                             '+ eye_div +'\
-                                            <div class="face_icon2"><img src="'+this.icon_setting+'" onclick="skip_to_mmanage4(\''
-                                            + add_data[i].groupName +'\',\'' + add_data[i].sdkId + '\')" title="跳转设备管理"/></div>\
+                                            <div class="face_icon2 face_icon2_img face_icon_fpath" onclick="skip_to_mmanage4(\''
+                                            + add_data[i].groupName +'\',\'' + add_data[i].name + '\')" title="跳转到设备配置"></div>\
                                         </div>\
                                         <div class="face_camera">'+add_data[i].name+'</div>\
                                         <div class="face_conter"></div>\
@@ -245,7 +283,7 @@
                                 .setLatLng(e.latlng)
                                 .setContent(contect)
                                 .openOn(this.map);
-                            this.map.panTo(e.latlng)
+                            // this.map.panTo(e.latlng)
                             this.is_real_leave = false
                         })
                         .on("mouseout", () => {
@@ -255,6 +293,9 @@
                                     this.map.closePopup()
                                 }
                             }, 50)
+                        })
+                        .on("click", (e) => {
+                            this.change_map_center(e.latlng)
                         })
                     );
                     this.group = L.layerGroup(this.layers)
@@ -272,7 +313,6 @@
             },
             //添加抓拍到的人脸标记
             add_markers: function () {
-                this.map_info()
                 for (let i = 0; i < this.infomycontent.length; i++) {
                     // let myIcon = add_markers_icon(this.tabledata[this.markers_list[i]].uuid)
 
@@ -288,7 +328,7 @@
                                 .setLatLng(e.latlng)
                                 .setContent(this.infomycontent[i])
                                 .openOn(this.map);
-                            this.map.panTo(e.latlng)
+                            // this.map.panTo(e.latlng)
                             this.is_real_leave = false
                         })
                         .on("mouseout", () => {
@@ -345,17 +385,25 @@
                 // console.log(contects.length)
                 for( let i = 0; i < contects.length; i++ ){
                     let camerastatus = '',eye_div = ''
+                    // if( this.tabledata[this.markers_list[i]].cameraStatus ){
+                    //     camerastatus = '<div class="state state1">正常</div>'
+                    //     eye_div = '<div class="face_icon1" ><img src="'+this.icon_eye+'" onclick="skip_to_realtimem(\''
+                    //             + this.tabledata[this.markers_list[i]].cameraSdkId +'\',\'' + this.tabledata[this.markers_list[i]].cameraName + '\')" title="跳转实时监控"/></div>'
+                    // }else{
+                    //     camerastatus = '<div class="state state2">闲置</div>'
+                    //     eye_div = '<div class="face_icon1"><img src="'+this.icon_eye+'" style="cursor: not-allowed;" title="闲置状态不可跳转"/></div>'
+                    // }
                     if( this.tabledata[this.markers_list[i]].cameraStatus ){
                         camerastatus = '<div class="state state1">正常</div>'
-                        eye_div = '<div class="face_icon1" ><img src="'+this.icon_eye+'" onclick="skip_to_realtimem(\''
-                                + this.tabledata[this.markers_list[i]].cameraSdkId +'\',\'' + this.tabledata[this.markers_list[i]].cameraName + '\')" title="跳转实时监控"/></div>'
+                        eye_div = '<div class="face_icon1 face_icon1_img face_icon_fpath" " onclick="skip_to_realtimem(\''
+                                + this.tabledata[this.markers_list[i]].cameraSdkId +'\',\'' + this.tabledata[this.markers_list[i]].cameraName + '\')" title="跳转实时监控"></div>'
                     }else{
                         camerastatus = '<div class="state state2">闲置</div>'
-                        eye_div = '<div class="face_icon1"><img src="'+this.icon_eye+'" style="cursor: not-allowed;" title="闲置状态不可跳转"/></div>'
+                        eye_div = '<div class="face_icon1 face_icon1_img face_icon_fpath" style="cursor: not-allowed;" title="闲置状态不可跳转"></div>'
                     }
 
                     this.infomycontent.push(
-                        '<div class="face_infobox" onmouseleave="test_leave()" onmouseenter="test_enter()">\
+                        '<div class="face_infobox offline_infobox" onmouseleave="test_leave()" onmouseenter="test_enter()">\
                             <div class="face_title">\
                                 <div class="snap">\
                                     <div class="snap_text1">抓拍:</div>\
@@ -363,8 +411,8 @@
                                 </div>\
                                 '+ camerastatus +'\
                                 '+ eye_div +'\
-                                <div class="face_icon2"><img src="'+this.icon_setting+'" onclick="skip_to_mmanage4(\''
-                                + this.tabledata[this.markers_list[i]].cameraGroupName +'\',\'' + this.tabledata[this.markers_list[i]].sdkId + '\')"/></div>\
+                                <div class="face_icon2 face_icon2_img face_icon_fpath" onclick="skip_to_mmanage4(\''
+                                + this.tabledata[this.markers_list[i]].cameraGroupName +'\',\'' + this.tabledata[this.markers_list[i]].cameraName + '\')" title="跳转到设备配置"></div>\
                             </div>\
                             <div class="face_camera">'+ this.tabledata[this.markers_list[i]].cameraName +'</div>\
                             <div class="face_conter">'
@@ -378,8 +426,18 @@
 
             //添加折线
             add_line: function () {
-                this.polyline = L.polyline(this.locations, {color: '#00a0e9'}).addTo(this.group);
-                this.map.fitBounds(this.polyline.getBounds());
+                this.polyline = L.polyline(this.locations, {color: '#00a0e9'}).addTo(this.group)
+                this.map.fitBounds(this.polyline.getBounds())
+                const options = {
+                    delay: 250,
+                    dashArray: [40, 1000],
+                    weight: 10,
+                    color: "rgba(0,0,0,0)",
+                    pulseColor: "#00fcff",
+                    reverse: true,
+                };
+                this.path = antPath(this.locations, options);
+                this.path.addTo(this.group);
             },
 
             // 上传图片
@@ -459,6 +517,25 @@
 
             // 初始化请求数据
             // 请求数据
+            mes_handling:function(status, msg){
+                if( status === 1 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 2 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 10 ){
+                    this.error_info('请先登录')
+                    return ;
+                }else{
+                    if( status === 401 && msg === "未登录" ){
+                        this.error_info(msg)
+                        this.$router.push("/login")
+                    }else{
+                        this.error_info(status + "  " + msg)
+                    }
+                }
+            },
             get_init_data: function () {
                 this.add_markers_all(this.allcamera_list)
             },
@@ -506,11 +583,18 @@
                     return;
                 }
                 // 请求搜索轨迹
-                // var params = new URLSearchParams()
-                // params.append("")
                 this.$ajax.post("/main/identifySnap", params, {headers: {'Content-Type': 'multipart/form-data'}}).then((res) => {
-                    // this.$ajax.post("",params).then((res) => {
                     if (res.data.status === 0) {
+                        if( !res.data.data.total ){
+                            this.$message({
+                                type: 'warning',
+                                message: '无对应数据',
+                                showClose: true,
+                                center: true
+                            })
+                            return 
+                        }
+
                         this.init_data.allnum = res.data.data.total
                         this.tabledata = res.data.data.list
                         // console.log(this.tabledata)
@@ -522,20 +606,14 @@
                                 this.tabledata[i].mystyle = "2px solid white"
                             }
                             [this.tabledata[i].nyr, this.tabledata[i].sfm] = this.tabledata[i].catchTime.split(" ")
-                            this.tabledata[i].location = [this.tabledata[i].location.split(",")[0], this.tabledata[i].location.split(",")[1]]
+                            this.tabledata[i].location = [this.tabledata[i].location.split(",")[1], this.tabledata[i].location.split(",")[0]]
                             this.locations.push(this.tabledata[i].location)
                         }
+                        this.map_info()
                         this.add_markers() // 添加标记
                         this.add_line() // 添加轨迹
-                    } else if (res.data.status === 1) {
-                        this.error_info('请求失败 ' + res.msg)
-                        return;
-                    } else if (res.data.status === 2) {
-                        this.error_info('参数错误 ' + res.msg)
-                        return;
-                    } else if (res.data.status === 10) {
-                        this.error_info('请先登录')
-                        return;
+                    }else{
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                     console.log(error)
@@ -553,6 +631,14 @@
                     center: true
                 })
             },
+            warning_info:function(mes){
+                this.$message({
+                    type: 'warning',
+                    message: mes,
+                    showClose: true,
+                    center: true
+                })
+            },
             success_info: function (mes) {
                 this.$message({
                     type: 'success',
@@ -565,47 +651,44 @@
             // 按钮事件
             // 搜索按钮
             click_to_search: function (search_data) {
-                if (this.group != null) {
-                    this.group.clearLayers()
-                    this.polyline = null
-                    this.markers = []
-                    this.locations = []
-                    this.group = null
-                    this.layers = []
-                    this.tabledata = []
-                    this.infomycontent = []
-                    this.markers_list = []
-                    this.post_to_get_facepath(search_data)
-                } else {
-                    this.post_to_get_facepath(search_data)
-                }
-                if (this.circle != null) {
-                    this.circle.remove()
-                }
+                this.click_to_clear(false)
+                this.post_to_get_facepath(search_data)
             },
             // 清空事件
-            click_to_clear: function () {
-                this.group.clearLayers()
-                this.circle.remove()
-                this.polyline = null
+            click_to_clear: function ( flag = true ) {
+                if( this.group ){
+                    this.group.clearLayers()
+                }
+                if( this.polyline ){
+                    this.polyline = null
+                }
+                if( this.circle ){
+                    this.circle.remove()
+                }
+                if( this.path ){
+                    this.path = null
+                }
                 this.markers = []
                 this.locations = []
-                this.group = null
                 this.layers = []
-                this.dataUrl = ""
-                this.pic = ""
                 this.tabledata = null
-                this.tabledata = []
                 this.infomycontent = []
                 this.markers_list = []
-                this.search_data = {
-                    photo: "",
-                    confidence: 0,
-                    startTime: "",
-                    endTime: "",
+                // this.map = null
+
+                this.init_data.allnum = 0
+                if( flag ){
+                    this.datevalue = [(new Date() - 3600 * 1000 * 24 * 15),new Date()-1],
+                    this.dataUrl = ""
+                    this.$refs.inputer.value = ""
+                    this.search_data = {
+                        photo: "",
+                        confidence: 75,
+                        startTime: "",
+                        endTime: "",
+                    }
+                    this.add_markers_all(this.allcamera_list)
                 }
-                this.tabledata = null
-                this.add_markers_all(this.allcamera_list)
             },
             // 导出事件
             // 导出数据为excel
@@ -630,9 +713,7 @@
 
             click_to_test: function () {
                 // this.$router.push('/historyface1')
-                console.log("hahahah")
-                this.map
-                    .closePopup()
+                this.map.closePopup()
             },
 
             // 跳转页面
@@ -643,11 +724,11 @@
                 this.$store.state.is_search_data = true
                 this.$router.push('/realtimem')
             },
-            skip_to_mmanage4(groupName,sdkId){
+            skip_to_mmanage4(groupName,name){
                 this.$store.state.search_data.groupId = groupName
-                this.$store.state.search_data.sdkId = sdkId
+                this.$store.state.search_data.name = name
                 this.$store.state.is_search_data = true
-                this.$router.push('/mmanage4')
+                this.$router.push('/mmanage4_offline')
             },
         },
         mounted: function () {
@@ -667,9 +748,19 @@
             window['skip_to_realtimem'] = (sdkId,name) => {
                 this.skip_to_realtimem(sdkId,name)
             }
-            window['skip_to_mmanage4'] = (groupName,sdkId) => {
-                this.skip_to_mmanage4(groupName,sdkId)
+            window['skip_to_mmanage4'] = (groupName,name) => {
+                this.skip_to_mmanage4(groupName,name)
             }
+        },
+        beforeRouteLeave(to, from, next) {
+            if( to.path === "/facepath" && from.path === "/facepath_offline" ){
+                // this.click_to_clear()
+                // if( this.map ){
+                //     this.map.remove()
+                // }
+                to.meta.keepAlive = false;
+            }
+            next()
         },
         watch: {
             'search_data.confidence': function (newVal, oldVal) {
@@ -681,24 +772,44 @@
                 this.search_data.confidence = parseInt(this.search_data.confidence)
             },
 
-            '$store.state.facepath_search_data.allcamera_list': function (newVal, old) {
-                this.allcamera_list = this.$store.state.facepath_search_data.allcamera_list
-                if (this.allcamera_list.length) {
-                    this.initMap(this.allcamera_list[0].location)
-                } else {
-                    /*console.log("haha")*/
-                    this.initMap(this.map_config.center)
-                }
-                if (this.$store.state.is_search_data) {
+            '$store.state.is_search_data_facepath':function(newVal,old){
+                if ( newVal && this.$store.state.facepath_model === "offline"){
+                    this.search_data.photo = ""
                     this.search_data.photoUrl = this.$store.state.facepath_data.photo
                     this.dataUrl = this.search_data.photoUrl
-                    this.group.clearLayers()
-                    this.post_to_get_facepath(this.search_data, "skip")
+                    this.click_to_clear(false)
 
-                    this.$store.state.is_search_data = false
+                    this.post_to_get_facepath(this.search_data,"skip")
+
+                    this.$store.state.is_search_data_facepath = false
                     this.$store.state.facepath_data.photo = ""
-                } else {
-                    this.get_init_data()
+                }
+            },
+
+            '$store.state.facepath_search_data.allcamera_list': function (newVal, old) {
+                if( this.$store.state.facepath_model === "offline" ){
+                    this.allcamera_list = this.$store.state.facepath_search_data.allcamera_list
+                    setTimeout(()=>{
+                        if (this.allcamera_list.length) {
+                            this.initMap(this.allcamera_list[0].location)
+                        } else {
+                            this.initMap(this.map_config.center)
+                        }
+                        // console.log("offline")
+                        if (this.$store.state.is_search_data_facepath) {
+                            this.search_data.photoUrl = this.$store.state.facepath_data.photo
+                            this.dataUrl = this.search_data.photoUrl
+                            if( this.group ){
+                                this.group.clearLayers()
+                            }
+                            this.post_to_get_facepath(this.search_data, "skip")
+
+                            this.$store.state.is_search_data_facepath = false
+                            this.$store.state.facepath_data.photo = ""
+                        } else {
+                            this.get_init_data()
+                        }
+                    },10)
                 }
             }
         }
@@ -709,7 +820,7 @@
     @import "../css/historyface.css";
     /*@import "../css/facepath.css";*/
 
-    .face_infobox {
+    .offline_infobox {
         top: -300px;
         left: 35px;
     }
@@ -724,7 +835,6 @@
 
     /* marker icon*/
     .leaflet-div-icon{
-        /*display: none;*/
         background: none;
         border: none;
     }

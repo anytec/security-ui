@@ -6,7 +6,7 @@
 					<div class="title_lefttext">设备配置</div>
 					<div class="title_righttext">结果{{init_data.allnum}}个</div>
 				</div>
-				<div class="input_box">
+				<div class="input_box" @keyup.enter="keyup_to_search">
 					<div class="export_btn" @click="click_to_add_info('')">添加</div>
 					<div class="export_btn" @click="click_to_delete">删除</div>
 					<div class="right_btn h2_right_btn m3_right_box">
@@ -110,11 +110,9 @@
 								</td>
 								<td class="td td4">
 									<div class="td_icon">
-										<div class="td_icon">
-											<img src="../assets/historyface/icon7.png" @click="skip_to_realtimem(item.sdkId,item.name)" title="跳转到实时监控"/>
-											<img src="../assets/historyface/icon6.png" @click="skip_to_historyface1(item.uuid)" title="跳转到历史报警"/>
-											<img src="../assets/historyface/icon2.png" @click="click_to_change_gallery(item.uuid)" title="修改该设备信息"/>
-										</div>
+										<div class="m_icon icon7" @click="skip_to_realtimem(item.sdkId,item.name)" title="跳转到实时监控"></div>
+										<div class="m_icon icon6" @click="skip_to_historyface1(item.uuid)" title="跳转到历史报警"></div>
+										<div class="m_icon icon2" @click="click_to_change_gallery(item.uuid)" title="修改该设备信息"></div>
 									</div>
 								</td>
 							</tr>
@@ -145,9 +143,7 @@
 							<option v-for="item in map_serverLabels_list">{{ item }}</option>
 						</select>
 						<select class="mm4_select" v-model="add_data.serverLabel" v-show="add_data.cameraType === '抓拍机'">
-							<option>mac1</option>
-							<option>mac2</option>
-							<option>mac3</option>
+							<option v-for="item in init_data.mac_serverLabels">{{ item }}</option>
 						</select>
 						<select class="mm4_select" v-model="add_data.cameraType">
 							<option>视频流</option>
@@ -173,7 +169,7 @@
 							<input class="mm4map_text1" id="tipinput" type="text" v-model.trim="keyword" @keyup="get($event)" @keyup.enter="search()"  @keydown.down="selectDown()" @keydown.up.prevent="selectUp()">
                             <!-- 这是一个小叉叉，点击它可清除输入框内容 -->
                             <span class="search-reset" @click="clearInput()">&times;</span>
-                            <div class="search-select" v-show="isShowSelect">
+                            <div class="search-select" id="search-select" v-show="isShowSelect">
                                 <!-- transition-group也是vue2.0中的新特性,tag='ul'表示用ul包裹v-for出来的li -->
                                 <div name="itemfade" tag="ul" mode="out-in" v-cloak>
                                     <li v-for="(value,index) in myData" :class="{selectback:index==now}" class="search-select-option search-select-list" @keydown.enter="search()"  @mouseover="selectHover(index)" @click="selectClick(index)" :key="index">
@@ -242,6 +238,7 @@
 					pageNum: 1,
 					pageSize: 10,
 					is_get_init_data : false,
+					mac_serverLabels: null,
 				},
 				// 搜索数据
 				search_data:{
@@ -260,6 +257,7 @@
 					serverLabel: "",
 					cameraType: "视频流",
 					name: "",
+					remarks: "",
 					streamAddress: "",
 				},
 
@@ -294,6 +292,25 @@
 				// 页面切换
 				this.init_data.pageNum = val
 				this.post_to_change_page(this.save_search_data)
+			},
+
+			// 输入-正则化
+			check_input:function(input_data,model=""){
+				let reg = /^.{0,30}$/
+				if( model === "name" ){
+					reg = /^[\u4e00-\u9fa5a-zA-Z0-9_\-\(\)]{0,30}$/
+				}else if( model === "remarks" ){
+					reg = /^[\u4e00-\u9fa5]{0,20}$/
+				}else if( model === "streamAddress" ){
+					reg = /^rtsp:\/\/.{0,100}$/
+					// reg = /^rtsp:\/\/[a-zA-Z0-9]{1,20}\:[a-zA-Z0-9]{1,20}\@.{0,100}$/
+					// reg = /^[rtsp://][0-9\.\:\@\\\-\_]{0,100}$/
+					// rtsp://amdin:password@0.0.0.0:554/Streaming/Channels/1
+				}else if( model === "location" ){
+					reg = /^[0-9]{1,3}\.[0-9]{5,7}\,[0-9]{1,2}\.[0-9]{5,7}$/
+				}
+
+                return reg.test(input_data)
 			},
 
 
@@ -355,7 +372,7 @@
 			click_to_delete:function(){
 				for ( let i = 0; i < this.tabledata.length; i++){
 					if(this.tabledata[i].ischecked){
-						this.delete_data = this.delete_data + this.tabledata[i].id + ","
+						this.delete_data = this.delete_data + this.tabledata[i].sdkId + ","
 					}
 				}
 				if( this.delete_data.length ){
@@ -424,14 +441,20 @@
                     corner2 = L.latLng(39.548516, 117.008525),
                     bounds = L.latLngBounds(corner1, corner2);
                 this.map.setMaxBounds(bounds)
-                L.tileLayer('/static/offlineMap/{z}/{x}/{y}.png',
-                // L.tileLayer('http://192.168.10.220:9090/beijingmapblue/{z}/{x}/{y}.png',
+
+                let map_url = '/static/offlineMap/{z}/{x}/{y}.png'
+                if( this.$ajax.defaults.baseURL ){
+                    map_url = this.$ajax.defaults.baseURL + '/static/offlineMap/{z}/{x}/{y}.png'
+                }else{
+                    map_url = '/static/offlineMap/{z}/{x}/{y}.png'
+                }
+                L.tileLayer(map_url,
                     {attribution: this.map_config.attribution}).addTo(this.map);
                 this.popup = L.popup({
                     closeButton: false,
                 });
                 this.map.on("click", (e) => {
-                    this.add_data.location = e.latlng.lat + "," + e.latlng.lng
+                    this.add_data.location = e.latlng.lng.toFixed(7) + "," + e.latlng.lat.toFixed(7)
                 })
             },
             //检索事件
@@ -444,12 +467,13 @@
                 this.isShowSelect = true
                 var params = new URLSearchParams()
                 params.append("name", this.keyword)
-                // this.$ajax.post("http://192.168.10.220:9090/map/getMapByName", params).then((res) => {
+                // this.$ajax.post("http://192.168.10.220:9999/map/getMapByName", params).then((res) => {
                 this.$ajax.post("/map/getMapByName", params).then((res) => {
                     this.myData = res.data;
                 })
                 if(this.keyword == null || this.keyword === ""){
                     this.isShowSelect = false
+                    this.now = 0
                 }
             },
 
@@ -458,9 +482,13 @@
                     return;
                 }
                 this.now++;
+                if (this.now >= this.myData.length * 0.5) {
+                    document.getElementById("search-select").scrollTop = 999
+                }
                 //到达最后一个时，再按下就回到第一个
                 if (this.now >= this.myData.length) {
                     this.now = 0;
+                    document.getElementById("search-select").scrollTop = 0
                 }
                 this.keyword = this.myData[this.now].name;
             },
@@ -469,9 +497,16 @@
                     return;
                 }
                 this.now--;
+                if (this.now <= this.myData.length * 0.5) {
+                    document.getElementById("search-select").scrollTop = 0
+                }
+                if (this.now >= this.myData.length * 0.5) {
+                    document.getElementById("search-select").scrollTop = 999
+                }
                 //同上
                 if (this.now <= -1) {
                     this.now = this.myData.length - 1
+                    document.getElementById("search-select").scrollTop = 999
                 }
                 if (this.now >= this.myData.length) {
                     this.now = 0;
@@ -503,6 +538,20 @@
 			// 添加事件-弹窗
 			click_to_addinfo_data:function(){
 				// console.log(this.add_data)
+				if( !this.check_input(this.add_data.name,"name") ){
+					this.warning_info("30个汉字或字符")
+					return ;
+				}else if( !this.check_input(this.add_data.remarks,"remarks") ){
+					console.log(this.add_data.remarks)
+					this.warning_info("备注应输入中文且不超过20个字")
+					return ;
+				}else if( !this.check_input(this.add_data.streamAddress,"streamAddress") ){
+					this.warning_info("流地址出错,格式如下：rtsp://amdin:password@0.0.0.0:554/Streaming/Channels/1")
+					return ;
+				}else if( !this.check_input(this.add_data.location,"location") ){
+					this.warning_info("坐标格式出错")
+					return ;
+				}
 
 				let temp_data = {}
 				for( let item in this.add_data ){
@@ -541,6 +590,7 @@
 					serverLabel: "",
 					cameraType: "视频流",
 					name: "",
+					remarks: "",
 					streamAddress: "",
 				}
 				this.model = ""
@@ -550,6 +600,10 @@
 			},
 			// 添加事件-添加地址标志
 			click_to_add_serverLabels:function(){
+				if( !this.check_input(this.add_serverLabel,"name") ){
+					this.warning_info("地址标志为30个汉字或字符")
+					return ;
+				}
 				if( this.add_serverLabel.indexOf(" ") === -1 ){
 					this.map_serverLabels_list.splice(-1,0,this.add_serverLabel)
 					this.add_data.serverLabel = this.add_serverLabel
@@ -567,6 +621,21 @@
 
 			// 修改事件
 			click_to_change_info_data:function(){
+				if( !this.check_input(this.add_data.name,"name") ){
+					this.warning_info("30个汉字字符")
+					return ;
+				}else if( !this.check_input(this.add_data.remarks,"remarks") ){
+					console.log(this.add_data.remarks)
+					this.warning_info("备注应输入中文且不超过20个字")
+					return ;
+				}else if( !this.check_input(this.add_data.streamAddress,"streamAddress") ){
+					this.warning_info("流地址出错,格式如下：rtsp://amdin:password@0.0.0.0:554/Streaming/Channels/1")
+					return ;
+				}else if( !this.check_input(this.add_data.location,"location") ){
+					this.warning_info("坐标格式出错")
+					return ;
+				}
+
 				let temp_data = {}
 				for( let item in this.add_data ){
 					if( this.add_data[item] === "" && item != "remarks"){
@@ -601,6 +670,11 @@
 
 			// 搜索事件
 			click_to_search:function(search_data){
+				if( !this.check_input(search_data.name,"name") ){
+					this.warning_info("设备名应输入中文且不超过30个字")
+					return ;
+				}
+
 				this.init_data.pageNum = 1
 				this.save_search_data = JSON.parse(JSON.stringify(search_data))
 				this.post_to_change_page(search_data)
@@ -627,22 +701,78 @@
 				this.click_to_add_info(temp_data)
 			},
 
+			// 键盘事件
+			// 键盘事件-回车搜索
+			keyup_to_search:function(){
+				// this.save_search_data = this.search_data
+				// this.post_to_change_page(this.search_data)
+				this.click_to_search(this.search_data)
+			},
+
 			// 请求数据
-			get_init_data:function(){
+			mes_handling:function(status, msg){
+                if( status === 1 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 2 ){
+                    this.error_info(msg)
+                    return ;
+                }else if( status === 10 ){
+                    this.error_info('请先登录')
+                    return ;
+                }else{
+                    if( status === 401 && msg === "未登录" ){
+                        this.error_info(msg)
+                        this.$router.push("/login")
+                    }else{
+                        this.error_info(status + "  " + msg)
+                    }
+                }
+            },
+			get_serverLabels:function(){
 				var params = new URLSearchParams()
 				// 地址标志请求
 				this.$ajax.post("/camera/getServerLabel",params).then((res) => {
                     if( res.data.status === 0){
             			this.init_data.serverLabels = res.data.data
-                    }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
+                    }else{
+                        this.mes_handling(res.data.status,res.data.msg)
+                    }
+                }).catch((error) => {
+                	this.error_info('网络连接出错')
+                    return ;
+                })
+			},
+			get_init_data:function(){
+				var params = new URLSearchParams()
+				this.get_serverLabels()
+				// // 地址标志请求
+				// this.$ajax.post("/camera/getServerLabel",params).then((res) => {
+    //                 if( res.data.status === 0){
+    //         			this.init_data.serverLabels = res.data.data
+    //                 }else if( res.data.status === 1 ){
+	   //                  this.error_info('请求失败 ' + res.msg)
+    //                 	return ;
+    //                 }else if( res.data.status === 2 ){
+	   //                  this.error_info('参数错误 ' + res.msg)
+    //                 	return ;
+    //                 }else if( res.data.status === 10 ){
+	   //                  this.error_info('请先登录')
+    //                 	return ;
+    //                 }else{
+    //                 	this.error_info(res.data.status + "  " + res.data.msg)
+    //                 }
+    //             }).catch((error) => {
+    //             	this.error_info('网络连接出错')
+    //                 return ;
+    //             })
+                 // 抓拍机mac
+                this.$ajax.post("/camera/getCaptureCameras",params).then((res) => {
+                    if( res.data.status === 0){
+            			this.init_data.mac_serverLabels = res.data.data
+            			// console.log(this.init_data.mac_serverLabels)
+                    }else{
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	this.error_info('网络连接出错')
@@ -653,15 +783,8 @@
                     if( res.data.status === 0){
             			this.init_data.video_groups = res.data.data.list
             			this.init_data.is_get_init_data = !this.init_data.is_get_init_data
-                    }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
+                    }else{
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	this.error_info('网络连接出错')
@@ -707,15 +830,8 @@
 		                	this.tabledata[i].uuid = i
 		                	this.tabledata[i].ischecked = false
 		                }
-                    }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
+                    }else{
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	this.error_info('网络连接出错')
@@ -732,15 +848,8 @@
 	                    this.success_info('删除成功')
 	                    this.isallchecked = false
 	                    this.post_to_change_page(this.save_search_data)
-                    }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
+                    }else{
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
                 	console.log(error)
@@ -753,32 +862,26 @@
 				var params = new URLSearchParams()
 				for( let item in temp_data ){
 					params.append(item,temp_data[item])
-					// if( item === "groupName" ){
-					// 	for( let i = 0; i < this.init_data.video_groups.length; i++ ){
-					// 		if( this.init_data.video_groups[i].name === temp_data[item] ){
-					// 			params.append("groupId",this.init_data.video_groups[i].id)
-					// 			break
-					// 		}
-					// 	}
-					// }
+					if( item === "groupName" ){
+						for( let i = 0; i < this.init_data.video_groups.length; i++ ){
+							if( this.init_data.video_groups[i].name === temp_data[item] ){
+								params.append("groupId",this.init_data.video_groups[i].id)
+								break
+							}
+						}
+					}
 				}
 				params.append("cameraStatus",1)
 
 				this.$ajax.post("/camera/add",params).then((res) => {
                     if( res.data.status === 0){
 	                    this.success_info('添加成功')
+	                    this.get_serverLabels()
 	                    this.is_request2add = false
 	                    this.post_to_change_page(this.save_search_data)
 	                    this.clear_show_data()
-                    }else if( res.data.status === 1 ){
-	                    this.error_info('请求失败 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-	                    this.error_info('参数错误 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
+                    }else{
+                        this.mes_handling(res.data.status,res.data.msg)
                     }
                     this.is_confirm_show = true
                 }).catch((error) => {
@@ -799,26 +902,17 @@
                     if( res.data.status === 0){
                     	if( model === "default" ){
                     		this.success_info('修改设备成功')
+                    		this.get_serverLabels()
 	                    	this.post_to_change_page(this.save_search_data)
                     	}else{
                     		this.success_info('修改设备状态成功')
                     	}
                     	this.clear_show_data()
-                    }else if( res.data.status === 1 ){
+                    }else{
                     	if( model === "status" ){
                     		this.tabledata[uuid].cameraStatus = !this.tabledata[uuid].cameraStatus
                     	}
-	                    this.error_info('请求失败 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 2 ){
-                    	if( model === "status" ){
-                    		this.tabledata[uuid].cameraStatus = !this.tabledata[uuid].cameraStatus
-                    	}
-	                    this.error_info('参数错误 ' + res.msg)
-                    	return ;
-                    }else if( res.data.status === 10 ){
-	                    this.error_info('请先登录')
-                    	return ;
+	                    this.mes_handling(res.data.status,res.data.msg)
                     }
                     this.is_confirm_show = true
                 }).catch((error) => {
@@ -872,6 +966,7 @@
 				if(	newval ){
 					if( this.$store.state.is_search_data ){
 						this.search_data.groupId = this.$store.state.search_data.groupId
+						this.search_data.name = this.$store.state.search_data.name
 						this.save_search_data = this.$store.state.search_data
 
 						let search_data = this.$store.state.search_data
@@ -883,6 +978,18 @@
 						this.post_to_change_page({})
 					}
 					
+				}
+			},
+			'search_data.name':function(newval,old){
+				if( newval === "" ){
+					this.click_to_search(this.search_data)
+				}
+			},
+			'add_data.cameraType':function(newval,old){
+				if( newval === "抓拍机" ){
+					this.add_data.serverLabel = this.init_data.mac_serverLabels[0]
+				}else{
+					this.add_data.serverLabel = this.init_data.serverLabels[0]
 				}
 			}
 		},
@@ -906,8 +1013,10 @@
 
 	.search-select {
             position: absolute;
-    		top: -360px;
-		    height: 400px;
+            bottom: 24px;
+			left: 447px;
+			height: auto;
+		    max-height: 400px;
 		    overflow: hidden;
 		    /* width: 162px; */
 		    -webkit-box-sizing: border-box;

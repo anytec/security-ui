@@ -60,6 +60,16 @@
 
 				        // icon:'circle',
 				    },
+				    toolbox: {
+				    	x: '1150px',
+				        show : true,
+				        feature : {
+				            mark : {show: false},
+				            dataView : {show: false, readOnly: false},
+				            restore : {show: false},
+				            saveAsImage : {show: true}
+				        }
+				    },
 				    radar: [{
 				        indicator: [
 					        {
