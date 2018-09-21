@@ -123,7 +123,7 @@ const  routes=[
 				title: '人脸检索-在线',
 				index: 3,
 				requireAuth: true,
-				keep_alive: true,
+				keep_alive: false,
 			},
 		},
 		{
@@ -134,7 +134,7 @@ const  routes=[
 				title: '人脸检索-离线',
 				index: 3,
 				requireAuth: true,
-				keep_alive: true,
+				keep_alive: false,
 			},
 		},
 		{

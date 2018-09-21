@@ -1,5 +1,5 @@
 <template>
-	<div style="height:100%;width:100%">
+	<div style="height:100%;width:100%" @click="click_to_close_tip">
 		<div class="list_box">
 			<div class="mask_box">
 				<div class="top_title">
@@ -16,40 +16,40 @@
 				</div>
 				<div class="table_box h2_table_box">
 					<div class="table_thbox">
-						<table>
+						<table :style="{'width': tabledata_style}">
 							<tr>
-								<td class="td td1">
+								<td class="td td4">
 									<input class="checkbox_box" type="checkbox" :checked="isallchecked" v-model="isallchecked" @click="click_to_checkedall" />
 								</td>
-								<td class="td td4">组名称</td>
-								<td class="td td4">区域</td>
-								<td class="td td4">状态</td>
-								<td class="td td4">备注</td>
-								<td class="td td4">操作</td>
+								<td class="td td18">组名称</td>
+								<td class="td td18" v-if="false">区域</td>
+								<td class="td td18">状态</td>
+								<td class="td td18">备注</td>
+								<td class="td td18">操作</td>
 							</tr>
 						</table>
 					</div>
-					<div class="table_thbox2">
-						<table>
+					<div class="table_thbox2" ref="table_f">
+						<table id="tabledata" ref="table_c">
 							<tr class="tr" v-for="item in tabledata">
-								<td class="td td1">
+								<td class="td td4">
 									<input class="checkbox_box" type="checkbox" :checked="item.ischecked" v-model="item.ischecked" @click="click_to_checkedone(item.uuid)" />
 								</td>
-								<td class="td td4">
+								<td class="td td18">
 									<div class="table_text">
 										<div class="cell_text">
 											{{ item.name }}
 										</div>
 									</div>
 								</td>
-								<td class="td td4">
+								<td class="td td18" v-if="false">
 									<div class="table_text">
 										<div class="cell_text">
 											{{item.area}}
 										</div>
 									</div>
 								</td>
-								<td class="td td4">
+								<td class="td td18">
 									<div class="table_text">
 										<div class="cell_text">
 											<el-switch
@@ -63,7 +63,7 @@
 										</div>
 									</div>
 								</td>
-								<td class="td td4">
+								<td class="td td18">
 									<div class="table_text">
 										<div class="cell_text">
 											{{ item.remarks }}
@@ -71,7 +71,7 @@
 									</div>
 								</td>
 								
-								<td class="td td4">
+								<td class="td td18">
 									<div class="td_icon">
 										<div class="m_icon icon9" @click="skip_to_camera(item.uuid)" title="跳转到设备配置"></div>
 										<div class="m_icon icon6" @click="skip_to_historyface1(item.uuid)" title="跳转到历史报警"></div>
@@ -98,13 +98,21 @@
 				</div>
 				<div class="choose_input mm3_choose">
 					<span>设备组名称：</span>
-					<input class="mm3_inputname" type="text" v-model="add_data.name"/>
+					<input class="mm3_inputname" 
+						type="text" 
+						v-model="add_data.name"
+						@focus="focus_to_show(-90,124,'name')"
+						@click.stop/>
 					<div class="mmbtn_box mm3_btn" @click="click_to_addinfo_data" v-show="is_confirm_show">新建设备组</div>
 					<div class="mmbtn_box mm3_btn left_mmbox" v-show="!is_confirm_show">新建设备组</div>
 					<div class="mmbtn_box left_mmbox mm3_btn" @click="click_to_close_addinfo">暂不添加</div>
 				</div>
 				<div class="mmbottom_input">
-					<input type="text" placeholder="附加备注信息" v-model="add_data.remarks"/>
+					<input type="text" 
+						placeholder="附加备注信息" 
+						v-model="add_data.remarks"
+						@focus="focus_to_show(-40,18,'remarks')"
+						@click.stop/>
 				</div>
 			</div>
 		</div>
@@ -118,13 +126,33 @@
 				</div>
 				<div class="choose_input mm3_choose">
 					<span>底库名称：</span>
-					<input class="mm3_inputname" type="text" v-model="change_data.name"/>
+					<input class="mm3_inputname" 
+						type="text" 
+						v-model="change_data.name"
+						@focus="focus_to_show(-90,124,'name')"
+						@click.stop/>
 					<div class="mmbtn_box mm3_btn" @click="click_to_change_infodata" v-show="is_confirm_show">确认修改</div>
 					<div class="mmbtn_box mm3_btn left_mmbox" v-show="!is_confirm_show">确认修改</div>
 					<div class="mmbtn_box left_mmbox mm3_btn" @click="click_to_close_change_info">暂不修改</div>
 				</div>
 				<div class="mmbottom_input">
-					<input type="text" placeholder="附加备注信息" v-model="change_data.remarks"/>
+					<input type="text" 
+						placeholder="附加备注信息" 
+						v-model="change_data.remarks"
+						@focus="focus_to_show(-40,18,'remarks')"
+						@click.stop/>
+				</div>
+			</div>
+		</div>
+		<div class="shape_minbox" v-if="is_show_tip" :style="{'left':'calc(35% + '+tip_left+'px)','top':'calc(35% + '+tip_top+'px)'}">
+			<div class="shape_topbox">
+				<div class="triangle"></div>
+				<div class="triangle1"></div>
+			</div>
+			<div class="shape_border">
+				<div class="shape_text">
+					<div style="color:white">输入限制：</div>
+					<div class="shape_text2" style="color:white" v-for="text,index in shape_text">{{index+1}}.{{text}}</div>
 				</div>
 			</div>
 		</div>
@@ -168,6 +196,15 @@
 				is_request2add: false,
 				is_request2change: false,
 				is_confirm_show : true,
+
+				// 滚动条
+				tabledata_style: "width:100%",
+
+				// 输入框提示
+				is_show_tip: false,
+				tip_top: 0,
+				tip_left: 0,
+				shape_text: [],
 			} //返回数据最外围
 		},
 		methods: {
@@ -184,10 +221,29 @@
 			},
 
 			// 输入-正则化
-			check_input:function(input_data){
-				let reg = /^[\u4e00-\u9fa5]{0,20}$/
-
+			check_input:function(input_data,model=""){
+				// let reg = /^[\u4e00-\u9fa5]{0,20}$/
+				let reg = /^[\u4e00-\u9fa50-9a-zA-Z\_]{0,20}$/
+				if( model === "remarks" ){
+					reg = /^.{0,20}$/
+				}
                 return reg.test(input_data)
+			},
+			// 输入框聚焦
+			focus_to_show:function(tip_top,tip_left,model=""){
+				this.tip_top = tip_top
+				this.tip_left = tip_left
+				if( model === "remarks" ){
+					this.shape_text = ["不超过20个字符"]
+				}else{
+					this.shape_text = ["不超过20个字符","可输入中文、数字、字母、下划线"]
+				}
+				if( this.shape_text.length ){
+					this.is_show_tip = true
+				}
+			},
+			click_to_close_tip:function(event){
+				this.is_show_tip = false
 			},
 
 			// 复选框函数
@@ -221,11 +277,12 @@
 
 			// 搜索事件
 			click_to_search:function(search_data){
-				if( !this.check_input(search_data.groupName) ){
-					this.warning_info("设备组名应输入中文且不超过20个字")
-					return ;
-				}
+				// if( !this.check_input(search_data.groupName) ){
+				// 	this.warning_info("设备组名应输入中文且不超过20个字")
+				// 	return ;
+				// }
 
+				this.isallchecked = false
 				this.init_data.pageNum = 1
 				this.save_search_data = JSON.parse(JSON.stringify(search_data))
 				this.post_to_change_page(search_data)
@@ -237,11 +294,11 @@
 			},
 			// 添加事件-弹窗
 			click_to_addinfo_data:function(){
-				if( !this.check_input(this.add_data.name) ){
-					this.warning_info("设备组名应输入中文且不超过20个字")
+				if( !this.check_input(this.add_data.name,"name") ){
+					this.warning_info("设备组名格式不正确")
 					return ;
-				}else if( !this.check_input(this.add_data.remarks) ){
-					this.warning_info("备注应输入中文且不超过20个字")
+				}else if( !this.check_input(this.add_data.remarks,"remarks") ){
+					this.warning_info("备注格式不正确")
 					return ;
 				}
 				this.is_confirm_show = false
@@ -257,11 +314,11 @@
 			},
 			// 修改事件-弹窗
 			click_to_change_infodata:function(){
-				if( !this.check_input(this.change_data.name) ){
-					this.warning_info("设备组名应输入中文且不超过20个字")
+				if( !this.check_input(this.change_data.name,"name") ){
+					this.warning_info("设备组名格式不正确")
 					return ;
-				}else if( !this.check_input(this.change_data.remarks) ){
-					this.warning_info("备注应输入中文且不超过20个字")
+				}else if( !this.check_input(this.change_data.remarks,"remarks") ){
+					this.warning_info("备注格式不正确")
 					return ;
 				}
 
@@ -273,7 +330,7 @@
 				}else{
 					let template = {"id":this.change_data.id,"name":this.change_data.name,"remarks":this.change_data.remarks}
 					this.is_confirm_show = false
-					this.require_to_change(template)
+					this.require_to_change(template,"default",this.change_data.uuid)
 				}
 			},
 			click_to_close_change_info:function(){
@@ -308,6 +365,8 @@
 				this.is_request2change = false
 				this.change_data = {}
 				this.add_data = { name: "", remarks: "" }
+
+				this.is_show_tip = false
 			},
 			// 键盘事件
 			// 键盘事件-回车搜索
@@ -346,7 +405,11 @@
 					}).then(() => {
 						this.tabledata[uuid].ischange = true
 						this.tabledata.splice(uuid,1,this.tabledata[uuid])
-						this.require_to_change({"id":this.tabledata[uuid].id,"groupStatus":this.tabledata[uuid].groupStatus},"status",uuid)
+						if( this.tabledata[uuid].groupStatus ){
+							this.require_to_change({"id":this.tabledata[uuid].id,"groupStatus":1},"status",uuid)
+						}else{
+							this.require_to_change({"id":this.tabledata[uuid].id,"groupStatus":0},"status",uuid)
+						}
 					}).catch(() => {
 						this.tabledata[uuid].groupStatus = false
 					})
@@ -358,7 +421,12 @@
 					}).then(() => {
 						this.tabledata[uuid].ischange = true
 						this.tabledata.splice(uuid,1,this.tabledata[uuid])
-						this.require_to_change({"id":this.tabledata[uuid].id,"groupStatus":this.tabledata[uuid].groupStatus},"status",uuid)
+						// this.require_to_change({"id":this.tabledata[uuid].id,"groupStatus":this.tabledata[uuid].groupStatus},"status",uuid)
+						if( this.tabledata[uuid].groupStatus ){
+							this.require_to_change({"id":this.tabledata[uuid].id,"groupStatus":1},"status",uuid)
+						}else{
+							this.require_to_change({"id":this.tabledata[uuid].id,"groupStatus":0},"status",uuid)
+						}
 					}).catch(() => {
 						this.tabledata[uuid].groupStatus = true
 					})
@@ -367,25 +435,25 @@
 			},
 
 			// 请求数据
-			mes_handling:function(status, msg){
-                if( status === 1 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 2 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 10 ){
-                    this.error_info('请先登录')
-                    return ;
-                }else{
-                    if( status === 401 && msg === "未登录" ){
-                        this.error_info(msg)
-                        this.$router.push("/login")
-                    }else{
-                        this.error_info(status + "  " + msg)
-                    }
-                }
-            },
+			// mes_handling:function(status, msg){
+   //              if( status === 1 ){
+   //                  this.error_info(msg)
+   //                  return ;
+   //              }else if( status === 2 ){
+   //                  this.error_info(msg)
+   //                  return ;
+   //              }else if( status === 10 ){
+   //                  this.error_info('请先登录')
+   //                  return ;
+   //              }else{
+   //                  if( status === 401 && msg === "未登录" ){
+   //                      this.error_info(msg)
+   //                      this.$router.push("/login")
+   //                  }else{
+   //                      this.error_info(status + "  " + msg)
+   //                  }
+   //              }
+   //          },
 			get_init_data:function(){
 				// 请求设备组列表
 				var params = new URLSearchParams()
@@ -517,6 +585,10 @@
                     		this.tabledata[uuid].groupStatus = !this.tabledata[uuid].groupStatus
                     	}
 	                    this.mes_handling(res.data.status,res.data.msg)
+	                    if( uuid === 0 || (uuid != 0 && uuid) ){
+							this.tabledata[uuid].ischange = false
+							this.tabledata.splice(uuid,1,this.tabledata[uuid])
+						}
                     }
                     this.is_confirm_show = true
                 }).catch((error) => {
@@ -534,10 +606,6 @@
 			// 消息窗口
 			error_info:function(mes,uuid){
 				this.is_confirm_show = true
-				if( uuid === 0 || (uuid != 0 && uuid) ){
-					this.tabledata[uuid].ischange = false
-					this.tabledata.splice(uuid,1,this.tabledata[uuid])
-				}
 				this.$message({
                     type: 'error',
                     message: mes,
@@ -572,6 +640,23 @@
 					this.click_to_search(this.search_data)
 				}
 			},
+			
+			// 滚动条
+			'tabledata':function(){
+			    // this.$nextTick(function(){
+			    //     let table_height = document.getElementById("tabledata").scrollHeight
+			    //     let box_height = this.$refs.table_f.offsetHeight
+			    //     if( table_height > box_height ){
+			    //     	this.tabledata_style = 'width: 100%'
+			    //     }else{
+			    //     	// console.log(table_height,box_height)
+			    //     	this.tabledata_style = 'width: calc(100% - 20px)'
+			    //     }
+			    // });
+
+			    // 全局函数-获取是否出现滚动条
+			    this.get_scroll()
+			}
 		},
 	}
 </script>

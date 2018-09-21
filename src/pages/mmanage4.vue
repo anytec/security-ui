@@ -1,5 +1,5 @@
 <template>
-	<div style="width:100%;height:100%">
+	<div style="width:100%;height:100%" @click="click_to_close_tip">
 		<div class="list_box">
 			<div class="mask_box">
 				<div class="top_title">
@@ -11,9 +11,13 @@
 					<div class="export_btn" @click="click_to_delete">删除</div>
 					<div class="right_btn h2_right_btn m3_right_box">
 						<div class="search h2_search" @click="click_to_search(search_data)">搜索</div>
-						<select class="center_select input_right" v-model="search_data.groupId">
-							<option selected="selected">选择组/不限</option>
-							<option v-for="item in init_data.video_groups">{{ item.name }}</option>
+						<select class="center_select input_right" v-model="search_data.serverLabel" v-if="search_data.type === '视频流'">
+							<option selected="selected">地址标识/不限</option>
+							<option v-for="item in init_data.serverLabels">{{ item }}</option>
+						</select>
+						<select class="center_select input_right" v-model="search_data.sdkId" v-if="search_data.type === '抓拍机'">
+							<option selected="selected">mac地址/不限</option>
+							<option v-for="item in init_data.mac_serverLabels">{{ item }}</option>
 						</select>
 						<select class="center_select input_right" v-model="search_data.type">
 							<option selected="selected">类型/不限</option>
@@ -23,69 +27,66 @@
 							<option selected="selected">摄像头状态/不限</option>
 							<option v-for="item in init_data.status">{{ item }}</option>
 						</select>
-						<select class="center_select input_right" v-model="search_data.serverLabel" v-if="search_data.type === '视频流'">
-							<option selected="selected">地址标识/不限</option>
-							<option v-for="item in init_data.serverLabels">{{ item }}</option>
-						</select>
-						<select class="center_select input_right" v-model="search_data.serverLabel" v-if="search_data.type === '抓拍机'">
-							<option v-for="item in init_data.mac_serverLabels">{{ item }}</option>
+						<select class="center_select input_right" v-model="search_data.groupId">
+							<option selected="selected">选择组/不限</option>
+							<option v-for="item in init_data.video_groups">{{ item.name }}</option>
 						</select>
 						<input class="center_input id_card input_right" type="text" v-model="search_data.name" placeholder="通过设备名称搜索"/>
 					</div>
 				</div>
 				<div class="table_box h2_table_box">
 					<div class="table_thbox">
-						<table>
+						<table :style="{'width': tabledata_style}">
 							<tr>
-								<td class="td td1">
+								<td class="td td4">
 									<input class="checkbox_box" type="checkbox" :checked="isallchecked" v-model="isallchecked" @click="click_to_checkedall" />
 								</td>
-								<td class="td td4">设备名称</td>
-								<td class="td td4">地址标识</td>
-								<td class="td td4">所在组</td>
-								<td class="td td5">流地址</td>
-								<td class="td td9">状态</td>
-								<td class="td td9">类型</td>
-								<td class="td td4">备注</td>
-								<td class="td td4">操作</td>
+								<td class="td td12">设备名称</td>
+								<td class="td td8">地址标识</td>
+								<td class="td td12">所在组</td>
+								<td class="td td20">流地址</td>
+								<td class="td td10">状态</td>
+								<td class="td td12">类型</td>
+								<td class="td td12">备注</td>
+								<td class="td td12">操作</td>
 							</tr>
 						</table>
 					</div>
-					<div class="table_thbox2">
-						<table>
+					<div class="table_thbox2" ref="table_f">
+						<table id="tabledata" ref="table_c">
 							<tr class="tr" v-for="item in tabledata">
-								<td class="td td1">
+								<td class="td td4">
 									<input class="checkbox_box" type="checkbox" :checked="item.ischecked" v-model="item.ischecked" @click="click_to_checkedone(item.uuid)" />
 								</td>
-								<td class="td td4">
+								<td class="td td12">
 									<div class="table_text">
 										<div class="cell_text">
 											{{ item.name }}
 										</div>
 									</div>
 								</td>
-								<td class="td td4">
+								<td class="td td8">
 									<div class="table_text">
 										<div class="cell_text">
 											{{ item.serverLabel }}
 										</div>
 									</div>
 								</td>
-								<td class="td td4">
+								<td class="td td12">
 									<div class="table_text">
 										<div class="cell_text">
 											{{ item.groupName }}
 										</div>
 									</div>
 								</td>
-								<td class="td td5">
+								<td class="td td20">
 									<div class="table_text">
 										<div class="cell_text">
 											{{ item.streamAddress }}
 										</div>
 									</div>
 								</td>
-								<td class="td td9">
+								<td class="td td10">
 									<div class="table_text">
 										<div class="cell_text">
 											<el-switch
@@ -99,21 +100,21 @@
 										</div>
 									</div>
 								</td>
-								<td class="td td9">
+								<td class="td td12">
 									<div class="table_text">
 										<div class="cell_text">
 											{{ item.cameraType }}
 										</div>
 									</div>
 								</td>
-								<td class="td td4">
+								<td class="td td12">
 									<div class="table_text">
 										<div class="cell_text">
 											{{ item.remarks }}
 										</div>
 									</div>
 								</td>
-								<td class="td td4">
+								<td class="td td12">
 									<div class="td_icon">
 										<div class="m_icon icon7" @click="skip_to_realtimem(item.sdkId,item.name)" title="跳转到实时监控"></div>
 										<div class="m_icon icon6" @click="skip_to_historyface1(item.uuid)" title="跳转到历史报警"></div>
@@ -144,30 +145,50 @@
 						<select class="mm4_select" v-model="add_data.groupName">
 							<option v-for="item in init_data.video_groups">{{ item.name }}</option>
 						</select>
-						<input class="mm4_text1" type="text" placeholder="设备名称" v-model="add_data.name"/>
-						<select class="mm4_select" v-model="add_data.serverLabel" v-show="add_data.cameraType === '视频流'">
-							<option v-for="item in map_serverLabels_list">{{ item }}</option>
-						</select>
-						<select class="mm4_select" v-model="add_data.serverLabel" v-show="add_data.cameraType === '抓拍机'">
-							<option v-for="item in init_data.mac_serverLabels">{{ item }}</option>
-						</select>
+						<input class="mm4_text1" 
+							type="text" 
+							placeholder="设备名称" 
+							v-model="add_data.name"
+							@focus="focus_to_show(-640,217,'name')"
+							@click.stop/>
 						<select class="mm4_select" v-model="add_data.cameraType">
 							<option>视频流</option>
-							<option>抓拍机</option>
+							<option v-if="init_data.mac_serverLabels.length">抓拍机</option>
 						</select>
-						
+						<select class="mm4_select" v-model="add_data.serverLabel" v-show="add_data.cameraType === '视频流' && map_serverLabels_list.length">
+							<option v-for="item in map_serverLabels_list">{{ item }}</option>
+						</select>
+						<select class="mm4_select" v-model="add_data.sdkId" v-show="add_data.cameraType === '抓拍机'">
+							<option v-for="item in init_data.mac_serverLabels">{{ item }}</option>
+						</select>
 					</div>
 					<div class="inputbox01">
-						<input class="mm4_text1_1" type="text" placeholder="流地址rtsp://" v-model="add_data.streamAddress"/>
-						<input class="mm4_text4" type="text" placeholder="附加备注信息" v-model="add_data.remarks"/>
+						<input class="mm4_text1_1" 
+							type="text" 
+							placeholder="流地址rtsp://" 
+							v-model="add_data.streamAddress"
+							@focus="focus_to_show(-603,19,'streamAddress')"
+							@click.stop/>
+						<input class="mm4_text4" 
+							type="text" 
+							placeholder="附加备注信息" 
+							v-model="add_data.remarks"
+							@focus="focus_to_show(-603,444,'remarks')"
+							@click.stop/>
 					</div>
 				</div>
 				<div class="mm4_map">
-					<div class="map_bg" id="container"></div>
+					<div class="map_bg" id="container_mm"></div>
 					<div class="mm4_mapbottom">
 						<div class="map_input">
 							<div class="mm4map_text">鼠标点击设置经纬度</div>
-							<input class="mm4map_text1" type="text" placeholder="设备坐标" v-model="add_data.location"/>
+							<input 
+								class="mm4map_text1" 
+								type="text" 
+								placeholder="设备坐标" 
+								v-model="add_data.location"
+								@focus="focus_to_show(-23,30,'location')"
+								@click.stop/>
 						</div>
 						<div class="map_input">
 							<div class="mm4map_text">按关键字搜索</div>
@@ -183,6 +204,18 @@
 				</div>
 			</div>
 		</div>
+		<div class="shape_minbox" v-if="is_show_tip" :style="{'left':'calc(25% + '+tip_left+'px)','top':'calc(15% + '+tip_top+'px)'}">
+			<div class="shape_topbox">
+				<div class="triangle"></div>
+				<div class="triangle1"></div>
+			</div>
+			<div class="shape_border">
+				<div class="shape_text">
+					<div style="color:white">输入限制：</div>
+					<div class="shape_text2" style="color:white" v-for="text,index in shape_text">{{index+1}}.{{text}}</div>
+				</div>
+			</div>
+		</div>
 		<!--遮罩层-->
 		<div class="mack_box" v-show="is_add_serverLabels"></div>
 		<!--弹出框-新增地址标志-->
@@ -193,7 +226,9 @@
 				</div>
 				<div class="choose_input mm3_choose mm4_add_labels">
 					<span>地址标识：</span>
-					<input class="mm3_inputname" type="text" v-model="add_serverLabel"/>
+					<input class="mm3_inputname" 
+						type="text" 
+						v-model="add_serverLabel"/>
 					<div class="mmbtn_box mm3_btn" @click="click_to_add_serverLabels">新建地址标识</div>
 					<div class="mmbtn_box left_mmbox mm3_btn" @click="click_to_close_serverLabels">暂不新建</div>
 				</div>
@@ -214,7 +249,7 @@
 					pageNum: 1,
 					pageSize: 10,
 					is_get_init_data : false,
-					mac_serverLabels: null,
+					mac_serverLabels: [],
 				},
 				// 搜索数据
 				search_data:{
@@ -223,6 +258,7 @@
 					type: "类型/不限",
 					status: "摄像头状态/不限",
 					serverLabel: "地址标识/不限",
+					sdkId: "mac地址/不限",
 				},
 				save_search_data:{
 
@@ -231,6 +267,7 @@
 				add_data:{
 					location: "",
 					serverLabel: "",
+					sdkId: "",
 					cameraType: "视频流",
 					name: "",
 					remarks: "",
@@ -254,7 +291,14 @@
 				add_serverLabel: null,
 				map_serverLabels_list:[],
 
-				
+				// 滚动条
+				tabledata_style: "width:100%",	
+
+				// 输入框提示
+				is_show_tip: false,
+				tip_top: 0,
+				tip_left: 0,
+				shape_text: [],			
 			} //返回数据最外围
 		},
 		methods: {
@@ -274,19 +318,40 @@
 			check_input:function(input_data,model=""){
 				let reg = /^.{0,30}$/
 				if( model === "name" ){
-					reg = /^[\u4e00-\u9fa5a-zA-Z0-9_\-\(\)]{0,30}$/
+					reg = /^[\u4e00-\u9fa5a-zA-Z0-9_]{0,30}$/
 				}else if( model === "remarks" ){
-					reg = /^[\u4e00-\u9fa5]{0,20}$/
+					reg = /^.{0,20}$/
 				}else if( model === "streamAddress" ){
 					reg = /^rtsp:\/\/.{0,100}$/
 					// reg = /^rtsp:\/\/[a-zA-Z0-9]{1,20}\:[a-zA-Z0-9]{1,20}\@.{0,100}$/
 					// reg = /^[rtsp://][0-9\.\:\@\\\-\_]{0,100}$/
 					// rtsp://amdin:password@0.0.0.0:554/Streaming/Channels/1
 				}else if( model === "location" ){
-					reg = /^[0-9]{1,3}\.[0-9]{5,6}\,[0-9]{1,2}\.[0-9]{5,6}$/
+					reg = /^[0-9]{1,3}\.[0-9]{5,7}\,[0-9]{1,2}\.[0-9]{5,7}$/
 				}
 
                 return reg.test(input_data)
+			},
+			// 输入框聚焦
+			focus_to_show:function(tip_top,tip_left,model=""){
+				this.tip_top = tip_top
+				this.tip_left = tip_left
+				if( model === "name" ){
+					this.shape_text = ["不超过20个字符","可输入中文、数字、字母、下划线"]
+				}else if( model === "remarks" ){
+					this.shape_text = ["不超过20个字符"]
+				}else if( model === "streamAddress" ){
+					this.shape_text = ["不超过100个字符","以rtsp://开头"]
+				}else if( model === "location" ){
+					this.shape_text = ["正常经纬度坐标","小数点后5~7位"]
+				}
+				
+				if( this.shape_text.length ){
+					this.is_show_tip = true
+				}
+			},
+			click_to_close_tip:function(event){
+				this.is_show_tip = false
 			},
 
 			// 复选框函数
@@ -328,7 +393,7 @@
 					}).then(() => {
 						this.tabledata[uuid].ischange = true
 						this.tabledata.splice(uuid,1,this.tabledata[uuid])
-						this.require_to_change({"cameraStatus":1,"id":this.tabledata[uuid].id},"status",uuid)
+						this.require_to_change({"cameraStatus":1,"id":this.tabledata[uuid].id,"sdkId":this.tabledata[uuid].sdkId},"status",uuid)
 					}).catch(() => {
 						this.tabledata[uuid].cameraStatus = false
 					})
@@ -340,7 +405,7 @@
 					}).then(() => {
 						this.tabledata[uuid].ischange = true
 						this.tabledata.splice(uuid,1,this.tabledata[uuid])
-						this.require_to_change({"cameraStatus":0,"id":this.tabledata[uuid].id},"status",uuid)
+						this.require_to_change({"cameraStatus":0,"id":this.tabledata[uuid].id,"sdkId":this.tabledata[uuid].sdkId},"status",uuid)
 					}).catch(() => {
 						this.tabledata[uuid].cameraStatus = true
 					})
@@ -397,10 +462,10 @@
 			},
 			// 添加事件-地图初始化
 			add_info_map_init:function(){
-				this.map = new AMap.Map('container', {
+				this.map = new AMap.Map('container_mm', {
 				        resizeEnable: true,
 				        zoom:16,
-				        center: [114.059777,22.541492],
+				        center: [116.3979149,39.9148837],
 				        mapStyle: 'amap://styles/darkblue',
 				 })
 				this.map.on('click', (e) => {
@@ -429,22 +494,6 @@
 			// }
 			// 添加事件-弹窗
 			click_to_addinfo_data:function(){
-				// console.log(this.add_data)
-				if( !this.check_input(this.add_data.name,"name") ){
-					this.warning_info("30个汉字字符")
-					return ;
-				}else if( !this.check_input(this.add_data.remarks,"remarks") ){
-					console.log(this.add_data.remarks)
-					this.warning_info("备注应输入中文且不超过20个字")
-					return ;
-				}else if( !this.check_input(this.add_data.streamAddress,"streamAddress") ){
-					this.warning_info("流地址出错,格式如下：rtsp://amdin:password@0.0.0.0:554/Streaming/Channels/1")
-					return ;
-				}else if( !this.check_input(this.add_data.location,"location") ){
-					this.warning_info("坐标格式出错")
-					return ;
-				}
-
 				let temp_data = {}
 				for( let item in this.add_data ){
 					// console.log(this.add_data[item] +  "  " + item)
@@ -458,20 +507,40 @@
 						}else if( item === "location" ){
 							this.warning_info("设备坐标不能为空")
 							return ;
+						}else{
+							// console.log()
+							continue
 						}
 					}
-					temp_data[item] =  this.add_data[item]
 					if( item === "groupName" ){
 						for( let i = 0; i < this.init_data.video_groups.length; i++ ){
-							if( this.init_data.video_groups[i].name === temp_data[item] ){
+							if( this.init_data.video_groups[i].name === this.add_data[item] ){
 								temp_data.groupId = this.init_data.video_groups[i].id
-								break
 							}
 						}
+					}else{
+						temp_data[item] = this.add_data[item]
 					}
 				}
+
+				// console.log(this.add_data)
+				if( !this.check_input(this.add_data.name,"name") ){
+					this.warning_info("设备名称格式不正确")
+					return ;
+				}else if( !this.check_input(this.add_data.remarks,"remarks") ){
+					console.log(this.add_data.remarks)
+					this.warning_info("备注格式不正确")
+					return ;
+				}else if( !this.check_input(this.add_data.streamAddress,"streamAddress") ){
+					this.warning_info("流地址格式不正确,格式如下：rtsp://amdin:password@0.0.0.0:554/Streaming/Channels/1")
+					return ;
+				}else if( !this.check_input(this.add_data.location,"location") ){
+					this.warning_info("坐标格式不正确")
+					return ;
+				}
 				this.is_confirm_show = false
-				this.require_to_add(this.add_data)
+				// this.require_to_add(this.add_data)
+				this.require_to_add(temp_data)
 			},
 			// 添加事件-清除数据
 			clear_show_data:function(){
@@ -480,17 +549,25 @@
 				this.add_data = {
 					location: "",
 					serverLabel: "",
+					sdkId: "",
 					cameraType: "视频流",
 					name: "",
 					remarks: "",
 					streamAddress: "",
 				}
 				this.model = ""
+
+				// 抓拍机问题
+				if( this.is_catch_mac ){
+            		this.init_data.mac_serverLabels = []
+            	}
+
+            	this.is_show_tip = false
 			},
 			// 添加事件-添加地址标志
 			click_to_add_serverLabels:function(){
-				if( !this.check_input(this.add_serverLabel,"name") ){
-					this.warning_info("地址标志为30个汉字或字符")
+				if( !this.check_input(this.add_serverLabel,"remarks") ){
+					this.warning_info("地址标志格式不正确,长度不超过20个字符")
 					return ;
 				}
 
@@ -511,31 +588,41 @@
 
 			// 修改事件
 			click_to_change_info_data:function(){
-				if( !this.check_input(this.add_data.name,"name") ){
-					this.warning_info("30个汉字字符")
-					return ;
-				}else if( !this.check_input(this.add_data.remarks,"remarks") ){
-					console.log(this.add_data.remarks)
-					this.warning_info("备注应输入中文且不超过20个字")
-					return ;
-				}else if( !this.check_input(this.add_data.streamAddress,"streamAddress") ){
-					this.warning_info("流地址出错,格式如下：rtsp://amdin:password@0.0.0.0:554/Streaming/Channels/1")
-					return ;
-				}else if( !this.check_input(this.add_data.location,"location") ){
-					this.warning_info("坐标格式出错")
-					return ;
-				}
-
+				
 				let temp_data = {}
 				for( let item in this.add_data ){
-					if( this.add_data[item] === "" && item != "remarks"){
+					if( this.add_data[item] === "" && item != "remarks" && item != "serverLabel" && item != "sdkId"){
 						this.error_info("修改信息不能为空")
 						return ;
 					}
 				}
 
-				let name_list = ["groupName","name","serverLabel","cameraType","location","streamAddress","remarks"]
+				if( !this.check_input(this.add_data.name,"name") ){
+					this.warning_info("设备名称格式不正确")
+					return ;
+				}else if( !this.check_input(this.add_data.remarks,"remarks") ){
+					// console.log(this.add_data.remarks)
+					this.warning_info("备注格式不正确")
+					return ;
+				}else if( !this.check_input(this.add_data.streamAddress,"streamAddress") ){
+					this.warning_info("流地址格式不正确,格式如下：rtsp://amdin:password@0.0.0.0:554/Streaming/Channels/1")
+					return ;
+				}else if( !this.check_input(this.add_data.location,"location") ){
+					this.warning_info("坐标格式不正确")
+					return ;
+				}
+
+				let name_list = ["groupName","name","serverLabel","sdkId","cameraType","location","streamAddress","remarks"]
 				for( let item1 of name_list ){
+					if( this.add_data[item1] === "" && item1 != "remarks" ){
+						continue
+					}
+					if( item1 === "sdkId" ){
+						if( this.add_data.cameraType === "抓拍机" ){
+							temp_data.sdkId = this.add_data.sdkId
+						}
+						continue
+					}
 					if( this.add_data[item1] != this.tabledata[this.add_data.uuid][item1] ){
 						if( item1 === "groupName" ){
 							for( let i = 0; i < this.init_data.video_groups.length; i++ ){
@@ -550,7 +637,7 @@
 				if( JSON.stringify(temp_data) != "{}"){
 					temp_data.id = this.tabledata[this.add_data.uuid].id
 					this.is_confirm_show = false
-					this.require_to_change(temp_data)
+					this.require_to_change(temp_data,"default",this.add_data.uuid)
 				}else{
 					this.is_confirm_show = true
 					this.error_info("未修改信息")
@@ -560,11 +647,12 @@
 
 			// 搜索事件
 			click_to_search:function(search_data){
-				if( !this.check_input(search_data.name,"name") ){
-					this.warning_info("设备名应输入中文且不超过30个字")
-					return ;
-				}
+				// if( !this.check_input(search_data.name,"name") ){
+				// 	this.warning_info("设备名应输入中文且不超过30个字")
+				// 	return ;
+				// }
 
+				this.isallchecked = false
 				this.init_data.pageNum = 1
 				this.save_search_data = JSON.parse(JSON.stringify(search_data))
 				this.post_to_change_page(search_data)
@@ -589,6 +677,11 @@
 			},
 			click_to_change_gallery:function(num){
 				let temp_data = JSON.parse(JSON.stringify(this.tabledata[num]))
+
+				if( !this.init_data.mac_serverLabels.length && temp_data.cameraType === "抓拍机" ){
+					this.init_data.mac_serverLabels = [temp_data.sdkId]
+					this.is_catch_mac = true
+				}
 				this.click_to_add_info(temp_data)
 			},
 			// 键盘事件
@@ -601,25 +694,25 @@
 
 
 			// 请求数据
-			mes_handling:function(status, msg){
-                if( status === 1 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 2 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 10 ){
-                    this.error_info('请先登录')
-                    return ;
-                }else{
-                    if( status === 401 && msg === "未登录" ){
-                        this.error_info(msg)
-                        this.$router.push("/login")
-                    }else{
-                        this.error_info(status + "  " + msg)
-                    }
-                }
-            },
+			// mes_handling:function(status, msg){
+   //              if( status === 1 ){
+   //                  this.error_info(msg)
+   //                  return ;
+   //              }else if( status === 2 ){
+   //                  this.error_info(msg)
+   //                  return ;
+   //              }else if( status === 10 ){
+   //                  this.error_info('请先登录')
+   //                  return ;
+   //              }else{
+   //                  if( status === 401 && msg === "未登录" ){
+   //                      this.error_info(msg)
+   //                      this.$router.push("/login")
+   //                  }else{
+   //                      this.error_info(status + "  " + msg)
+   //                  }
+   //              }
+   //          },
 			get_serverLabels:function(){
 				var params = new URLSearchParams()
 				// 地址标志请求
@@ -637,26 +730,6 @@
 			get_init_data:function(){
 				var params = new URLSearchParams()
 				this.get_serverLabels()
-				// // 地址标志请求
-				// this.$ajax.post("/camera/getServerLabel",params).then((res) => {
-    //                 if( res.data.status === 0){
-    //         			this.init_data.serverLabels = res.data.data
-    //                 }else if( res.data.status === 1 ){
-	   //                  this.error_info(res.data.msg)
-    //                 	return ;
-    //                 }else if( res.data.status === 2 ){
-	   //                  this.error_info(res.data.msg)
-    //                 	return ;
-    //                 }else if( res.data.status === 10 ){
-	   //                  this.error_info('请先登录')
-    //                 	return ;
-    //                 }else{
-    //                 	this.error_info(res.data.status + "  " + res.data.msg)
-    //                 }
-    //             }).catch((error) => {
-    //             	this.error_info('网络连接出错')
-    //                 return ;
-    //             })
                 // 抓拍机mac
                 this.$ajax.post("/camera/getCaptureCameras",params).then((res) => {
                     if( res.data.status === 0){
@@ -784,7 +857,6 @@
                 })
 			},
 			require_to_change:function( temp_data ,model="default",uuid=null){
-				// console.log(temp_data)
 				var params = new URLSearchParams()
 				for( let item in temp_data ){
 					params.append(item,temp_data[item])
@@ -798,6 +870,8 @@
                     	}else{
                     		this.success_info('修改设备状态成功')
                     	}
+                    	// console.log(this.tabledata)
+                    	// console.log(uuid)
                     	this.tabledata[uuid].ischange = false
 						this.tabledata.splice(uuid,1,this.tabledata[uuid])
                     	this.clear_show_data()
@@ -806,6 +880,10 @@
                     		this.tabledata[uuid].cameraStatus = !this.tabledata[uuid].cameraStatus
                     	}
 	                    this.mes_handling(res.data.status,res.data.msg)
+	                    if( uuid === 0 || (uuid != 0 && uuid) ){
+							this.tabledata[uuid].ischange = false
+							this.tabledata.splice(uuid,1,this.tabledata[uuid])
+						}
                     }
                     this.is_confirm_show = true
                 }).catch((error) => {
@@ -822,10 +900,6 @@
 			// 消息窗口
 			error_info:function(mes,uuid){
 				this.is_confirm_show = true
-				if( uuid === 0 || (uuid != 0 && uuid) ){
-					this.tabledata[uuid].ischange = false
-					this.tabledata.splice(uuid,1,this.tabledata[uuid])
-				}
 				
 				this.$message({
                     type: 'error',
@@ -883,20 +957,49 @@
 					this.click_to_search(this.search_data)
 				}
 			},
+			// cameraSdkId
 			'add_data.cameraType':function(newval,old){
 				if( newval === "抓拍机" ){
-					this.add_data.serverLabel = this.init_data.mac_serverLabels[0]
+					this.add_data.sdkId = this.init_data.mac_serverLabels[0]
+					this.add_data.serverLabel = ""
 				}else{
 					this.add_data.serverLabel = this.init_data.serverLabels[0]
+					this.add_data.sdkId = ""
 				}
 			},
 			'search_data.type':function(newval,old){
 				if( newval === "抓拍机" ){
-					this.search_data.serverLabel = this.init_data.mac_serverLabels[0]
+					if( this.init_data.mac_serverLabels.length ){
+						this.search_data.sdkId = this.init_data.mac_serverLabels[0]
+					}
+					this.search_data.serverLabel = "地址标识/不限"
+				}else if(newval === "视频流"){
+					if( this.init_data.serverLabels ){
+						this.search_data.serverLabel = this.init_data.serverLabels[0]
+					}
+					this.search_data.sdkId = "mac地址/不限"
 				}else{
-					this.search_data.serverLabel = this.init_data.serverLabels[0]
+					this.search_data.serverLabel = "地址标识/不限"
+					this.search_data.sdkId = "mac地址/不限"
 				}
 			},
+
+			// 滚动条
+			'tabledata':function(){
+			    // this.$nextTick(function(){
+			    //     let table_height = document.getElementById("tabledata").scrollHeight
+			    //     let box_height = this.$refs.table_f.offsetHeight
+			    //     if( table_height > box_height ){
+			    //     	this.tabledata_style = 'width: 100%'
+			    //     }else{
+			    //     	// console.log(table_height,box_height)
+			    //     	this.tabledata_style = 'width: calc(100% - 20px)'
+			    //     }
+			    // });
+
+			    // 全局函数-获取是否出现滚动条
+			    this.get_scroll()
+			}
 		},
 	}
 </script>
@@ -916,4 +1019,8 @@
 </style>
 <style scoped>
 	@import "../css/historyface.css";
+	.mm_hiddenx{
+		/*border: 3px red solid;*/
+		position: fixed;
+	}
 </style>

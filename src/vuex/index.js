@@ -32,7 +32,8 @@ const store = new Vuex.Store({
         facepath_data:{
             photo: "",
         },
-        facepath_model: "online",
+        // facepath_model: "online",
+        facepath_model: "offline",
 
         
         color: ['#1B68CC','#6383EE','#00E4EC','#005039','#189A75'],
@@ -56,7 +57,8 @@ const store = new Vuex.Store({
             state.user = payload
         },
         logout (state) {
-            sessionStorage.setItem("username","");
+            sessionStorage.setItem("username","")
+            sessionStorage.setItem("role","")
             state.user = {username:""}
         },
         page1_change(state,change_num){

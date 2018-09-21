@@ -39,6 +39,16 @@
                     </div>
                     <div class="results_box">
                         <div class="results_text">发现{{init_data.allnum}}个结果</div>
+                        <div class="face_rowselect">
+                            <div class="rowselect_text">限制</div>
+                            <div class="rowselect_select">
+                                <select v-model="search_data.identifyNumber">
+                                    <option>10</option>
+                                    <option>20</option>
+                                    <option>30</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="export_btn face_btn" @click="click_to_clear">清空</div>
                         <div class="export_btn face_btn" @click="export_data2excel">导出</div>
                     </div>
@@ -113,6 +123,7 @@
                 popup_content: null,
                 map_config: {
                     zoom: 16,
+                    // zoom: 13,
                     center: [39.895218, 116.419072],
                     minZoom: 12,
                     maxZoom: 16,
@@ -138,6 +149,7 @@
                     confidence: 75,
                     startTime: "",
                     endTime: "",
+                    identifyNumber: 10,
                 },
                 input_confidence: 0,
                 same_confidence: 0,
@@ -216,6 +228,7 @@
                 let map_url = '/static/offlineMap/{z}/{x}/{y}.png'
                 if( this.$ajax.defaults.baseURL ){
                     map_url = this.$ajax.defaults.baseURL + '/static/offlineMap/{z}/{x}/{y}.png'
+                    // map_url = this.$ajax.defaults.baseURL + '/static/mymap/{z}/{x}/{y}.png'
                 }else{
                     map_url = '/static/offlineMap/{z}/{x}/{y}.png'
                 }
@@ -474,6 +487,7 @@
                 
             },
             handleFileChange:function(e){
+                this.click_to_clear(false)
                 let inputDOM = this.$refs.inputer
 
                 // console.log(this.$refs.inputer.files[0])
@@ -517,25 +531,25 @@
 
             // 初始化请求数据
             // 请求数据
-            mes_handling:function(status, msg){
-                if( status === 1 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 2 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 10 ){
-                    this.error_info('请先登录')
-                    return ;
-                }else{
-                    if( status === 401 && msg === "未登录" ){
-                        this.error_info(msg)
-                        this.$router.push("/login")
-                    }else{
-                        this.error_info(status + "  " + msg)
-                    }
-                }
-            },
+            // mes_handling:function(status, msg){
+            //     if( status === 1 ){
+            //         this.error_info(msg)
+            //         return ;
+            //     }else if( status === 2 ){
+            //         this.error_info(msg)
+            //         return ;
+            //     }else if( status === 10 ){
+            //         this.error_info('请先登录')
+            //         return ;
+            //     }else{
+            //         if( status === 401 && msg === "未登录" ){
+            //             this.error_info(msg)
+            //             this.$router.push("/login")
+            //         }else{
+            //             this.error_info(status + "  " + msg)
+            //         }
+            //     }
+            // },
             get_init_data: function () {
                 this.add_markers_all(this.allcamera_list)
             },
@@ -554,6 +568,9 @@
                     params.append("cameraIds", cameraIds) // 搜索设备id
                 } else {
                     params.append("cameraIds", "")
+                }
+                if( search_data.identifyNumber ){
+                    params.append( "identifyNumber", search_data.identifyNumber )
                 }
 
                 if (this.datevalue) {
@@ -686,6 +703,7 @@
                         confidence: 75,
                         startTime: "",
                         endTime: "",
+                        identifyNumber: 10,
                     }
                     this.add_markers_all(this.allcamera_list)
                 }
@@ -751,6 +769,7 @@
             window['skip_to_mmanage4'] = (groupName,name) => {
                 this.skip_to_mmanage4(groupName,name)
             }
+
         },
         beforeRouteLeave(to, from, next) {
             if( to.path === "/facepath" && from.path === "/facepath_offline" ){

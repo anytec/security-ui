@@ -57,25 +57,25 @@
            
         },
         methods: {
-            mes_handling:function(status, msg){
-                if( status === 1 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 2 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 10 ){
-                    this.error_info('请先登录')
-                    return ;
-                }else{
-                    if( status === 401 && msg === "未登录" ){
-                        this.error_info(msg)
-                        this.$router.push("/login")
-                    }else{
-                        this.error_info(status + "  " + msg)
-                    }
-                }
-            },
+            // mes_handling:function(status, msg){
+            //     if( status === 1 ){
+            //         this.error_info(msg)
+            //         return ;
+            //     }else if( status === 2 ){
+            //         this.error_info(msg)
+            //         return ;
+            //     }else if( status === 10 ){
+            //         this.error_info('请先登录')
+            //         return ;
+            //     }else{
+            //         if( status === 401 && msg === "未登录" ){
+            //             this.error_info(msg)
+            //             this.$router.push("/login")
+            //         }else{
+            //             this.error_info(status + "  " + msg)
+            //         }
+            //     }
+            // },
             post_to_change_page:function( search_data ){
                 var params = new URLSearchParams()
 

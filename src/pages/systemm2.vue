@@ -18,42 +18,42 @@
 			</div>
 			<div class="systable_box">
 				<div class="table_thbox systable_thbox">
-					<table>
+					<table :style="{'width': tabledata_style}">
 						<tr>
-							<td class="td td1">用户名</td>
-							<td class="td td1">操作时间</td>
-							<td class="td td1">操作类型</td>
-							<td class="td td1">操作对象</td>
+							<td class="td td20">用户名</td>
+							<td class="td td20">操作时间</td>
+							<td class="td td20">操作类型</td>
+							<td class="td td20">操作对象</td>
 							<!-- <td class="td td1">操作内容</td> -->
-							<td class="td td1">操作结果</td>
+							<td class="td td20">操作结果</td>
 						</tr>
 					</table>
 				</div>
-				<div class="table_thbox2 systable_thbox2">
-					<table>
+				<div class="table_thbox2 systable_thbox2" ref="table_f">
+					<table id="tabledata" ref="table_c">
 						<tr class="tr" v-for="item in tabledata">
-							<td class="td td1">
+							<td class="td td20">
 								<div class="table_text">
 									<div class="cell_text">
 										{{item.uname}}
 									</div>
 								</div>
 							</td>
-							<td class="td td1">
+							<td class="td td20">
 								<div class="table_text">
 									<div class="cell_text">
 										{{item.operationTime}}
 									</div>
 								</div>
 							</td>
-							<td class="td td1">
+							<td class="td td20">
 								<div class="table_text">
 									<div class="cell_text">
 										{{item.operationType}}
 									</div>
 								</div>
 							</td>
-							<td class="td td1">
+							<td class="td td20">
 								<div class="table_text">
 									<div class="cell_text">
 										{{item.operationObj}}
@@ -64,7 +64,7 @@
 								<div class="td_icon2 sys2_tdtext" :title="item.objId" v-if="item.objId"> 查看详情 </div>
 								<div class="td_icon2 sys2_tdtext" title="无内容" v-if="!item.objId"> 查看详情 </div>
 							</td> -->
-							<td class="td td1">
+							<td class="td td20">
 								<div class="td_icon2 sys2_tdtext">
 									{{item.operationResult}}
 								</div>
@@ -144,7 +144,7 @@
 				tabledata: [],
 
 				operands: [ "操作对象/全部","底库","底库人员","设备组","设备" ],
-				optypes: [ "操作类型/全部","添加","删除","查找","修改" ],
+				optypes: [ "操作类型/全部","添加","修改","删除","注册"],
 				search_data: {
 					operationObj: "操作对象/全部",
 					operationType: "操作类型/全部",
@@ -153,6 +153,9 @@
 				save_search_data: {},
 
 				isallchecked: false,
+
+				// 滚动条
+				tabledata_style: 'width: 100%',
 			}//返回数据最外围
 		},
 		components:{
@@ -196,11 +199,12 @@
 
 			// 搜索事件
 			click_to_search:function(){
-				if(!this.check_input(this.search_name)){
-					this.warning_info("用户名应输入不超过20个字或字符")
-					return ;
-				}
+				// if(!this.check_input(this.search_name)){
+				// 	this.warning_info("用户名应输入不超过20个字或字符")
+				// 	return ;
+				// }
 
+				this.isallchecked = false
 				this.init_data.pageNum = 1
 				
 				let search_data = {}
@@ -220,25 +224,25 @@
 			},
 
 			// 请求
-			mes_handling:function(status, msg){
-                if( status === 1 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 2 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 10 ){
-                    this.error_info('请先登录')
-                    return ;
-                }else{
-                    if( status === 401 && msg === "未登录" ){
-                        this.error_info(msg)
-                        this.$router.push("/login")
-                    }else{
-                        this.error_info(status + "  " + msg)
-                    }
-                }
-            },
+			// mes_handling:function(status, msg){
+   //              if( status === 1 ){
+   //                  this.error_info(msg)
+   //                  return ;
+   //              }else if( status === 2 ){
+   //                  this.error_info(msg)
+   //                  return ;
+   //              }else if( status === 10 ){
+   //                  this.error_info('请先登录')
+   //                  return ;
+   //              }else{
+   //                  if( status === 401 && msg === "未登录" ){
+   //                      this.error_info(msg)
+   //                      this.$router.push("/login")
+   //                  }else{
+   //                      this.error_info(status + "  " + msg)
+   //                  }
+   //              }
+   //          },
 			get_init_data:function( search_data = {} ){
     			search_data.pageNum = this.init_data.pageNum
     			search_data.pageSize = this.init_data.pageSize
@@ -292,6 +296,23 @@
 					this.click_to_search()
 				}
 			},
+
+			// 滚动条
+			'tabledata':function(){
+			    // this.$nextTick(function(){
+			    //     let table_height = document.getElementById("tabledata").scrollHeight
+			    //     let box_height = this.$refs.table_f.offsetHeight
+			    //     if( table_height > box_height ){
+			    //     	this.tabledata_style = 'width: 100%'
+			    //     }else{
+			    //     	// console.log(table_height,box_height)
+			    //     	this.tabledata_style = 'width: calc(100% - 20px)'
+			    //     }
+			    // });
+
+			    // 全局函数-获取是否出现滚动条
+			    this.get_scroll()
+			}
 		}
 	}
 	

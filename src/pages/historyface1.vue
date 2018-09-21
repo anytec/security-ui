@@ -21,6 +21,7 @@
 					</select>
 				</div>
 				<div class="input_box" @keyup.enter="keyup_to_search">
+					<input class="center_input id_card" type="text" v-model="search_data.personName" placeholder="姓名" />
 					<input class="center_input id_card" type="text" v-model="search_data.idNumber" placeholder="标识编码" />
 					<select class="center_select" v-model="search_data.gender">
 						<option selected="selected">性别/不限</option>
@@ -46,96 +47,95 @@
 				</div>
 				<div class="table_box">
 					<div class="table_thbox">
-						<table>
+						<table :style="{'width': tabledata_style}">
 							<tr>
-								<td class="td td1">
+								<td class="td td4">
 									<input class="checkbox_box" type="checkbox" :checked="isallchecked" v-model="isallchecked" @click="click_to_checkedall"/>
 								</td>
-								<td class="td td2">抓拍人脸</td>
-								<td class="td td3">目标人脸</td>
-								<td class="td td4">相似度</td>
-								<td class="td td5">姓名</td>
-								<td class="td td6">性别</td>
-								<td class="td td8">标识编码</td>
-								<td class="td td4">抓拍时间</td>
-								<td class="td td8">所在底库</td>
-								<td class="td td9">设备信息</td>
-								<td class="td td10">操作</td>
+								<td class="td td8">抓拍人脸</td>
+								<td class="td td8">目标人脸</td>
+								<td class="td td6">相似度</td>
+								<td class="td td6">姓名</td>
+								<td class="td td4">性别</td>
+								<td class="td td14">标识编码</td>
+								<td class="td td18">抓拍时间</td>
+								<td class="td td6">所在底库</td>
+								<td class="td td18">设备信息</td>
+								<td class="td td6">操作</td>
 							</tr>
 						</table>
 					</div>
-					<div class="table_thbox2">
-						<table>
+					<div class="table_thbox2" ref="table_f">
+						<table id="tabledata" ref="table_c">
 							<tr class="tr" v-for="item in tabledata">
-								<td class="td td1">
+								<td class="td td4">
 									<input class="checkbox_box" type="checkbox" :checked="item.ischecked" v-model="item.ischecked" @click="click_to_checkedone(item.uuid)"/>
 								</td>
-								<td class="td td2">
+								<td class="td td8">
 									<img class="td_img"  :src="item.snapshotUrl"  @click="show_pic(item.wholePhoto)" title="点击显示原图" />
 								</td>
-								<td class="td td3">
+								<td class="td td8">
 									<!-- <img class="td_img"  :src="item.faceUrl"  @click="show_pic(item.photo)" title="点击显示原图"/> -->
 									<img class="td_img"  :src="item.faceUrl" />
 								</td>
-								<td class="td td4">
+								<td class="td td6">
 									<div class="table_text">
 										<div class="cell_text">
 											{{item.confidence}}%
 										</div>
 									</div>
 								</td>
-								<td class="td td5">
+								<td class="td td6">
 									<div class="table_text">
 										<div class="cell_text">
 											{{item.personName}}
 										</div>
 									</div>
 								</td>
-								<td class="td td6">
+								<td class="td td4">
 									<div class="table_text">
 										<div class="cell_text">
 											{{item.gender}}
 										</div>
 									</div>
 								</td>
-								<td class="td td8">
+								<td class="td td14">
 									<div class="table_text">
 										<div class="cell_text">
 											{{item.idNumber}}
 										</div>
 									</div>
 								</td>
-								<td class="td td4">
+								<td class="td td18">
 									<div class="table_text">
 										<div class="cell_text">
-											{{ item.catchTime.split(" ")[0] }}
+											{{item.catchTime}}
+											<!-- {{ item.catchTime.split(" ")[0] }}
 											<br>
-											{{ item.catchTime.split(" ")[1] }}
+											{{ item.catchTime.split(" ")[1] }} -->
 										</div>
 									</div>
 								</td>
-								<td class="td td8">
+								<td class="td td6">
 									<div class="table_text">
 										<div class="cell_text">
 											{{item.personGroupName}}
 										</div>
 									</div>
 								</td>
-								<td class="td td9">
+								<td class="td td18">
 									<div class="table_text">
 										<div class="cell_text">
 											{{item.cameraGroupName}}-{{item.cameraName}}
 										</div>
 									</div>
 								</td>
-								<td class="td td10">
-									<div class="td_icon1 icon1" title="跳转到人脸检索" @click="skip_to_facepath(item.snapshotUrl)">
-										<!-- <img src="../assets/historyface/icon1.png" /> -->
-									</div>
-									<div class="td_icon2 icon5" title="跳转到底库人员" @click="skip_to_mmanage2(item.uuid)">
-										<!-- <img src="../assets/historyface/icon5.png" /> -->
-									</div>
-								</td>
+								<td class="td td6">
+									<div class="icon_fa icon_hi">
+	                                	<div class="td_icon2 icon5" title="跳转到底库人员" @click="skip_to_mmanage2(item.uuid)"></div>
+	                                    <div class="td_icon2 icon1" title="跳转到人脸检索" @click="skip_to_facepath(item.snapshotUrl)"></div>
+	                                </div>
+                                </td>
 							</tr>
 						</table>
 					</div>
@@ -187,6 +187,7 @@
 				search_data:{
 					idNumber: "",
 					cameraName: "",
+					personName: "",
 					cameraGroupName_data: "设备组/不限",
 					personGroupName_data: "底库/不限",
 					// cameraName: "",
@@ -243,6 +244,8 @@
 				is_show_pic: false,
 				total_pic: "",
 
+				// 滚动条
+				tabledata_style: "width:100%",
 			}//返回数据最外围
 		},
 		components:{
@@ -301,6 +304,7 @@
 					this.warning_info("标识编码应输入字母、数字;长度小于20")
 					return ;
 				}
+				this.isallchecked = false
 				this.init_data.pageNum = 1
 				this.save_search_data = JSON.parse(JSON.stringify(search_data))
 				this.post_to_change_page(search_data)
@@ -373,25 +377,25 @@
 			},
 
 			// 数据初始化请求数据
-			mes_handling:function(status, msg){
-                if( status === 1 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 2 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 10 ){
-                    this.error_info('请先登录')
-                    return ;
-                }else{
-                    if( status === 401 && msg === "未登录" ){
-                        this.error_info(msg)
-                        this.$router.push("/login")
-                    }else{
-                        this.error_info(status + "  " + msg)
-                    }
-                }
-            },
+			// mes_handling:function(status, msg){
+   //              if( status === 1 ){
+   //                  this.error_info(msg)
+   //                  return ;
+   //              }else if( status === 2 ){
+   //                  this.error_info(msg)
+   //                  return ;
+   //              }else if( status === 10 ){
+   //                  this.error_info('请先登录')
+   //                  return ;
+   //              }else{
+   //                  if( status === 401 && msg === "未登录" ){
+   //                      this.error_info(msg)
+   //                      this.$router.push("/login")
+   //                  }else{
+   //                      this.error_info(status + "  " + msg)
+   //                  }
+   //              }
+   //          },
 			get_init_data1:function(){
 				// 请求库名
 				var params = new URLSearchParams()
@@ -628,6 +632,23 @@
 					this.click_to_search(this.search_data)
 				}
 			},
+
+			// 滚动条
+			'tabledata':function(){
+			    // this.$nextTick(function(){
+			    //     let table_height = document.getElementById("tabledata").scrollHeight
+			    //     let box_height = this.$refs.table_f.offsetHeight
+			    //     if( table_height > box_height ){
+			    //     	this.tabledata_style = 'width: 100%'
+			    //     }else{
+			    //     	// console.log(table_height,box_height)
+			    //     	this.tabledata_style = 'width: calc(100% - 20px)'
+			    //     }
+			    // });
+
+			    // 全局函数-获取是否出现滚动条
+			    this.get_scroll()
+			}
 		},
 		beforeRouteLeave(to, from, next) {
 			// console.log(to.path)

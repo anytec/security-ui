@@ -1,5 +1,5 @@
 <template>
-	<div style="width:100%;height:100%;">
+	<div style="width:100%;height:100%;" @click="click_to_close_tip">
 		<div class="syslist_box1">
             <div class="mask_box">
                 <div class="top_title">
@@ -16,48 +16,48 @@
                 </div>
                 <div class="systable_box">
                     <div class="table_thbox systable_thbox">
-                        <table>
+                        <table :style="{'width': tabledata_style}">
                             <tr>
-                                <td class="td td1">用户名</td>
-                                <td class="td td1">ID</td>
-                                <td class="td td1">权限</td>
-                                <td class="td td9">备注</td>
-                                <td class="td td10">设置</td>
+                                <td class="td td20">用户名</td>
+                                <td class="td td20">ID</td>
+                                <td class="td td20">权限</td>
+                                <td class="td td20">备注</td>
+                                <td class="td td20">设置</td>
                             </tr>
                         </table>
                     </div>
-                    <div class="table_thbox2 systable_thbox2">
-                        <table>
+                    <div class="table_thbox2 systable_thbox2" ref="table_f">
+                        <table id="tabledata" ref="table_c">
                             <tr class="tr" v-for="item,index in tabledata">
-                                <td class="td td1">
+                                <td class="td td20">
                                     <div class="table_text">
                                         <div class="cell_text">
                                             {{item.uname}}
                                         </div>
                                     </div>
                                 </td>
-                                <td class="td td1">
+                                <td class="td td20">
                                     <div class="table_text">
                                         <div class="cell_text">
                                             {{item.id}}
                                         </div>
                                     </div>
                                 </td>
-                                <td class="td td1">
+                                <td class="td td20">
                                     <div class="table_text">
                                         <div class="cell_text">
                                             {{item.role}}
                                         </div>
                                     </div>
                                 </td>
-                                <td class="td td9">
+                                <td class="td td20">
                                     <div class="table_text">
                                         <div class="cell_text">
                                             {{item.notes}}
                                         </div>
                                     </div>
                                 </td>
-                                <td class="td td10">
+                                <td class="td td20">
                                     <div class="icon_fa">
                                     	<div class="td_icon2 systd_icon2 icon2" @click="click_to_update_person(item.id,index)" title="修改用户信息"></div>
 	                                    <div class="td_icon2 systd_icon2 icon_trash" 
@@ -100,9 +100,9 @@
                 <div class="sysconter_box">
                     <div class="sys_maxbox">
                     	<div class="sysleft_text">账号：</div>
-                        <div class="sysleft_input"><input type="text" v-model="showData.account" /></div>
+                        <div class="sysleft_input"><input type="text" v-model="showData.account" @focus="focus_to_show(62,154,'account')" @click.stop/></div>
                         <div class="sysleft_text">密码：</div>
-                        <div class="sysleft_input"><input type="text" v-model="showData.upass"/></div>
+                        <div class="sysleft_input"><input type="text" v-model="showData.upass" @focus="focus_to_show(62,424,'upass')" @click.stop/></div>
                     </div>
                     <!-- <div class="sys_maxbox">
                         <div class="sysleft_text">账号：</div>
@@ -110,11 +110,11 @@
                     </div> -->
                     <div class="sys_maxbox">
                     	<div class="sysleft_text">用户名：</div>
-                        <div class="sysleft_input"><input type="text" v-model="showData.uname" /></div>
+                        <div class="sysleft_input"><input type="text" v-model="showData.uname" @focus="focus_to_show(113,154,'uname')" @click.stop/></div>
                     </div>
                     <div class="sys_maxbox">
                         <div class="sysleft_text">备注：</div>
-                        <div class="sysleft_input sysleft_input2"><input type="text" v-model="showData.notes" /></div>
+                        <div class="sysleft_input sysleft_input2"><input type="text" v-model="showData.notes" @focus="focus_to_show(165,154,'notes')" @click.stop/></div>
                     </div>
                 </div>
                 <div class="sys_cancelbtn" @click="close_add_info">
@@ -132,13 +132,13 @@
                 <div class="sysconter_box">
                     <div class="sys_maxbox">
                         <div class="sysleft_text">用户名：</div>
-                        <div class="sysleft_input"><input type="text" v-model="showData.uname"/></div>
+                        <div class="sysleft_input"><input type="text" v-model="showData.uname" @focus="focus_to_show(62,154,'uname')" @click.stop/></div>
                         <div class="sysleft_text">密码：</div>
-                        <div class="sysleft_input"><input type="text" v-model="showData.upass"/></div>
+                        <div class="sysleft_input"><input type="text" v-model="showData.upass" @focus="focus_to_show(62,424,'upass')" @click.stop/></div>
                     </div>
                     <div class="sys_maxbox">
                         <div class="sysleft_text">备注：</div>
-                        <div class="sysleft_input sysleft_input2"><input type="text" v-model="showData.notes"/></div>
+                        <div class="sysleft_input sysleft_input2"><input type="text" v-model="showData.notes" @focus="focus_to_show(112,154,'notes')" @click.stop/></div>
                     </div>
                 </div>
                 <div class="sys_cancelbtn" @click="close_add_info">
@@ -152,6 +152,18 @@
                 </div> -->
             </div>  
         </div>
+        <div class="shape_minbox" v-if="is_show_tip" :style="{'left':'calc(35% + '+tip_left+'px)','top':'calc(35% + '+tip_top+'px)'}">
+			<div class="shape_topbox">
+				<div class="triangle"></div>
+				<div class="triangle1"></div>
+			</div>
+			<div class="shape_border">
+				<div class="shape_text">
+					<div style="color:white">输入限制：</div>
+					<div class="shape_text2" style="color:white" v-for="text,index in shape_text">{{index+1}}.{{text}}</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -235,6 +247,15 @@
 
 				// 设置用户
 				is_click_to_set: false,
+
+				// 滚动条
+				tabledata_style: '100%',
+
+				// 输入框提示
+				is_show_tip: false,
+				tip_top: 0,
+				tip_left: 0,
+				shape_text: [],
 			}//返回数据最外围
 		},
 		methods: {
@@ -247,18 +268,50 @@
 				this.get_init_data( {keyword:this.save_search_data} )
 			},
 
-			// 输入-校验
-            check_input:function(input_data,model=""){
-                let reg = /^.{4,20}$/
-                if( model === "account" ){
-                	reg = /^[a-zA-Z0-9_]{4,20}$/
-                }else if( model === "notes" ){
-					reg = /^[\u4e00-\u9fa5]{0,20}$/
-				}else if( model === "search" ){
-					reg = /^.{0,20}$/
+			// // 输入-校验
+   //          check_input:function(input_data,model=""){
+   //              let reg = /^.{4,20}$/
+   //              if( model === "account" ){
+   //              	reg = /^[a-zA-Z0-9_]{4,20}$/
+   //              }else if( model === "notes" ){
+			// 		reg = /^[\u4e00-\u9fa5]{0,20}$/
+			// 	}else if( model === "search" ){
+			// 		reg = /^.{0,20}$/
+			// 	}
+   //              return reg.test(input_data)
+   //          },
+            // 输入-正则化
+			check_input:function(input_data,model=""){
+				let reg = /^.{0,20}$/
+
+				if( model === "account" ){
+					reg = /^[0-9a-zA-Z]{6,20}$/
+				}else if( model === "upass"){
+					reg = /^.{4,20}$/
 				}
                 return reg.test(input_data)
-            },
+			},
+			// 输入框聚焦
+			focus_to_show:function(tip_top,tip_left,model=""){
+				this.tip_top = tip_top
+				this.tip_left = tip_left
+				if( model === "uname" ){
+					this.shape_text = ["不超过20个字符"]
+				}else if( model === "account" ){
+					this.shape_text = ["长度：6~20个字符","可输入数字、字母"]
+				}else if( model === "upass" ){
+					this.shape_text = ["长度：4~20个字符"]
+				}else{
+					this.shape_text = ["不超过20个字符"]
+				}
+				
+				if( this.shape_text.length ){
+					this.is_show_tip = true
+				}
+			},
+			click_to_close_tip:function(event){
+				this.is_show_tip = false
+			},
 
 			click_to_checkedall:function(){
 				if(!this.isallchecked){
@@ -280,29 +333,35 @@
 				this.is_click_to_add = true
 			},
 			confirm_add_data:function(){
-				if( !this.check_input(this.showData.account,"account") ){
-					this.warning_info("账户只能输入4~20位字母、数字、下划线")
-					return ;
-				}else if(!this.check_input(this.showData.notes,"notes")){
-					this.warning_info("备注应输入中文且不超过20个字")
-					return ;
-				}else if(!this.check_input(this.showData.uname)){
-					this.warning_info("用户名应输入4~20个字或字符")
-					return ;
-				}else if(!this.check_input(this.showData.upass)){
-					this.warning_info("密码应输入4~20个字或字符")
-					return ;
-				}
 
 				if( this.showData.account === ""){
 					this.warning_info("账号不能为空")
+					return ;
 				}else if( this.showData.uname === "" ){
 					this.warning_info("用户名不能为空")
+					return ;
 				}else if( this.showData.upass === ""){
 					this.warning_info("密码不能为空")
-				}else{
-					this.require_add_person(this.showData)
+					return ;
 				}
+
+				if( !this.check_input(this.showData.account,"account") ){
+					this.warning_info("账户格式不正确")
+					return ;
+				}else if(!this.check_input(this.showData.notes,"notes")){
+					this.warning_info("备注格式不正确")
+					return ;
+				}else if(!this.check_input(this.showData.uname,"uname")){
+					this.warning_info("用户名格式不正确")
+					return ;
+				}else if(!this.check_input(this.showData.upass,"upass")){
+					this.warning_info("密码格式不正确")
+					return ;
+				}
+
+
+				this.require_add_person(this.showData)
+				
 			},
 			close_add_info:function(){
 				this.showData = {
@@ -319,20 +378,32 @@
 				this.require_get_change_person(id,index)
 			},
 			confirm_set_data:function(){
+				if(!this.check_input(this.showData.notes,"notes")){
+					this.warning_info("备注格式不正确")
+					return ;
+				}else if(!this.check_input(this.showData.uname,"uname")){
+					this.warning_info("用户名格式不正确")
+					return ;
+				}else if(!this.check_input(this.showData.upass,"upass")){
+					this.warning_info("密码格式不正确")
+					return ;
+				}
+
 				let update_date = {}
 				let items = ["uname","upass","notes"]
+				let flag = false
 				for( let i = 0; i < items.length; i++ ){
 					if( this.showData[items[i]] != this.tabledata[this.showData.uuid][items[i]] ){
 						update_date[items[i]] = this.showData[items[i]]
+						flag = true
 					}
 				}
-				// for( let item in  this.showData ){
-				// 	if( item === 'uuid' ){
-				// 		continue
-				// 	}else{
-				// 		update_date[item] = this.showData[item]
-				// 	}
-				// }
+
+				if( !flag ){
+					this.warning_info("用户信息未更改")
+					return ;
+				}
+
 				update_date.id = this.showData.id
 				this.require_to_update( update_date )
 
@@ -340,11 +411,12 @@
 			},
 			// 搜素事件
 			click_to_search:function(){
-				if(!this.check_input(this.search_name,"search")){
-					this.warning_info("用户名应输入不超过20个字或字符")
-					return ;
-				}
+				// if(!this.check_input(this.search_name,"search")){
+				// 	this.warning_info("用户名格式不正确")
+				// 	return ;
+				// }
 
+				this.isallchecked = false
 				this.init_data.pageNum = 1
 				this.save_search_data = this.search_name
 				this.get_init_data( {keyword:this.search_name} )
@@ -372,25 +444,25 @@
 			},
 
 			// 请求
-			mes_handling:function(status, msg){
-                if( status === 1 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 2 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 10 ){
-                    this.error_info('请先登录')
-                    return ;
-                }else{
-                    if( status === 401 && msg === "未登录" ){
-                        this.error_info(msg)
-                        this.$router.push("/login")
-                    }else{
-                        this.error_info(status + "  " + msg)
-                    }
-                }
-            },
+			// mes_handling:function(status, msg){
+   //              if( status === 1 ){
+   //                  this.error_info(msg)
+   //                  return ;
+   //              }else if( status === 2 ){
+   //                  this.error_info(msg)
+   //                  return ;
+   //              }else if( status === 10 ){
+   //                  this.error_info('请先登录')
+   //                  return ;
+   //              }else{
+   //                  if( status === 401 && msg === "未登录" ){
+   //                      this.error_info(msg)
+   //                      this.$router.push("/login")
+   //                  }else{
+   //                      this.error_info(status + "  " + msg)
+   //                  }
+   //              }
+   //          },
 			get_init_data:function( search_data = {} ){
 				// 请求库名
 				var params = new URLSearchParams()
@@ -522,6 +594,20 @@
 				if( newval === "" ){
 					this.click_to_search()
 				}
+			},
+			'tabledata':function(newval,old){
+			    // this.$nextTick(function(){
+			    //     let table_height = this.$refs.table_c.offsetHeight
+			    //     let box_height = this.$refs.table_f.offsetHeight
+			    //     if( table_height > box_height ){
+			    //     	this.tabledata_style = 'calc(100% - 20px)'
+			    //     }else{
+			    //     	this.tabledata_style = '100%'
+			    //     }
+			    // });
+			    
+			    // 全局函数-获取是否出现滚动条
+			    this.get_scroll()
 			},
 		},
 	}

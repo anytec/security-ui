@@ -13,6 +13,7 @@
 	export default {
 		props:{
 			emotionsData: Array,
+			neutralData: Array,
 		},
 		data(){
 			return {
@@ -32,11 +33,35 @@
 					this.myChart.resize()
 				}.bind(this))
 			},
-			line_echart_init:function( mydata ){
+			line_echart_init:function( mydata, neutralData ){
 				// let imgPath = ['http://bmob-cdn-15355.b0.upaiyun.com/2017/12/01/bee4341c4089af7980b87074a77479ad.png']
+				let show_data = '常态： '+ neutralData[0] + '    ' + neutralData[1] +'\n\n'+
+								'快乐： '+ mydata[0][1] + '    ' + mydata[1][1] +'\n\n'+
+								'惊讶： '+ mydata[0][2] + '    ' + mydata[1][2] +'\n\n'+
+								'害怕： '+ mydata[0][3] + '    ' + mydata[1][3] +'\n\n'+
+								'生气： '+ mydata[0][4] + '    ' + mydata[1][4] +'\n\n'+
+								'嫌弃： '+ mydata[0][5] + '    ' + mydata[1][5] 
 				let option = {
 					backgroundColor: 'rgba(0,0,0,0.4)', // 修改背景颜色
 				    color: ['rgba(0, 200, 100, 0.2)','rgba(10, 170, 100, 0.5)'], // 线条颜色
+				    // title: {
+				    //     text: '情绪 -> 显性 -> 隐性',
+				    //     subtext: show_data,
+				    //     left:'10px',
+				    //     top:'10px',
+				    //     backgroundColor: 'rgba(0,0,0,0.1)',
+				    //     // padding:[24,0],
+				    //     textStyle:{
+				    //         color:'#ffffff',
+				    //         fontSize:20,
+				    //         align:'center'
+				    //     },
+				    //     subtextStyle:{
+				    //     	color:'#ffffff',
+				    //     	fontSize:18,
+				    //     	// align:'center',
+				    //     },
+				    // },
 				    // 图例
 				    legend: {
 				    	icon: 'rect',
@@ -222,7 +247,7 @@
 					this.max = Math.max.apply(null, this.emotionsData[1])
 				}
 
-				this.line_echart_init( this.emotionsData )
+				this.line_echart_init( this.emotionsData, this.neutralData )
 				this.my_init()
 			}
 		}

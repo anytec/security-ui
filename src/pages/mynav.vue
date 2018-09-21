@@ -17,7 +17,7 @@
 				</ul>
 			</div>
 			<div class="right_user">
-				<div class="map_model_box" @click="change_map_model">{{map_model}}</div>
+				<div class="map_model_box" @click="change_map_model" id="map_model">{{map_model}}</div>
 				<div class="user_box">
 					<div class="user_icon"><img src="../assets/user_icon.png"/></div>
 					<div class="user_text" :title="username" >{{username}}</div>
@@ -92,9 +92,23 @@
                         this.$store.dispatch('logout').then(() => {
 		                    this.$router.replace('/')
 		                })
-                    }else{
-                        this.error_info('注销失败')
-                    }
+                    }else if( res.data.status === 1 ){
+	                    this.error_info(res.data.msg)
+	                    return ;
+	                }else if( res.data.status === 2 ){
+	                    this.error_info(res.data.msg)
+	                    return ;
+	                }else if( res.data.status === 10 ){
+	                    this.error_info('请先登录')
+	                    return ;
+	                }else{
+	                    if( res.data.status === 401 && res.data.msg === "未登录" ){
+	                        this.error_info("未登录,注销失败")
+	                        this.$router.push("/login")
+	                    }else{
+	                        this.error_info(res.data.msg)
+	                    }
+	                }
                 }).catch((error) => {
                     console.log(error)
                     this.error_info('网络连接出错')
@@ -110,6 +124,14 @@
                     showClose: true,
                     center: true,
 
+                })
+			},
+			warning_info:function(mes){
+				this.$message({
+                    type: 'warning',
+                    message: mes,
+                    showClose: true,
+                    center: true
                 })
 			},
 			success_info:function(mes){
@@ -187,6 +209,8 @@
             // }
         },
         mounted(){
+        	this.change_mynav_active()
+
         	this.username = sessionStorage.username
         	this.$store.state.user.uname = sessionStorage.username
 
@@ -199,8 +223,8 @@
 					this.$store.state.facepath_model = "offline"
 				}
 			}else{
-				this.$store.state.facepath_model = "online"
-				this.map_model = "在线"
+				this.$store.state.facepath_model = "offline"
+				this.map_model = "离线"
 				sessionStorage.setItem("map_model", this.map_model)
 			}
 			
@@ -224,6 +248,10 @@
 			},
         	$route(to,from){
 				this.change_mynav_active()
+				if( sessionStorage.role != "管理员" && ( to.path.indexOf("mmanage") != -1 || to.path.indexOf("systemm") != -1 ) ){
+					this.warning_info("权限不足")
+					this.$router.push(from.path)
+				}
 			},
         },
 	}

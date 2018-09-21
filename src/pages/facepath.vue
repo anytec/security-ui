@@ -39,13 +39,13 @@
                     </div>
                     <div class="results_box">
                         <div class="results_text">发现{{init_data.allnum}}个结果</div>
-                        <div class="face_rowselect" v-show="false">
+                        <div class="face_rowselect">
                             <div class="rowselect_text">限制</div>
                             <div class="rowselect_select">
-                                <select>
-                                    <option>10条</option>
-                                    <option>20条</option>
-                                    <option>30条</option>
+                                <select v-model="search_data.identifyNumber">
+                                    <option>10</option>
+                                    <option>20</option>
+                                    <option>30</option>
                                 </select>
                             </div>
                         </div>
@@ -127,6 +127,7 @@
                     confidence: 75,
                     startTime: "",
                     endTime: "",
+                    identifyNumber: 10
                 },
                 // input_confidence: 0,
                 // same_confidence: 0,
@@ -199,7 +200,6 @@
 
             // 地图初始化
             init:function(location){
-                // console.log(location)
                 this.map = new AMap.Map('container', {
                   center: location,
                   resizeEnable: true,
@@ -389,6 +389,7 @@
                 
             },
             handleFileChange:function(e){
+                this.click_to_clear(false)
                 let inputDOM = this.$refs.inputer
 
                 // console.log(this.$refs.inputer.files[0])
@@ -433,25 +434,25 @@
 
             // 初始化请求数据
             // 请求数据
-            mes_handling:function(status, msg){
-                if( status === 1 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 2 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 10 ){
-                    this.error_info('请先登录')
-                    return ;
-                }else{
-                    if( status === 401 && msg === "未登录" ){
-                        this.error_info(msg)
-                        this.$router.push("/login")
-                    }else{
-                        this.error_info(status + "  " + msg)
-                    }
-                }
-            },
+            // mes_handling:function(status, msg){
+            //     if( status === 1 ){
+            //         this.error_info(msg)
+            //         return ;
+            //     }else if( status === 2 ){
+            //         this.error_info(msg)
+            //         return ;
+            //     }else if( status === 10 ){
+            //         this.error_info('请先登录')
+            //         return ;
+            //     }else{
+            //         if( status === 401 && msg === "未登录" ){
+            //             this.error_info(msg)
+            //             this.$router.push("/login")
+            //         }else{
+            //             this.error_info(status + "  " + msg)
+            //         }
+            //     }
+            // },
             get_init_data:function(){
                 this.add_markers_all(this.allcamera_list)
             },
@@ -470,6 +471,9 @@
                     params.append( "cameraIds", cameraIds) // 搜索设备id
                 }else{
                     params.append( "cameraIds", "" )
+                }
+                if( search_data.identifyNumber ){
+                    params.append( "identifyNumber", search_data.identifyNumber )
                 }
                 
                 if( this.datevalue ){
@@ -594,6 +598,7 @@
                         confidence: 75,
                         startTime: "",
                         endTime: "",
+                        identifyNumber: 10,
                     }
                     this.add_markers_all(this.allcamera_list)
                     if( this.polyline ){
@@ -765,9 +770,11 @@
                         this.init( this.center_xy )
                     }
                     if ( this.$store.state.is_search_data_facepath ){
+                        this.search_data.photo = ""
                         this.search_data.photoUrl = this.$store.state.facepath_data.photo
                         this.dataUrl = this.search_data.photoUrl
-                        this.map.clearMap()
+                        // this.map.clearMap()
+                        this.click_to_clear(false)
                         this.post_to_get_facepath(this.search_data,"skip")
 
                         this.$store.state.is_search_data_facepath = false
