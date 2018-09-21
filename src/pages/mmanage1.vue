@@ -1,6 +1,6 @@
 <template>
 	<!--html,不用head和body-->
-	<div style="width:100%;height:100%">
+	<div style="width:100%;height:100%" @click="click_to_close_tip">
 		<div class="list_box">
 			<div class="mask_box">
 				<div class="top_title">
@@ -17,47 +17,47 @@
 				</div>
 				<div class="table_box h2_table_box">
 					<div class="table_thbox">
-						<table>
+						<table :style="{'width': tabledata_style}">
 							<tr>
-								<td class="td td1">
+								<td class="td td4">
 									<input class="checkbox_box" type="checkbox" :checked="isallchecked" v-model="isallchecked" @click="click_to_checkedall" />
 								</td>
-								<td class="td td4">底库名称</td>
-								<td class="td td4">人员数量</td>
-								<td class="td td4">标记颜色</td>
-								<td class="td td9">备注</td>
+								<td class="td td16">底库名称</td>
+								<td class="td td16">人员数量</td>
+								<td class="td td18">标记颜色</td>
+								<td class="td td18">备注</td>
 								<td class="td td10">操作</td>
 							</tr>
 						</table>
 					</div>
-					<div class="table_thbox2">
-						<table>
+					<div class="table_thbox2" ref="table_f">
+						<table id="tabledata" ref="table_c">
 							<tr class="tr" v-for="item in tabledata">
-								<td class="td td1">
+								<td class="td td4">
 									<input class="checkbox_box" type="checkbox" :checked="item.ischecked" v-model="item.ischecked" @click="click_to_checkedone(item.uuid)"/>
 								</td>
-								<td class="td td4">
+								<td class="td td16">
 									<div class="table_text">
 										<div class="cell_text">
 											{{item.name}}
 										</div>
 									</div>
 								</td>
-								<td class="td td4">
+								<td class="td td16">
 									<div class="table_text">
 										<div class="cell_text">
 											{{item.totalNumber}}
 										</div>
 									</div>
 								</td>
-								<td class="td td4">
+								<td class="td td18">
 									<div class="table_text">
 										<div class="cell_text">
 											<div class="tag_color" :style="{'background-color': item.colorLabel}"></div>
 										</div>
 									</div>
 								</td>
-								<td class="td td9">
+								<td class="td td18">
 									<div class="table_text">
 										<div class="cell_text">
 											{{item.remarks}}
@@ -91,18 +91,15 @@
 				</div>
 				<div class="mm1_addbox1">
 					<div class="addbox1_text">标记色设置</div>
-					<input class="mm1_inputname" type="text" v-model="add_data.name"/>
+					<input class="mm1_inputname" 
+						type="text" 
+						v-model="add_data.name"
+						@focus="focus_to_show(-127,429,'name')"
+						@click.stop/>
 					<span>底库名称：</span>
 				</div>
 				<div class="mm1_addbox2">
 					<div class="left_colordiv">
-						<!-- <div class="color_box" 
-							 :style="{'background-color':item.color,'border':item.border,'margin-top':item.margin_top,'box-shadow':item.shadow}" 
-							 v-for="item in box_color" 
-							 @click="choose_color(item.uuid,'add')" 
-							 @mouseover="mouseover_event(item.uuid)" 
-							 @mouseout="mouseout_event(item.uuid)">
-						</div> -->
 						<div class="color_box1">
 							<el-color-picker 
 								v-model="add_data.colorLabel"
@@ -117,47 +114,71 @@
 					</div>
 				</div>
 				<div class="mmbottom_input">
-					<input type="text" placeholder="附加备注信息" v-model="add_data.remarks"/>
+					<input type="text" 
+						placeholder="附加备注信息" 
+						v-model="add_data.remarks"
+						@focus="focus_to_show(-30,18,'remarks')"
+						@click.stop/>
 				</div>
 			</div>
+
 		</div>
 		<!--遮罩层-->
-		<div class="mack_box" v-show="is_request2change" @click="is_request2change = false"></div>
+		<div class="mack_box" v-show="is_request2change" @click="is_request2change = false; is_show_tip = false"></div>
 		<!--弹出框-编辑设备组信息-->
-		<div class="bounced_add mm1_bounced" v-show="is_request2change">
-			<div class="bounced_box">
-				<div class="bounced_top">
-					<div class="bounced_title">编辑底库信息</div>
-				</div>
-				<div class="mm1_addbox1">
-					<div class="addbox1_text">标记色设置</div>
-					<input class="mm1_inputname" type="text" v-model="change_data.name"/>
-					<span>底库名称：</span>
-				</div>
-				<div class="mm1_addbox2">
-					<div class="left_colordiv">
-						<!-- <div class="color_box" 
-							 :style="{'background-color':item.color,'border':item.border,'margin-top':item.margin_top,'box-shadow':item.shadow}" 
-							 v-for="item in box_color" 
-							 @click="choose_color(item.uuid,'change')" 
-							 @mouseover="mouseover_event(item.uuid)" 
-							 @mouseout="mouseout_event(item.uuid)">
-						</div> -->
-						<div class="color_box1">
-							<el-color-picker 
-								v-model="change_data.colorLabel"
-								:predefine="predefineColors">
-							</el-color-picker>
+		<div class="bounced_add mm1_bounced" v-show="is_request2change" @click="click_to_close_tip">
+		    <div class="bounced_minbox">
+				<div class="bounced_box">
+					<div class="bounced_top">
+						<div class="bounced_title">编辑底库信息</div>
+					</div>
+					<div class="mm1_addbox1">
+						<div class="addbox1_text">标记色设置</div>
+						<!-- <input class="mm1_inputname" type="text" v-model="change_data.name"/> -->
+						<div class="shape_input">
+							<input class="mm1_inputname" 
+								type="text" 
+								v-model="change_data.name" 
+								@focus="focus_to_show(-127,429)"
+								@click.stop 
+								/>
+						</div>
+						<span>底库名称：</span>
+					</div>
+					<div class="mm1_addbox2">
+						<div class="left_colordiv">
+							<div class="color_box1">
+								<el-color-picker 
+									v-model="change_data.colorLabel"
+									:predefine="predefineColors">
+								</el-color-picker>
+							</div>
+						</div>
+						<div class="right_btndiv">
+							<div class="mmbtn_box mm1_btn" @click="request_change_persongroup" v-show="is_confirm_show">确认修改</div>
+							<div class="mmbtn_box mm1_btn left_mmbox" v-show="!is_confirm_show">确认修改</div>
+							<div class="mmbtn_box left_mmbox mm1_btn" @click="close_change_persongroup">暂不修改</div>
 						</div>
 					</div>
-					<div class="right_btndiv">
-						<div class="mmbtn_box mm1_btn" @click="request_change_persongroup" v-show="is_confirm_show">确认修改</div>
-						<div class="mmbtn_box mm1_btn left_mmbox" v-show="!is_confirm_show">确认修改</div>
-						<div class="mmbtn_box left_mmbox mm1_btn" @click="close_change_persongroup">暂不修改</div>
+					<div class="mmbottom_input">
+						<input type="text" 
+							placeholder="附加备注信息" 
+							v-model="change_data.remarks" 
+							@focus="focus_to_show(-30,18)"
+							@click.stop/>
 					</div>
 				</div>
-				<div class="mmbottom_input">
-					<input type="text" placeholder="附加备注信息" v-model="change_data.remarks"/>
+		    </div>
+		</div>
+		<div class="shape_minbox" v-if="is_show_tip" :style="{'left':'calc(35% + '+tip_left+'px)','top':'calc(35% + '+tip_top+'px)'}">
+			<div class="shape_topbox">
+				<div class="triangle"></div>
+				<div class="triangle1"></div>
+			</div>
+			<div class="shape_border">
+				<div class="shape_text">
+					<div style="color:white">输入限制：</div>
+					<div class="shape_text2" style="color:white" v-for="text,index in shape_text">{{index+1}}.{{text}}</div>
 				</div>
 			</div>
 		</div>
@@ -232,6 +253,15 @@
 					},
 				],
 				predefineColors: ["#ff2f60","#ffdd23","#3cafff","#1bde5b"],
+
+				// 输入框提示
+				is_show_tip: false,
+				tip_top: 0,
+				tip_left: 0,
+				shape_text: [],
+
+				// 滚动条
+				tabledata_style: "width:100%",
 			} //返回数据最外围
 		},
 		methods: {
@@ -251,10 +281,29 @@
 			},
 
 			// 输入-正则化
-			check_input:function(input_data){
-				let reg = /^[\u4e00-\u9fa50-9a-zA-Z]{0,20}$/
-
+			check_input:function(input_data,model=""){
+				let reg = /^.{0,20}$/
+				if( model === "name" ){
+					reg = /^[\u4e00-\u9fa50-9a-zA-Z\_]{0,20}$/
+				}
                 return reg.test(input_data)
+			},
+			// 输入框聚焦
+			focus_to_show:function(tip_top,tip_left,model=""){
+				this.tip_top = tip_top
+				this.tip_left = tip_left
+				if( model === "name" ){
+					this.shape_text = ["不超过20个字符","可输入中文、数字、字母、下划线"]
+				}else{
+					this.shape_text = ["不超过20个字符"]
+				}
+				
+				if( this.shape_text.length ){
+					this.is_show_tip = true
+				}
+			},
+			click_to_close_tip:function(event){
+				this.is_show_tip = false
 			},
 
 			// 复选框函数
@@ -289,9 +338,10 @@
 
 			// 搜索按钮
 			click_to_search:function(search_data){
-				if( !this.check_input(search_data.groupName) ){
-					this.warning_info( "底库名称不超过20个字" )
-				}
+				// if( !this.check_input(search_data.groupName) ){
+				// 	this.warning_info( "底库名称超过20个字或不符合限制" )
+				// }
+				this.isallchecked = false
 				this.init_data.pageNum = 1
 				this.save_search_data = JSON.parse(JSON.stringify(search_data))
 				this.post_to_change_page(search_data)
@@ -348,11 +398,11 @@
 			},
 			// 添加事件-弹窗事件
 			request_add_persongroup:function(){
-				if( !this.check_input(this.add_data.name) ){
-					this.warning_info( "底库名称不超过20个字" )
+				if( !this.check_input(this.add_data.name,"name") ){
+					this.warning_info( "底库名称格式不正确" )
 					return ;
-				}else if( !this.check_input(this.add_data.remarks) ){
-					this.warning_info( "备注不超过20个字" )
+				}else if( !this.check_input(this.add_data.remarks,"remarks") ){
+					this.warning_info( "备注格式不正确" )
 					return ;
 				}
 
@@ -409,15 +459,16 @@
 						this.box_color[i].is_choose = false
 					}
 				}
+				// this.tip_top = 87
 				this.is_request2change = true
 			},
 			// 修改事件-弹窗事件
 			request_change_persongroup:function(){
-				if( !this.check_input(this.change_data.name) ){
-					this.warning_info( "底库名称不超过20个字" )
+				if( !this.check_input(this.change_data.name,"name") ){
+					this.warning_info( "底库名称格式不正确" )
 					return ;
-				}else if( !this.check_input(this.change_data.remarks) ){
-					this.warning_info( "备注不超过20个字" )
+				}else if( !this.check_input(this.change_data.remarks,"remarks") ){
+					this.warning_info( "备注格式不正确" )
 					return ;
 				}
 
@@ -461,25 +512,25 @@
 			},
 
 			// 请求数据
-			mes_handling:function(status, msg){
-                if( status === 1 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 2 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 10 ){
-                    this.error_info('请先登录')
-                    return ;
-                }else{
-                    if( status === 401 && msg === "未登录" ){
-                        this.error_info(msg)
-                        this.$router.push("/login")
-                    }else{
-                        this.error_info(status + "  " + msg)
-                    }
-                }
-            },
+			// mes_handling:function(status, msg){
+   //              if( status === 1 ){
+   //                  this.error_info(msg)
+   //                  return ;
+   //              }else if( status === 2 ){
+   //                  this.error_info(msg)
+   //                  return ;
+   //              }else if( status === 10 ){
+   //                  this.error_info('请先登录')
+   //                  return ;
+   //              }else{
+   //                  if( status === 401 && msg === "未登录" ){
+   //                      this.error_info(msg)
+   //                      this.$router.push("/login")
+   //                  }else{
+   //                      this.error_info(status + "  " + msg)
+   //                  }
+   //              }
+   //          },
 			get_init_data:function(){
 				// 请求库名
 				var params = new URLSearchParams()
@@ -552,13 +603,14 @@
             		params.append( "name", add_data.name )
             	}else{
             		this.is_confirm_show = true
-            		this.error_info("请添加库名")
+            		this.warning_info("请添加库名")
                     return ;
             	}
             	if( add_data.colorLabel ){
             		params.append( "colorLabel", add_data.colorLabel )
             	}else{
-            		this.error_info("请选择底库颜色")
+            		this.is_confirm_show = true
+            		this.warning_info("请选择底库颜色")
             		return ;
             	}
             	// params.append( "colorLabel", add_data.colorLabel )
@@ -588,13 +640,15 @@
             	if( change_data.name ){
             		params.append( "name", change_data.name )
             	}else{
-            		this.error_info("请添加库名")
+            		this.warning_info("请添加库名")
+            		this.is_confirm_show = true
                     return ;
             	}
             	if( change_data.colorLabel ){
             		params.append( "colorLabel", change_data.colorLabel )
             	}else{
-            		this.error_info("请选择底库颜色")
+            		this.warning_info("请选择底库颜色")
+            		this.is_confirm_show = true
             		return ;
             	}
             	params.append("id", change_data.id)
@@ -655,6 +709,23 @@
 					this.click_to_search(this.search_data)
 				}
 			},
+
+			// 滚动条
+			'tabledata':function(){
+			    // this.$nextTick(function(){
+			    //     let table_height = document.getElementById("tabledata").scrollHeight
+			    //     let box_height = this.$refs.table_f.offsetHeight
+			    //     if( table_height > box_height ){
+			    //     	this.tabledata_style = 'width: 100%'
+			    //     }else{
+			    //     	// console.log(table_height,box_height)
+			    //     	this.tabledata_style = 'width: calc(100% - 20px)'
+			    //     }
+			    // });
+
+			    // 全局函数-获取是否出现滚动条
+			    this.get_scroll()
+			}
 		}
 	}
 </script>

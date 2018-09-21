@@ -200,7 +200,6 @@
 
             // 地图初始化
             init:function(location){
-                // console.log(location)
                 this.map = new AMap.Map('container', {
                   center: location,
                   resizeEnable: true,
@@ -390,6 +389,7 @@
                 
             },
             handleFileChange:function(e){
+                this.click_to_clear(false)
                 let inputDOM = this.$refs.inputer
 
                 // console.log(this.$refs.inputer.files[0])
@@ -434,25 +434,25 @@
 
             // 初始化请求数据
             // 请求数据
-            mes_handling:function(status, msg){
-                if( status === 1 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 2 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 10 ){
-                    this.error_info('请先登录')
-                    return ;
-                }else{
-                    if( status === 401 && msg === "未登录" ){
-                        this.error_info(msg)
-                        this.$router.push("/login")
-                    }else{
-                        this.error_info(status + "  " + msg)
-                    }
-                }
-            },
+            // mes_handling:function(status, msg){
+            //     if( status === 1 ){
+            //         this.error_info(msg)
+            //         return ;
+            //     }else if( status === 2 ){
+            //         this.error_info(msg)
+            //         return ;
+            //     }else if( status === 10 ){
+            //         this.error_info('请先登录')
+            //         return ;
+            //     }else{
+            //         if( status === 401 && msg === "未登录" ){
+            //             this.error_info(msg)
+            //             this.$router.push("/login")
+            //         }else{
+            //             this.error_info(status + "  " + msg)
+            //         }
+            //     }
+            // },
             get_init_data:function(){
                 this.add_markers_all(this.allcamera_list)
             },

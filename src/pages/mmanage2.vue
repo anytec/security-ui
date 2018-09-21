@@ -1,5 +1,5 @@
 <template>
-	<div style="width:100%;height:100%;">
+	<div style="width:100%;height:100%;" @click="click_to_close_tip">
 		<div class="list_box">
 			<div class="mask_box">
 				<div class="top_title">
@@ -26,69 +26,69 @@
 				</div>
 				<div class="table_box h2_table_box">
 					<div class="table_thbox">
-						<table>
+						<table :style="{'width': tabledata_style}">
 							<tr>
-								<td class="td td1">
+								<td class="td td4">
 									<input class="checkbox_box" type="checkbox" :checked="isallchecked" v-model="isallchecked" @click="click_to_checkedall" />
 								</td>
-								<td class="td td4">
+								<td class="td td12">
 									人脸图像
 								</td>
-								<td class="td td4">姓名</td>
-								<td class="td td4">性别</td>
-								<td class="td td5">标识编码</td>
-								<td class="td td9">所在底库</td>
-								<td class="td td4">备注</td>
-								<td class="td td4">操作</td>
+								<td class="td td13">姓名</td>
+								<td class="td td13">性别</td>
+								<td class="td td14">标识编码</td>
+								<td class="td td14">所在底库</td>
+								<td class="td td18">备注</td>
+								<td class="td td12">操作</td>
 							</tr>
 						</table>
 					</div>
-					<div class="table_thbox2">
-						<table>
+					<div class="table_thbox2" ref="table_f">
+						<table id="tabledata" ref="table_c">
 							<tr class="tr" v-for="item in tabledata">
-								<td class="td td1">
+								<td class="td td4">
 									<input class="checkbox_box" type="checkbox" :checked="item.ischecked" v-model="item.ischecked" @click="click_to_checkedone(item.uuid)" />
 								</td>
-								<td class="td td4">
+								<td class="td td12">
 									<!-- <img class="td_img"  :src="item.thumbnail" @click="show_pic(item.wholePhoto)" title="点击显示原图"/> -->
 									<img class="td_img"  :src="item.thumbnail"/>
 								</td>
-								<td class="td td4">
+								<td class="td td13">
 									<div class="table_text">
 										<div class="cell_text">
 											{{item.name}}
 										</div>
 									</div>
 								</td>
-								<td class="td td4">
+								<td class="td td13">
 									<div class="table_text">
 										<div class="cell_text">
 											{{item.gender}}
 										</div>
 									</div>
 								</td>
-								<td class="td td5">
+								<td class="td td14">
 									<div class="table_text">
 										<div class="cell_text">
 											{{item.idNumber}}
 										</div>
 									</div>
 								</td>
-								<td class="td td9">
+								<td class="td td14">
 									<div class="table_text">
 										<div class="cell_text">
 											{{item.groupName}}
 										</div>
 									</div>
 								</td>
-								<td class="td td4">
+								<td class="td td18">
 									<div class="table_text">
 										<div class="cell_text">
 											{{item.remarks}}
 										</div>
 									</div>
 								</td>
-								<td class="td td4">
+								<td class="td td12">
 									<div class="td_icon">
 										<div class="td_icon">
 											<div class="m_icon icon1" @click="skip_to_facepath(item.thumbnail)" title="跳转到人脸检索"></div>
@@ -123,12 +123,20 @@
 				</div>
 				<div class="choose_input">
 					<div class="choose_top">
-						<input type="text" placeholder="姓名" v-model="add_data.name"/>
+						<input type="text" 
+							placeholder="姓名" 
+							v-model="add_data.name"
+							@focus="focus_to_show(-136,234,'name')"
+							@click.stop/>
 						<select v-model="add_data.gender">
 							<option>男</option>
 							<option>女</option>
 						</select>
-						<input type="text" placeholder="标识编码" v-model="add_data.idNumber"/>
+						<input type="text" 
+							placeholder="标识编码" 
+							v-model="add_data.idNumber"
+							@focus="focus_to_show(-97,234,'idNumber')"
+							@click.stop/>
 						<select v-model="add_data.groupName">
 							<option v-for="item in init_data.galleries">{{ item }}</option>
 						</select>
@@ -138,7 +146,11 @@
 					<div class="mmbtn_box left_mmbox" @click="click_to_addinfo_close">暂不添加</div>
 				</div>
 				<div class="mmbottom_input">
-					<input type="text" placeholder="备注" v-model="add_data.remarks"/>
+					<input type="text" 
+						placeholder="备注" 
+						v-model="add_data.remarks"
+						@focus="focus_to_show(-18,18,'remarks')"
+						@click.stop/>
 				</div>
 			</div>
 		</div>
@@ -181,12 +193,20 @@
 				</div>
 				<div class="choose_input">
 					<div class="choose_top">
-						<input type="text" placeholder="姓名"  v-model="change_data.name" />
+						<input type="text" 
+							placeholder="姓名"  
+							v-model="change_data.name"
+							@focus="focus_to_show(-136,234,'name')"
+							@click.stop/>
 						<select v-model="change_data.gender">
 							<option>男</option>
 							<option>女</option>
 						</select>
-						<input type="text" placeholder="标识编码"  v-model="change_data.idNumber" />
+						<input type="text" 
+							placeholder="标识编码"  
+							v-model="change_data.idNumber"
+							@focus="focus_to_show(-97,234,'idNumber')"
+							@click.stop/>
 						<select v-model="change_data.groupName">
 							<option v-for="item in init_data.galleries">{{ item }}</option>
 						</select>
@@ -196,7 +216,11 @@
 					<div class="mmbtn_box left_mmbox" @click="click_to_close_change_infodata">暂不修改</div>
 				</div>
 				<div class="mmbottom_input">
-					<input type="text" placeholder="备注" v-model="change_data.remarks"/>
+					<input type="text" 
+						placeholder="备注" 
+						v-model="change_data.remarks"
+						@focus="focus_to_show(-18,18,'remarks')"
+						@click.stop/>
 				</div>
 			</div>
 		</div>
@@ -208,6 +232,18 @@
 					<div class="graph_cell">
 						<img style="max-width:800px; max-height:800px;margin:0 auto;" :src="total_pic" />
 					</div>
+				</div>
+			</div>
+		</div>
+		<div class="shape_minbox" v-if="is_show_tip" :style="{'left':'calc(35% + '+tip_left+'px)','top':'calc(35% + '+tip_top+'px)'}">
+			<div class="shape_topbox">
+				<div class="triangle"></div>
+				<div class="triangle1"></div>
+			</div>
+			<div class="shape_border">
+				<div class="shape_text">
+					<div style="color:white">输入限制：</div>
+					<div class="shape_text2" style="color:white" v-for="text,index in shape_text">{{index+1}}.{{text}}</div>
 				</div>
 			</div>
 		</div>
@@ -283,6 +319,14 @@
 				is_show_pic: false,
 				total_pic: "",
 
+				// 滚动条
+				tabledata_style: "width:100%",
+
+				// 输入框提示
+				is_show_tip: false,
+				tip_top: 0,
+				tip_left: 0,
+				shape_text: [],
 			} //返回数据最外围
 		},
 		methods: {
@@ -302,16 +346,44 @@
 
 			// 输入-正则化
 			check_input:function(input_data,model=""){
-				let reg = /^.{0,30}$/
-				if( model === "name" ){
-					reg = /^[\u4e00-\u9fa5]{0,10}$/
-				}else if( model === "remarks" ){
-					reg = /^[\u4e00-\u9fa5]{0,20}$/
-				}else if( model === "idNumber" ){
-					reg = /^[a-zA-Z0-9_-]{0,30}$/
-				}
+				// let reg = /^.{0,30}$/
+				// if( model === "name" ){
+				// 	reg = /^[\u4e00-\u9fa5]{0,10}$/
+				// }else if( model === "remarks" ){
+				// 	reg = /^[\u4e00-\u9fa5]{0,20}$/
+				// }else if( model === "idNumber" ){
+				// 	reg = /^[a-zA-Z0-9_-]{0,30}$/
+				// }
 
+				let reg = /^[\u4e00-\u9fa50-9a-zA-Z\_]{0,20}$/
+				if( model === "remarks" ){
+					reg = /^.{0,20}$/
+				}else if( model === "idNumber"){
+					reg = /^[0-9a-zA-Z]{0,20}$/
+				}else if( model === "name" ){
+					reg = /^[\u4e00-\u9fa50-9a-zA-Z]{0,20}$/
+				}
                 return reg.test(input_data)
+			},
+			// 输入框聚焦
+			focus_to_show:function(tip_top,tip_left,model=""){
+				this.tip_top = tip_top
+				this.tip_left = tip_left
+				if( model === "remarks" ){
+					this.shape_text = ["不超过20个字符",]
+				}else if(model === "idNumber"){
+					this.shape_text = ["不超过20个字符","可输入数字、字母"]
+				}else if(model === "name"){
+					this.shape_text = ["不超过20个字符","可输入中文、数字、字母"]
+				}else{
+					this.shape_text = ["不超过20个字符","可输入中文、数字、字母、下划线"]
+				}
+				if( this.shape_text.length ){
+					this.is_show_tip = true
+				}
+			},
+			click_to_close_tip:function(event){
+				this.is_show_tip = false
 			},
 
 			// 复选框函数
@@ -345,10 +417,11 @@
 
 			// 搜索按钮
 			click_to_search:function(search_data){
-				if( !this.check_input(search_data.idNumber) ){
-					this.warning_info("标识编码应输入字母、数字、_、- 或过长")
-					return ;
-				}
+				// if( !this.check_input(search_data.idNumber) ){
+				// 	this.warning_info("标识编码应输入字母、数字、_、- 或过长")
+				// 	return ;
+				// }
+				this.isallchecked = false
 				this.init_data.pageNum = 1
 				this.save_search_data = JSON.parse(JSON.stringify(search_data))
 				this.post_to_change_page(search_data)
@@ -388,10 +461,13 @@
 				this.is_confirm_show = true
 				this.is_request2add_batch = false
 				this.uploading = ""
+				this.$refs.inputer.value = ''
 				this.$refs.inputer_batch.value = ''
 				this.files = []
                 this.biggist_pic_list = []
                 this.pic_num = []
+
+                this.is_show_tip = false
 			},
 			// 单个添加切换到批量添加
 			add_batch_data_:function(){
@@ -442,25 +518,25 @@
 			},
 
 			// 请求数据
-			mes_handling:function(status, msg){
-                if( status === 1 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 2 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 10 ){
-                    this.error_info('请先登录')
-                    return ;
-                }else{
-                    if( status === 401 && msg === "未登录" ){
-                        this.error_info(msg)
-                        this.$router.push("/login")
-                    }else{
-                        this.error_info(status + "  " + msg)
-                    }
-                }
-            },
+			// mes_handling:function(status, msg){
+   //              if( status === 1 ){
+   //                  this.error_info(msg)
+   //                  return ;
+   //              }else if( status === 2 ){
+   //                  this.error_info(msg)
+   //                  return ;
+   //              }else if( status === 10 ){
+   //                  this.error_info('请先登录')
+   //                  return ;
+   //              }else{
+   //                  if( status === 401 && msg === "未登录" ){
+   //                      this.error_info(msg)
+   //                      this.$router.push("/login")
+   //                  }else{
+   //                      this.error_info(status + "  " + msg)
+   //                  }
+   //              }
+   //          },
 			get_init_data1:function(){
 				// 请求库名
 				var params = new URLSearchParams()
@@ -606,13 +682,13 @@
             	if( add_data.idNumber ){
             		params.append( "idNumber", add_data.idNumber )   // 搜索身份证号 该三个信息不一定有，且可能只有其中一个
             	}else{
-            		this.error_info("请添加标志编码")
+            		this.warning_info("请添加标志编码")
                     return ;
             	}
             	if( add_data.name ){
             		params.append( "name", add_data.name )
             	}else{
-            		this.error_info("请添加姓名")
+            		this.warning_info("请添加姓名")
                     return ;
             	}
             	if( add_data.photo ){
@@ -621,7 +697,7 @@
             		params.append( "photoUrl", add_data.dataUrl )
             	}else{
             		console.log(add_data)
-            		this.error_info("请添加图片")
+            		this.warning_info("请添加图片")
                     return ;
             	}
             	if( add_data.remarks ){
@@ -644,6 +720,7 @@
 							groupName: this.init_data.galleries[0],
 							dataUrl: "",
 	                    }
+	                    this.click_to_clear()
                     }else{
                         this.mes_handling(res.data.status,res.data.msg)
                     }
@@ -681,6 +758,7 @@
                         this.mes_handling(res.data.status,res.data.msg)
                     }
                     this.is_confirm_show = true
+                    this.click_to_clear()
                 }).catch((error) => {
                 	console.log(error)
                 	this.error_info('网络连接出错')
@@ -729,13 +807,13 @@
                     if( res.data.status === 0){
                     	let big_msg = ""
                     	if( this.biggist_pic_list.length ){
-                    		big_msg = " 超过10M,未上传照片：" + this.biggist_pic_list.join(",")
+                    		big_msg = " 超过10M未上传照片：" + this.biggist_pic_list.join(",")
                     	}
                     	if( res.data.msg ){
 
-                    		this.success_info(res.data.msg + "  " + big_msg)
+                    		this.success_info(res.data.msg + "  " + big_msg,0)
                     	}else{
-                    		this.success_info("录入成功"+ "  " + big_msg)
+                    		this.success_info("录入成功"+ "  " + big_msg,0)
                     	}
 	                    this.post_to_change_page(this.save_search_data)
 	                    this.click_to_clear()
@@ -770,12 +848,13 @@
                     center: true
                 })
 			},
-			success_info:function(mes){
+			success_info:function(mes,showtime=3){
 				this.$message({
                     type: 'success',
                     message: mes,
                     showClose: true,
-                    center: true
+                    center: true,
+                    duration: showtime,
                 })
 			},
 
@@ -947,6 +1026,7 @@
 					}
                 	return ;
                 }
+                this.uploading = "图片检测中,请勿操作"
                 for( let file_num = 0; file_num < this.pic_num.length; file_num++ ){
                 	this.pic_astrict( e.target.files[this.pic_num[file_num].num], file_num )
                 }
@@ -955,13 +1035,13 @@
 			// 弹窗事件-添加人员
 			click_to_addinfo_data:function(){
 				if( !this.check_input(this.add_data.idNumber,"idNumber") ){
-					this.warning_info("标识编码应输入字母、数字、_、- 或过长")
+					this.warning_info("标识编码格式不正确")
 					return ;
 				}else if( !this.check_input(this.add_data.remarks,"remarks") ){
-					this.warning_info( "备注应输入中文且不超过20个字" )
+					this.warning_info( "备注格式不正确" )
 					return ;
 				}else if( !this.check_input(this.add_data.name,"name") ){
-					this.warning_info( "姓名应输入中文且不超过10个字" )
+					this.warning_info( "姓名格式不正确" )
 					return ;
 				}
 				// this.add_data.dataUrl = ""
@@ -973,13 +1053,13 @@
 			// 弹窗事件-修改人员
 			click_to_change_infodata:function(){
 				if( !this.check_input(this.change_data.idNumber,"idNumber") ){
-					this.warning_info("标识编码应输入字母、数字、_、- 或过长")
+					this.warning_info("标识编码格式不正确")
 					return ;
 				}else if( !this.check_input(this.change_data.remarks,"remarks") ){
-					this.warning_info( "备注应输入中文且不超过20个字" )
+					this.warning_info( "备注格式不正确" )
 					return ;
 				}else if( !this.check_input(this.change_data.name,"name") ){
-					this.warning_info( "姓名应输入中文且不超过10个字" )
+					this.warning_info( "姓名格式不正确" )
 					return ;
 				}
 
@@ -1024,6 +1104,23 @@
 					this.click_to_search(this.search_data)
 				}
 			},
+
+			// 滚动条
+			'tabledata':function(){
+			    // this.$nextTick(function(){
+			    //     let table_height = document.getElementById("tabledata").scrollHeight
+			    //     let box_height = this.$refs.table_f.offsetHeight
+			    //     if( table_height > box_height ){
+			    //     	this.tabledata_style = 'width: 100%'
+			    //     }else{
+			    //     	// console.log(table_height,box_height)
+			    //     	this.tabledata_style = 'width: calc(100% - 20px)'
+			    //     }
+			    // });
+
+			    // 全局函数-获取是否出现滚动条
+			    this.get_scroll()
+			}
 		},
 		beforeRouteLeave(to, from, next) {
 			if( to.path === "/facepath" && this.$store.state.is_search_data_facepath ){

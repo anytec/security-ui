@@ -1,8 +1,14 @@
 <template>
 	<div class="left_nav">
 		<ul class="left_ul">
-			<li class="left_one" :class="{'leftli_active':isactive1}" @click="change_active(1)" @mouseenter="enter(0)" @mouseleave="leave">历史报警</li>
-			<li class="left_two" :class="{'leftli_active':isactive2}" @click="change_active(2)" @mouseenter="enter(1)" @mouseleave="leave">历史抓拍</li>
+			<li class="left_one" :class="{'leftli_active':isactive1}" @click="change_active(1)" @mouseenter="enter(0)" @mouseleave="leave">
+				<div class="left_icondiv"><img  src="../assets/nav_icon/hi1_icon1.png" /></div>
+				<div class="left_icontext">历史报警</div>
+			</li>
+			<li class="left_two" :class="{'leftli_active':isactive2}" @click="change_active(2)" @mouseenter="enter(1)" @mouseleave="leave">
+				<div class="left_icondiv"><img  src="../assets/nav_icon/hi1_icon2.png" /></div>
+				<div class="left_icontext">历史抓拍</div>
+			</li>
 			<div class="left_active" :style="{ top: 50*listnum + 'px' }"></div>
 		</ul>
 	</div>

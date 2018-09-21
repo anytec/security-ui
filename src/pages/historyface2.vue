@@ -34,43 +34,43 @@
 				</div>
 				<div class="table_box h2_table_box">
 					<div class="table_thbox">
-						<table>
+						<table :style="{'width': tabledata_style}">
 							<tr>
-								<td class="td td1">
+								<td class="td td4">
 									<input class="checkbox_box" type="checkbox" :checked="isallchecked" v-model="isallchecked" @click="click_to_checkedall"/>
 								</td>
-								<td class="td td2">抓拍人脸</td>
-								<td class="td td2">性别</td>
-								<td class="td td2">情绪</td>
-								<td class="td td7">抓拍时间</td>
-								<td class="td td9">设备信息</td>
+								<td class="td td8">抓拍人脸</td>
+								<td class="td td7">性别</td>
+								<td class="td td15">情绪</td>
+								<td class="td td18">抓拍时间</td>
+								<td class="td td18">设备信息</td>
 								<td class="td td10">操作</td>
 							</tr>
 						</table>
 					</div>
-					<div class="table_thbox2">
-						<table>
+					<div class="table_thbox2" ref="table_f">
+						<table id="tabledata" ref="table_c">
 							<tr class="tr" v-for="item in tabledata">
-								<td class="td td1">
+								<td class="td td4">
 									<input class="checkbox_box" type="checkbox" :checked="item.ischecked" v-model="item.ischecked" @click="click_to_checkedone(item.uuid)"/>
 								</td>
-								<td class="td td2">
+								<td class="td td8">
 									<img class="td_img" :src="item.snapshotUrl" @click="show_pic(item.wholePhoto)" title="点击显示原图" />
 								</td>
-								<td class="td td2">
+								<td class="td td7">
 										{{item.gender}}
 								</td>
-								<td class="td td2">
+								<td class="td td15">
 										{{item.emotions}}
 								</td>
-								<td class="td td7">
+								<td class="td td18">
 									<div class="table_text">
 										<div class="cell_text">
 											{{item.catchTime}}
 										</div>
 									</div>
 								</td>
-								<td class="td td9">
+								<td class="td td18">
 									<div class="table_text">
 										<div class="cell_text">
 											{{item.cameraGroupName}}-{{item.cameraName}}
@@ -78,8 +78,10 @@
 									</div>
 								</td>
 								<td class="td td10">
-									<div class="td_icon1 icon1" title="跳转到人脸检索" @click="skip_to_facepath(item.snapshotUrl)"></div>
-									<div class="td_icon2 icon8" title="跳转添加该人脸" @click="click_to_addface(item.uuid)"></div>
+									<div class="icon_fa icon_hi">
+                                    	<div class="td_icon2 icon8" title="跳转添加该人脸" @click="click_to_addface(item.uuid)"></div>
+	                                    <div class="td_icon2 icon1" title="跳转到人脸检索" @click="skip_to_facepath(item.snapshotUrl)"></div>
+                                    </div>
 								</td>
 							</tr>
 						</table>
@@ -180,6 +182,8 @@
 				is_show_pic: false,
 				total_pic: "",
 
+				// 滚动条
+				tabledata_style: "width:100%",
 			}//返回数据最外围
 		}, // data end
 		methods: {
@@ -229,6 +233,7 @@
 				}
 			},
 			click_to_search:function(search_data){
+				this.isallchecked = false
 				this.init_data.pageNum = 1
 				this.save_search_data = JSON.parse(JSON.stringify(search_data))
 				this.post_to_change_page(this.save_search_data)
@@ -291,25 +296,25 @@
 			},
 
 			// 请求数据
-			mes_handling:function(status, msg){
-                if( status === 1 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 2 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 10 ){
-                    this.error_info('请先登录')
-                    return ;
-                }else{
-                    if( status === 401 && msg === "未登录" ){
-                        this.error_info(msg)
-                        this.$router.push("/login")
-                    }else{
-                        this.error_info(status + "  " + msg)
-                    }
-                }
-            },
+			// mes_handling:function(status, msg){
+   //              if( status === 1 ){
+   //                  this.error_info(msg)
+   //                  return ;
+   //              }else if( status === 2 ){
+   //                  this.error_info(msg)
+   //                  return ;
+   //              }else if( status === 10 ){
+   //                  this.error_info('请先登录')
+   //                  return ;
+   //              }else{
+   //                  if( status === 401 && msg === "未登录" ){
+   //                      this.error_info(msg)
+   //                      this.$router.push("/login")
+   //                  }else{
+   //                      this.error_info(status + "  " + msg)
+   //                  }
+   //              }
+   //          },
             // 数据初始化请求数据
 			get_init_data:function(){
                 // 请求设备组列表
@@ -484,6 +489,23 @@
 					)
 				}
 			},
+
+			// 滚动条
+			'tabledata':function(){
+			    // this.$nextTick(function(){
+			    //     let table_height = document.getElementById("tabledata").scrollHeight
+			    //     let box_height = this.$refs.table_f.offsetHeight
+			    //     if( table_height > box_height ){
+			    //     	this.tabledata_style = 'width: 100%'
+			    //     }else{
+			    //     	// console.log(table_height,box_height)
+			    //     	this.tabledata_style = 'width: calc(100% - 20px)'
+			    //     }
+			    // });
+
+			    // 全局函数-获取是否出现滚动条
+			    this.get_scroll()
+			}
 		},
 
 		beforeRouteLeave(to, from, next) {

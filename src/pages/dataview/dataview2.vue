@@ -8,7 +8,7 @@
                 <v-pie :ageGroupList="gender_age_data.ageGroupList" :genderData="genderData" :AgeGengerData="AgeGenderTotal"></v-pie>
             </div>
             <div class="item three active" @click="clickChart('3')" style="transform: translate(50%,0%) scale(1)">
-                <v-radar :emotionsData="emotions_data"></v-radar>
+                <v-radar :neutralData="neutral" :emotionsData="emotions_data"></v-radar>
             </div>
         </div>
     </div>
@@ -38,6 +38,7 @@
 
                 // 清除图表数据可视化
                 emotions_data: null,
+                neutral: null,
                 gender_age_data:{
                     ageGroupList: [],
                     maleNum: [],
@@ -65,25 +66,25 @@
             }   
         },
         methods: {
-            mes_handling:function(status, msg){
-                if( status === 1 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 2 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 10 ){
-                    this.error_info('请先登录')
-                    return ;
-                }else{
-                    if( status === 401 && msg === "未登录" ){
-                        this.error_info(msg)
-                        this.$router.push("/login")
-                    }else{
-                        this.error_info(status + "  " + msg)
-                    }
-                }
-            },
+            // mes_handling:function(status, msg){
+            //     if( status === 1 ){
+            //         this.error_info(msg)
+            //         return ;
+            //     }else if( status === 2 ){
+            //         this.error_info(msg)
+            //         return ;
+            //     }else if( status === 10 ){
+            //         this.error_info('请先登录')
+            //         return ;
+            //     }else{
+            //         if( status === 401 && msg === "未登录" ){
+            //             this.error_info(msg)
+            //             this.$router.push("/login")
+            //         }else{
+            //             this.error_info(status + "  " + msg)
+            //         }
+            //     }
+            // },
             post_to_change_page:function( search_data ){
                 var params = new URLSearchParams()
 
@@ -109,6 +110,7 @@
                             temp_data[1].push(res.data.data.emotions[items[i]].split(",")[1])
                         }
                         this.emotions_data = temp_data
+                        this.neutral = res.data.data.emotions.neutral.split(",")
 
                         // 年龄、男女数据解析
                         this.gender_age_data.ageGroupList = []

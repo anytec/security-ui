@@ -28,7 +28,8 @@
                                 <img src="../assets/login/user.png" />
                             </div>
                             <div class="right_input">
-                                <input v-model="user.name" type="text" placeholder="账号" @focus="my_focus('uname')"/>
+                                <!-- <input v-model="user.name" type="text" placeholder="账号" @focus="my_focus('uname')"/> -->
+                                <input v-model="user.name" type="text" placeholder="账号"/>
                             </div>
                         </div>
                         <div class="uname_title">{{ warning_uname_msg }}</div>
@@ -37,7 +38,8 @@
                                 <img src="../assets/login/pwd.png" />
                             </div>
                             <div class="right_input pwd_inut" @keyup.enter="login">
-                                <input v-model="user.password" :type="pass_type" @focus="my_focus('upass')" id="pwd" placeholder="密码"/>
+                                <!-- <input v-model="user.password" :type="pass_type" @focus="my_focus('upass')" id="pwd" placeholder="密码"/> -->
+                                <input v-model="user.password" :type="pass_type" id="pwd" placeholder="密码"/>
                             </div>
                             <div class="eyes">
                                 <!-- <img :src="imgurl" @click="change_view"/> -->
@@ -90,10 +92,10 @@
         },
         methods: {
             login: function() {
-                if( !this.check_uname(this.user.name) || !this.check_upass(this.user.password) ){
-                    this.warning_info("账户或密码只能输入4~20位字母、数字、下划线")
-                    return ;
-                }
+                // if( !this.check_uname(this.user.name) || !this.check_upass(this.user.password) ){
+                //     this.warning_info("账户或密码只能输入4~20位字母、数字、下划线")
+                //     return ;
+                // }
                 if ( !this.user.name || !this.user.password){
                     this.$message({
                         type: 'error',
@@ -128,7 +130,8 @@
                         this.$notify({
                             type: 'success',
                             message: '欢迎你' + res.data.data.uname + '!',
-                            duration: 3000
+                            duration: 2000,
+                            offset: 40,
                         })
                         if( this.isrem_password ){
                             this.setCookie( this.user.name,this.user.password,7 )

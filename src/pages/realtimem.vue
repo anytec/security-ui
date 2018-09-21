@@ -624,6 +624,7 @@
                 // let socket = new SockJS('http://192.168.10.126:9990/gee');
                 // let socket = new SockJS('http://192.168.10.132:9999/gee');
                 let socket = new SockJS('gee');
+                let first_time = true
                 this.stompClient = Stomp.over(socket);
                 this.stompClient.connect({}, (frame) =>{
                     this.stompClient.subscribe('/topic/camera/warning', (data) => {
@@ -645,6 +646,10 @@
                             this.catch_oneday = jsonData.data
                         }
                     });
+                    if( first_time ){
+                        first_time = false
+                        this.get_init_data1()
+                    }
                 },(message) => {
                     console.log(message);
                     setTimeout("initSocket()", 3000);
@@ -669,25 +674,25 @@
             },
 
             // 初始化请求
-            mes_handling:function(status, msg){
-                if( status === 1 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 2 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 10 ){
-                    this.error_info('请先登录')
-                    return ;
-                }else{
-                    if( status === 401 && msg === "未登录" ){
-                        this.error_info(msg)
-                        this.$router.push("/login")
-                    }else{
-                        this.error_info(status + "  " + msg)
-                    }
-                }
-            },
+            // mes_handling:function(status, msg){
+            //     if( status === 1 ){
+            //         this.error_info(msg)
+            //         return ;
+            //     }else if( status === 2 ){
+            //         this.error_info(msg)
+            //         return ;
+            //     }else if( status === 10 ){
+            //         this.error_info('请先登录')
+            //         return ;
+            //     }else{
+            //         if( status === 401 && msg === "未登录" ){
+            //             this.error_info(msg)
+            //             this.$router.push("/login")
+            //         }else{
+            //             this.error_info(status + "  " + msg)
+            //         }
+            //     }
+            // },
             // 抓拍
             get_init_data:function(){
                 var params = new URLSearchParams()
@@ -830,9 +835,9 @@
         },
         mounted:function(){
             this.initSocket()
-            setTimeout(() => {
-                this.get_init_data1()
-            }, 500)
+            // setTimeout(() => {
+            //     this.get_init_data1()
+            // }, 600)
             // if( this.first_flag ){
             //     this.get_init_data()
             //     this.get_init_data2()
@@ -879,7 +884,7 @@
 
         },
         beforeRouteEnter(to, from, next){
-            if( from.path === "/mmanage4" || from.path === "/facepath"){
+            if( from.path === "/mmanage4" || from.path === "/mmanage4_offline" || from.path === "/facepath" || from.path === "/facepath_offline"){
                 next(vm => {
                     if( vm.first_flag ){
                         vm.get_init_data()

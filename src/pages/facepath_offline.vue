@@ -123,6 +123,7 @@
                 popup_content: null,
                 map_config: {
                     zoom: 16,
+                    // zoom: 13,
                     center: [39.895218, 116.419072],
                     minZoom: 12,
                     maxZoom: 16,
@@ -227,6 +228,7 @@
                 let map_url = '/static/offlineMap/{z}/{x}/{y}.png'
                 if( this.$ajax.defaults.baseURL ){
                     map_url = this.$ajax.defaults.baseURL + '/static/offlineMap/{z}/{x}/{y}.png'
+                    // map_url = this.$ajax.defaults.baseURL + '/static/mymap/{z}/{x}/{y}.png'
                 }else{
                     map_url = '/static/offlineMap/{z}/{x}/{y}.png'
                 }
@@ -485,6 +487,7 @@
                 
             },
             handleFileChange:function(e){
+                this.click_to_clear(false)
                 let inputDOM = this.$refs.inputer
 
                 // console.log(this.$refs.inputer.files[0])
@@ -528,25 +531,25 @@
 
             // 初始化请求数据
             // 请求数据
-            mes_handling:function(status, msg){
-                if( status === 1 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 2 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 10 ){
-                    this.error_info('请先登录')
-                    return ;
-                }else{
-                    if( status === 401 && msg === "未登录" ){
-                        this.error_info(msg)
-                        this.$router.push("/login")
-                    }else{
-                        this.error_info(status + "  " + msg)
-                    }
-                }
-            },
+            // mes_handling:function(status, msg){
+            //     if( status === 1 ){
+            //         this.error_info(msg)
+            //         return ;
+            //     }else if( status === 2 ){
+            //         this.error_info(msg)
+            //         return ;
+            //     }else if( status === 10 ){
+            //         this.error_info('请先登录')
+            //         return ;
+            //     }else{
+            //         if( status === 401 && msg === "未登录" ){
+            //             this.error_info(msg)
+            //             this.$router.push("/login")
+            //         }else{
+            //             this.error_info(status + "  " + msg)
+            //         }
+            //     }
+            // },
             get_init_data: function () {
                 this.add_markers_all(this.allcamera_list)
             },
@@ -766,6 +769,7 @@
             window['skip_to_mmanage4'] = (groupName,name) => {
                 this.skip_to_mmanage4(groupName,name)
             }
+
         },
         beforeRouteLeave(to, from, next) {
             if( to.path === "/facepath" && from.path === "/facepath_offline" ){

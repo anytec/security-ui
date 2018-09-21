@@ -2,8 +2,14 @@
 	<div>
 		<div class="left_nav">
 			<ul class="left_ul">
-				<li class="left_one" :class="{'leftli_active':isactive1}" @click="change_active(1)" @mouseenter="enter(0)" @mouseleave="leave">用户列表</li>
-				<li class="left_two" :class="{'leftli_active':isactive2}" @click="change_active(2)" @mouseenter="enter(1)" @mouseleave="leave">操作记录</li>
+				<li class="left_one" :class="{'leftli_active':isactive1}" @click="change_active(1)" @mouseenter="enter(0)" @mouseleave="leave">
+					<div class="left_icondiv"><img  src="../assets/nav_icon/sys1_icon1.svg" /></div>
+					<div class="left_icontext">用户列表</div>
+				</li>
+				<li class="left_two" :class="{'leftli_active':isactive2}" @click="change_active(2)" @mouseenter="enter(1)" @mouseleave="leave">
+					<div class="left_icondiv"><img  src="../assets/nav_icon/sys1_icon2.svg" /></div>
+					<div class="left_icontext">操作记录</div>
+				</li>
 				<div class="left_active" :style="{ top: 50*listnum + 'px' }"></div>
 			</ul>
 			<div class="left7set_up" @click="set_confidence"></div>
@@ -83,25 +89,25 @@
 			},
 
 			// 获取阈值
-			mes_handling:function(status, msg){
-                if( status === 1 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 2 ){
-                    this.error_info(msg)
-                    return ;
-                }else if( status === 10 ){
-                    this.error_info('请先登录')
-                    return ;
-                }else{
-                    if( status === 401 && msg === "未登录" ){
-                        this.error_info(msg)
-                        this.$router.push("/login")
-                    }else{
-                        this.error_info(status + "  " + msg)
-                    }
-                }
-            },
+			// mes_handling:function(status, msg){
+   //              if( status === 1 ){
+   //                  this.error_info(msg)
+   //                  return ;
+   //              }else if( status === 2 ){
+   //                  this.error_info(msg)
+   //                  return ;
+   //              }else if( status === 10 ){
+   //                  this.error_info('请先登录')
+   //                  return ;
+   //              }else{
+   //                  if( status === 401 && msg === "未登录" ){
+   //                      this.error_info(msg)
+   //                      this.$router.push("/login")
+   //                  }else{
+   //                      this.error_info(status + "  " + msg)
+   //                  }
+   //              }
+   //          },
 			get_confidence:function(){
 				var params = new URLSearchParams()
 

@@ -227,31 +227,64 @@
 	font-weight: 100;
 }
 .td1{
-	width: 5%;
+	width: 1%;
 }
-.td2,.td3{
-	width: 10%;
+.td2{
+	width: 2%;
+}
+.td3{
+	width: 3%;
 }
 .td4{
-	width: 7%;
+	width: 4%;
 }
 .td5{
-	width: 10%;
-}
-.td6{
 	width: 5%;
 }
+.td6{
+	width: 6%;
+}
 .td7{
-	width: 18%;
+	width: 7%;
 }
 .td8{
-	width: 10%;
+	width: 8%;
 }
 .td9{
-	width: 15%;
+	width: 9%;
 }
 .td10{
 	width: 10%;
+}
+.td11{
+	width: 11%;
+}
+.td12{
+	width: 12%;
+}
+.td13{
+	width: 13%;
+}
+.td14{
+	width: 14%;
+}
+.td15{
+	width: 15%;
+}
+.td16{
+	width: 16%;
+}
+.td17{
+	width: 17%;
+}
+.td18{
+	width: 18%;
+}
+.td19{
+	width: 19%;
+}
+.td20{
+	width: 20%;
 }
 .checkbox_box{
 	width: 20px;
@@ -682,7 +715,8 @@
 	background-color: rgba(0,0,0,0.3);
 }
 .bounced_add{
-	position: fixed;
+	/*position: fixed;*/
+	position: relative;
 	top: 35%;
 	left: 35%;
 	background-color: #111c29;
@@ -692,6 +726,13 @@
 	border: 1px solid #00b7ee;
 	border-radius: 5px;
 	box-shadow: 0px 0px 29px #3aabda;
+}
+.bounced_minbox{
+	width: 100%;
+	height: 100%;
+	/*border:3px solid red;*/
+	position: relative;
+	border-radius: 5px;
 }
 .bounced_box{
 	position: relative;
@@ -711,6 +752,54 @@
 	line-height: 38px;
 	float: right;
 	margin-right: 20px;
+}
+.shape_box{
+	position: relative;
+}
+.shape_minbox{
+	position: relative;
+	z-index: 10000;
+	top: calc(35% - 0px);
+    left: 35%;
+	width: 200px;
+}
+.shape_topbox{
+	position: relative;
+	width: 36px;
+	height: 20px;
+	margin-left: 20px;
+}
+.shape_text2{
+	font-size: 14px;
+	margin-top: 6px;
+}
+.triangle{
+	position:absolute;
+	top: -7px; 
+	border: 8px solid transparent;
+	border-bottom: 8px solid #00b7ee;
+	width: 0;height: 0;
+}
+.triangle1{
+	position:absolute;
+	top: -4px; 
+	left: 1px;
+	border: 7px solid transparent;
+	border-bottom: 7px solid #1e4e69;
+	width: 0;height: 0;
+}
+.shape_border{
+	width: 100%;
+	padding: 10px 20px;
+	margin-top: -12px;
+	border: 1px solid #00b7ee;
+	background-color: #1e4e69;
+	border-radius: 5px;
+}
+.shape_input{
+    width: 180px;
+    height: 25px;
+    float: right;
 }
 .file_box{
 	position: absolute;
@@ -977,7 +1066,8 @@
     padding: 0px 8px;
 }
 .mm4_text4{
-	width: 370px;
+	/*width: 370px;*/
+	width: 342px;
     padding: 0px 10px;
     height: 20px;
     line-height: 20px;
@@ -2365,6 +2455,11 @@ to {height: 373px;opacity: 1;}
 	height: 100%;
 	margin:0 auto;
 }
+/*20180918 add WX start*/
+.icon_hi{
+	width: 85px;
+}
+/*20180918 add WX end*/
 .systd_icon2{
 	margin-right: 0;
 	float: inherit;

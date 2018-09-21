@@ -185,3 +185,19 @@
 }
 /* system1 弹窗 end */
 	
+/*20180918 add WX start*/
+.left_icondiv{
+	float: left;
+	margin-left: 55px;
+	height: 50px;
+}
+.left_icondiv img{
+	margin-top: 15px;
+	margin-right: 5px;
+	width: 20px;
+	height: 20px;
+}
+.left_icontext{
+	float: left;
+}
+/*20180918 add WX end*/
