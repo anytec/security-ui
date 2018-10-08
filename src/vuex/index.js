@@ -28,6 +28,7 @@ const store = new Vuex.Store({
             video_names: null,
             groupNames: null,
         },
+        clear_flag: false, // 实时监控缓存清除标志
 
         facepath_data:{
             photo: "",

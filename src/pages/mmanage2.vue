@@ -290,6 +290,7 @@
 					dataUrl:"",
 					name: "",
 					idNumber: "",
+                    gender: "",
 				},
 
 				// 批量上传图片
@@ -613,7 +614,7 @@
                 	if( this.init_data.galleries_id[this.init_data.galleries.indexOf(search_data.groupName)] ){
                 		params.append( "groupId", this.init_data.galleries_id[this.init_data.galleries.indexOf(search_data.groupName)]) // 搜索底库名
                 	}
-                	if( search_data.gender != "性别/不限" && search_data.gender ){
+                	if( search_data.gender != "性别性别/不限" && search_data.gender ){
                 		params.append( "gender", search_data.gender )   // 搜索性别
                 	}
                 	if( search_data.idNumber ){
@@ -1067,6 +1068,7 @@
 				if( this.change_data.dataUrl != this.tabledata[this.change_data.uuid].thumbnail ){
 					photo_flag = true
 				}
+
 				if( this.change_data.name === this.tabledata[this.change_data.uuid].name 
 					&& this.change_data.idNumber === this.tabledata[this.change_data.uuid].idNumber 
 					&& this.change_data.gender === this.tabledata[this.change_data.uuid].gender 
@@ -1079,7 +1081,7 @@
 					this.warning_info("标识编码不能为空")
 				}else if( this.change_data.name === ""){
 					this.warning_info("姓名不能为空")
-				}else if( this.change_data.gender === ""){
+				}else if( !this.change_data.gender ){
 					this.warning_info("性别不能为空")
 				}else{
 					this.is_confirm_show = false

@@ -197,7 +197,7 @@
 					cameraId: "",
 					cameraName_data: "设备/不限",
 				},
-				date_value: [(new Date() - 3600 * 1000 * 24 * 1),new Date()-1],
+				date_value: [],
 				save_search_data:{
 				},
 				pickeroptions:{
@@ -532,8 +532,10 @@
 
                 if( this.date_value ){
     				// console.log(date_value)
-        			params.append("startTime",this.date_value[0] - 1)
-        			params.append("endTime",this.date_value[1] - 1)
+   					if( this.date_value.length ){
+   						params.append("startTime",this.date_value[0] - 1)
+        				params.append("endTime",this.date_value[1] - 1)
+   					}
     			}
                 params.append("pageNum",this.init_data.pageNum)
                 params.append("pageSize",this.init_data.pageSize)

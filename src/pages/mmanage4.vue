@@ -455,7 +455,12 @@
 					this.model = "update"
 				}else{
 					this.model = "add"
+					// 加载抓拍机初始化
+					this.get_mac_serverLabel_some(false)
 				}
+
+				// // 加载抓拍机初始化
+				// this.get_mac_serverLabel_some(false)
 
 				this.is_request2add = true
 				this.add_info_map_init()
@@ -561,6 +566,7 @@
 				if( this.is_catch_mac ){
             		this.init_data.mac_serverLabels = []
             	}
+            	this.get_mac_serverLabel()
 
             	this.is_show_tip = false
 			},
@@ -678,9 +684,13 @@
 			click_to_change_gallery:function(num){
 				let temp_data = JSON.parse(JSON.stringify(this.tabledata[num]))
 
-				if( !this.init_data.mac_serverLabels.length && temp_data.cameraType === "抓拍机" ){
-					this.init_data.mac_serverLabels = [temp_data.sdkId]
+				if( temp_data.cameraType === "抓拍机" ){
+					// this.init_data.mac_serverLabels.splice(-1,0,temp_data.sdkId)
 					this.is_catch_mac = true
+					this.is_request2add = true
+					this.get_mac_serverLabel_some(false,temp_data.sdkId)
+				}else{
+					this.get_mac_serverLabel_some(false)
 				}
 				this.click_to_add_info(temp_data)
 			},
@@ -727,21 +737,57 @@
                     return ;
                 })
 			},
-			get_init_data:function(){
+			get_mac_serverLabel:function(){
 				var params = new URLSearchParams()
-				this.get_serverLabels()
-                // 抓拍机mac
-                this.$ajax.post("/camera/getCaptureCameras",params).then((res) => {
+                 // 抓拍机mac
+                this.$ajax.post("/camera/getAllCaptureCameras",params).then((res) => {
                     if( res.data.status === 0){
             			this.init_data.mac_serverLabels = res.data.data
-            			// console.log(this.init_data.mac_serverLabels)
+						if( this.init_data.length ){
+							this.search_data.sdkId = this.init_data.mac_serverLabels[0]
+						}else{
+							this.search_data.sdkId = "mac地址/不限"
+						}
                     }else{
+                    	this.search_data.sdkId = "mac地址/不限"
                         this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
+                	this.search_data.sdkId = "mac地址/不限"
                 	this.error_info('网络连接出错')
                     return ;
                 })
+			},
+			get_mac_serverLabel_some:function(flag=false,sdkId=""){
+				var params = new URLSearchParams()
+				// 抓拍机mac
+                this.$ajax.post("/camera/getCaptureCameras",params).then((res) => {
+                    if( res.data.status === 0){
+            			this.init_data.mac_serverLabels = res.data.data
+            			if( this.init_data.mac_serverLabels.length && flag){
+							this.add_data.sdkId = this.init_data.mac_serverLabels[0]
+							this.add_data.serverLabel = ""
+							// console.log(this.add_data)
+						}
+						if( sdkId ){
+							this.init_data.mac_serverLabels.splice(-1,0,sdkId)
+							this.add_data.sdkId = sdkId
+						}
+                    }else{
+                        this.mes_handling(res.data.status,res.data.msg)
+                        this.add_data.cameraType = "视频流"
+                    }
+                }).catch((error) => {
+                	this.add_data.cameraType = "视频流"
+                	this.error_info('网络连接出错')
+                    return ;
+                })
+			},
+			get_init_data:function(){
+				this.get_serverLabels()
+                this.get_mac_serverLabel()
+
+                var params = new URLSearchParams()
 				// 设备组列表请求
 				this.$ajax.post("/groupCamera/list",params).then((res) => {
                     if( res.data.status === 0){
@@ -756,26 +802,29 @@
                 })
 			},
 			post_to_change_page:function(search_data){
-				// console.log(this.search_data)
+				// console.log(mm4)
+				// console.log(search_data)
                 var params = new URLSearchParams()
                 for( let item in search_data ){
-                	if( search_data[item].indexOf("不限") == -1 &&  search_data[item] != ""){
-                		// 此处 groupId 为设备组名
-                		if( item === "groupId" ){
-	                		for(let i = 0; i < this.init_data.video_groups.length; i++){
-	                			if( search_data[item] === this.init_data.video_groups[i].name ){
-	                				params.append(item,this.init_data.video_groups[i].id)
+                	if( search_data[item] ){
+                		if( search_data[item].indexOf("不限") == -1 &&  search_data[item] != ""){
+	                		// 此处 groupId 为设备组名
+	                		if( item === "groupId" ){
+		                		for(let i = 0; i < this.init_data.video_groups.length; i++){
+		                			if( search_data[item] === this.init_data.video_groups[i].name ){
+		                				params.append(item,this.init_data.video_groups[i].id)
+		                			}
+		                		}
+	                		}else if( item === "status" ){
+	                			if( search_data.status === "正常" ){
+	                				params.append(item,1)
+	                			}else{
+	                				params.append(item,0)
 	                			}
+	                		}else{
+	                			params.append(item,search_data[item])
 	                		}
-                		}else if( item === "status" ){
-                			if( search_data.status === "正常" ){
-                				params.append(item,1)
-                			}else{
-                				params.append(item,0)
-                			}
-                		}else{
-                			params.append(item,search_data[item])
-                		}
+	                	}
                 	}
                 }
                 params.append("pageNum",this.init_data.pageNum)
@@ -942,7 +991,8 @@
 						this.save_search_data = this.$store.state.search_data
 
 						let search_data = this.$store.state.search_data
-						// console.log(search_data)
+						console.log("mm4")
+						console.log(search_data)
 						this.post_to_change_page( search_data )
 						this.$store.state.is_search_data = false
 						this.$store.state.search_data = {}
@@ -960,18 +1010,17 @@
 			// cameraSdkId
 			'add_data.cameraType':function(newval,old){
 				if( newval === "抓拍机" ){
-					this.add_data.sdkId = this.init_data.mac_serverLabels[0]
-					this.add_data.serverLabel = ""
+					if( this.init_data.mac_serverLabels.length ){
+						this.add_data.sdkId = this.init_data.mac_serverLabels[0]
+					}
 				}else{
 					this.add_data.serverLabel = this.init_data.serverLabels[0]
-					this.add_data.sdkId = ""
+					// this.add_data.sdkId = ""
 				}
 			},
 			'search_data.type':function(newval,old){
 				if( newval === "抓拍机" ){
-					if( this.init_data.mac_serverLabels.length ){
-						this.search_data.sdkId = this.init_data.mac_serverLabels[0]
-					}
+					this.get_mac_serverLabel()
 					this.search_data.serverLabel = "地址标识/不限"
 				}else if(newval === "视频流"){
 					if( this.init_data.serverLabels ){

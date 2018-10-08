@@ -1,37 +1,70 @@
 <template>
-    <div style="width:100%;height:100%">
+    <div style="width:100%;height:100%" v-if="!$store.state.clear_flag">
         <div class="left_mainBox">
             <left-nav></left-nav>
             <div class="center_box">
                 <div class="video_box">
                     <div class="video_top">
-                        <div class="video_minbox">
+                        <div :class="{'video_minbox':true,'video_minbox1':video_srcs[0].big_video_flag}" :style="{'transform': video_style[0]}">
                             <div class="camera_text">
                                 {{ video_srcs[0].name }}
                             </div>
-                            <object class="player" id="player1">
-                                <embed src="/static/grindPlayer/GrindPlayer.swf" width="612px" height="344px" type=application/x-shockwave-flash
-                                       wmode="transparent" quality="high"></embed>
-                            </object>
+                            <div :class="{'video_origin':true,'video_origin1':video_srcs[0].playAddress}"
+                                 v-if="!video_srcs[0].playAddress"
+                                 @mouseup="click_to_change_video_size(0)"
+                                 title="点击缩放">
+                                <div class="video_text">ANYTEC</div>
+                            </div>
+                            <div @mouseup="click_to_change_video_size(0)">
+                                <object class="player" id="player1" title="点击缩放">
+                                    <embed src="" 
+                                        type=application/x-shockwave-flash
+                                        wmode="transparent" 
+                                        quality="high"
+                                        @mouseup.stop>
+                                    </embed>
+                                </object>
+                            </div>
                         </div>
-                        <div class="video_minbox" v-for="item in [2,3,4]" @mouseenter="change_choose_show(true,item)" @mouseleave="change_choose_show(false,item)">
+                        <div  v-for="item in [2,3,4]" 
+                            :class="{'video_minbox':true,'video_minbox1':video_srcs[item-1].big_video_flag}"
+                            :style="{'transform': video_style[item-1]}"
+                            @mouseenter="change_choose_show(true,item)" 
+                            @mouseleave="change_choose_show(false,item)"
+                            title="点击缩放">
                             <div class="camera_text">
                                 {{ video_srcs[item-1].name }}
                             </div>
-                            <div class="choose_box" :class="{'choose_box1':isactive[item-2],'choose_box2':!isactive[item-2]}" @click="change_video(item)">
-                                  选择设备
+                            <div :class="{'video_origin':true,'video_origin1':video_srcs[item-1].playAddress}" 
+                                v-if="!video_srcs[item-1].playAddress"
+                                @mouseup="click_to_change_video_size(item-1)">
+                                <div class="video_text">ANYTEC</div>
                             </div>
-                            <div class="refresh_icon" 
-                                 :class="{'choose_box1':isactive[item-2],'choose_box2':!isactive[item-2]}" 
-                                 @mouseover="refresh_icon = refresh_icon2" 
-                                 @mouseout="refresh_icon = refresh_icon1"
-                                 @click="repaly_video(item)">
-                                <img :src="refresh_icon" />
+                            <div :class="{'choose_box3':true,'choose_box_active':isactive[item-2]}">
+                                <div class="choose_box" 
+                                    @click="change_video(item)"
+                                    title="点击选择设备显示"
+                                    @mouseup.stop>
+                                      选择设备
+                                </div>
+                                <div class="refresh_icon" 
+                                     @mouseover="refresh_icon = refresh_icon2" 
+                                     @mouseout="refresh_icon = refresh_icon1"
+                                     @click="repaly_video(item)"
+                                     title="点击刷新显示"
+                                     @mouseup.stop>
+                                    <img :src="refresh_icon" />
+                                </div>
                             </div>
-                            <object class="player" :id="'player'+item">
-                                <embed src="/static/grindPlayer/GrindPlayer.swf" width="612px" height="344px" type=application/x-shockwave-flash
-                                       wmode="transparent" quality="high"></embed>
-                            </object>
+                            <div @mouseup="click_to_change_video_size(item-1)" style="cursor: pointer;" title="点击缩放">
+                                <object class="player" :id="'player'+item">
+                                    <embed src="" type=application/x-shockwave-flash
+                                           wmode="transparent" 
+                                           quality="high" 
+                                           @mouseup.stop>
+                                    </embed>
+                                </object>
+                            </div>
                         </div>
                     </div>
                     <div class="information_box">
@@ -84,7 +117,12 @@
                                 </div>
                                 <div class="photo_text" v-show="is_trans">
                                     <!-- <div class="new_photo_text">{{item.age}}岁    {{item.gender}}</div> -->
-                                    <div class="new_photo_text">{{item.gender}}</div>
+                                    <div class="new_photo_text" v-if="!item.age">{{item.gender}}</div>
+                                    <div class="new_photo_text" v-else-if="item.age < 15"> 儿童 {{item.gender}}</div>
+                                    <div class="new_photo_text" v-else-if="item.age > 14 && item.age < 36"> 青年 {{item.gender}}</div>
+                                    <div class="new_photo_text" v-else-if="item.age > 35 && item.age < 61"> 中年 {{item.gender}}</div>
+                                    <div class="new_photo_text" v-else-if="item.age > 60"> 老年 {{item.gender}}</div>
+                                    <!-- <div class="new_photo_text" v-else>{{item.gender}}</div> -->
                                 </div>
                                 <div class="photo_text" v-show="!is_trans">
                                     <div class="small_icon" title="跳转到人脸检索" @click="skip_to_facepath(item.img)"></div>
@@ -95,7 +133,7 @@
                     </div>
                     <div class="re_rightbox" style="margin-left:18px">
                         <div class="data_title">数据统计</div>
-                        <div class="history">查看历史</div>
+                        <div class="history"><!-- 查看历史 --></div>
                         <div class="data_box">
                             <div class="alarm">
                                 <div class="alarm_text">本周报警次数</div>
@@ -138,7 +176,18 @@
         <!--警告-->
         <!--遮罩层-->
         <div class="mack_box" v-show="open_alarm" @click="close_info"></div>
-        <div class="warning_box" v-show="open_alarm" @click="skip_to_mmanage2(alarm_new_data.personGroupName,alarm_new_data.personGroupId,alarm_new_data.faceSdkId)">
+        <div class="warning_box" v-if="open_alarm || open_alarm1" @click="skip_to_mmanage2(alarm_new_data.personGroupName,alarm_new_data.personGroupId,alarm_new_data.faceSdkId)" style="cursor: pointer;" title="跳转查看详细信息">
+            <!-- <div>
+                <audio src="/static/music/test1.mp3" autoplay="autoplay">
+                您的浏览器不支持 audio 标签。
+                </audio>
+            </div> -->
+            <audio v-if="alarm_new_data.voiceLabel && open_alarm" :src="'/static/music/'+ alarm_new_data.voiceLabel +'.mp3'" autoplay="autoplay" loop>
+                您的浏览器不支持 audio 标签。
+            </audio>
+            <audio v-if="open_alarm1" :src="'/static/music/'+ alarm_new_data.voiceLabel +'.mp3'" autoplay="autoplay">
+                您的浏览器不支持 audio 标签。
+            </audio>
             <div class="warning_title">最新预警</div>
             <div class="warning_conter">
                 <div class="left_photo">
@@ -225,21 +274,25 @@
                         name: "",
                         playAddress: "",
                         sdkId: "",
+                        big_video_flag: false,
                     },
                     {
                         name: "",
                         playAddress: "",
                         sdkId: "",
+                        big_video_flag: false,
                     },
                     {
                         name: "",
                         playAddress: "",
                         sdkId: "",
+                        big_video_flag: false,
                     },
                     {
                         name: "",
                         playAddress: "",
                         sdkId: "",
+                        big_video_flag: false,
                     },
                 ],
                 flashvars:{
@@ -247,19 +300,22 @@
                     src: "",
                     streamType: "live",
                     scaleMode: "zoom", // 自动缩放
-                    bufferTime: 0,
+                    bufferTime: 1,
                     controlBarAutoHideTimeout: 0, // 播放隐藏工具栏
                     // controlBarAutoHide: true,
+                    // javascriptCallbackFunction: "onJSBridge",
                 },
                 params:{
                     allowFullScreen: false,
                     allowScriptAccess: "always",
                     bgcolor: "#000000",
+                    // poster: "http://img07.tooopen.com/images/20170316/tooopen_sy_201956178977.jpg",
                 },
                 attrs:{
                     name:"player",
                 },
                 player: null,
+                // video_play_status: true,
 
                 // 图片滚动数据
                 move_pix: 0,
@@ -284,6 +340,7 @@
                 is_choose_change: [false,false,false],
                 open_flag: false,
                 open_alarm:false,
+                open_alarm1: false,
                 active_box_num: null,
                 info_show_data:[],
                 groupNames: null,
@@ -302,6 +359,15 @@
                 // 原图
                 is_show_pic: false,
                 total_pic: "",
+
+                // 视频显示
+                default_video_style:[
+                    "translate(310px,176px) scale(2.02)",
+                    "translate(-310px,176px) scale(2.02)",
+                    "translate(310px,-176px) scale(2.02)",
+                    "translate(-310px,-176px) scale(2.02)",
+                ],
+                video_style:["","","",""],
             }
         },
         components: {
@@ -311,18 +377,8 @@
         methods:{
             // test
             click_to_move:function(){
-                // console.log("haha")
-                // this.video_srcs[0].name = Date()
-                // let temp_data = JSON.parse(JSON.stringify(this.default_data1))
-                // temp_data.confidence = 100
-                // this.rolling_alarm(temp_data)
-
-                // this.alarm_new_data = JSON.parse(JSON.stringify(this.default_data1))
-                // if( this.open_alarm ){
-                //     clearInterval(this.timer_num)
-                // }else{
-                //     this.open_alarm = true
-                // }
+                console.log("ahha")
+                // console.log(swfobject.embedSWF("/static/grindPlayer/GrindPlayer.swf", "player1", "1224px", "688px", "10.2", null, this.flashvars, this.params, this.attrs))
                 // this.timer_num = setTimeout(() => {
                 //     this.open_alarm = false
                 // }, 2000)
@@ -336,6 +392,16 @@
                 // console.log(flag,num)
                 // this.is_choose_change.splice(num-2,1,flag)
                 this.isactive.splice(num-2,1,flag)
+            },
+            // 视频切换
+            click_to_change_video_size:function(box_num=0){
+                if( this.video_srcs[box_num].big_video_flag ){
+                    this.video_style[box_num] = ""
+                    this.video_srcs[box_num].big_video_flag = false
+                }else{
+                    this.video_srcs[box_num].big_video_flag = true
+                    this.video_style[box_num] = this.default_video_style[box_num]
+                }
             },
 
             // 页面跳转
@@ -357,12 +423,16 @@
                 this.$router.push('/mmanage2')
             },
             skip_to_mmanage4(item){
-                // console.log(item.sdkId)
+                console.log(item)
                 this.open_flag = false
                 this.$store.state.search_data.groupId = item.groupName
                 this.$store.state.search_data.name = item.name
                 this.$store.state.is_search_data = true
-                this.$router.push('/mmanage4')
+                if( this.$store.state.facepath_model === "online" ){
+                    this.$router.push('/mmanage4')
+                }else{
+                    this.$router.push('/mmanage4_offline')
+                }
             },
             skip_to_historyface2:function(faceSdkId){
                 // console.log(faceSdkId)
@@ -375,7 +445,7 @@
             init_video:function(){
                 for(let i = 0; i < this.video_srcs.length; i++ ){
                     // this.flashvars.src = this.video_srcs[i]
-                    swfobject.embedSWF("/static/grindPlayer/GrindPlayer.swf", "player"+(i+1), "612px", "344px", "10.2", null, this.flashvars, this.params, this.attrs);
+                    swfobject.embedSWF("", "player"+(i+1), "612px", "344px", "10.2", null, this.flashvars, this.params, this.attrs);
                 }
             },
             // 设备选择弹框
@@ -473,7 +543,13 @@
                                 }   
                             }else{
                                 if( sdkId === this.video_srcs[this.active_box_num-1].sdkId ){
-                                    this.error_info("视频未打开成功")
+                                    // this.error_info("视频未打开成功")
+                                    this.$message({
+                                      duration: 7,
+                                      showClose: true,
+                                      message: '视频未打开成功',
+                                      type: 'error',
+                                    })
                                 }
                             }
                             
@@ -483,6 +559,7 @@
                             let temp_data = {}
                             temp_data.time = jsonData.data.catchTime.split(" ")[1]
                             temp_data.img = jsonData.data.snapshotUrl
+                            temp_data.age = jsonData.data.age
                             temp_data.faceSdkId = jsonData.data.faceSdkId
                             temp_data.cameraName = jsonData.data.cameraName
                             temp_data.wholePhoto = jsonData.data.wholePhoto
@@ -496,7 +573,7 @@
                             }
                             // this.show_face_list.push(JSON.parse(JSON.stringify(temp_data)))
                             // console.log("temp_data")
-                            console.log(temp_data)
+                            // console.log(temp_data)
                             this.rolling_picture(temp_data)
                         }
                     }
@@ -506,12 +583,14 @@
             },
 
             // 滚动图片
+            // 滚动抓拍图片
             rolling_picture:function(temp_data){
                 // let temp_data = JSON.parse(JSON.stringify(this.default_data))
                 if( this.end_id === 12 ){
                     this.show_data[0].img = temp_data.img
                     this.show_data[0].time = temp_data.time
                     this.show_data[0].gender = temp_data.gender
+                    this.show_data[0].age = temp_data.age
                     this.show_data[0].emotions = temp_data.emotions
                     this.show_data[0].cameraName = temp_data.cameraName
                     this.show_data[0].faceSdkId = temp_data.faceSdkId
@@ -524,6 +603,7 @@
                     this.show_data[this.end_id+1].img = temp_data.img
                     this.show_data[this.end_id+1].time = temp_data.time
                     this.show_data[this.end_id+1].gender = temp_data.gender
+                    this.show_data[this.end_id+1].age = temp_data.age
                     this.show_data[this.end_id+1].emotions = temp_data.emotions
                     this.show_data[this.end_id+1].cameraName = temp_data.cameraName
                     this.show_data[this.end_id+1].faceSdkId = temp_data.faceSdkId
@@ -586,8 +666,15 @@
                 if( this.open_alarm ){
                     clearInterval(this.timer_num)
                 }else{
-                    this.open_alarm = true
+                    if( this.$route.path === "/realtimem" ){
+                        this.open_alarm = true
+                    }else{
+                        this.open_alarm1 = true
+                    }
                 }
+                setTimeout(() => {
+                    this.open_alarm1 = false
+                }, 1000*4)
                 this.timer_num = setTimeout(() => {
                     this.open_alarm = false
                 }, 1000*4)
@@ -621,7 +708,7 @@
             // 请求初始化
             initSocket:function(){
                 // let socket = new SockJS('http://192.168.10.62:9999/gee');
-                // let socket = new SockJS('http://192.168.10.126:9990/gee');
+                // let socket = new SockJS('http://192.168.10.73:9990/gee');
                 // let socket = new SockJS('http://192.168.10.132:9999/gee');
                 let socket = new SockJS('gee');
                 let first_time = true
@@ -674,25 +761,6 @@
             },
 
             // 初始化请求
-            // mes_handling:function(status, msg){
-            //     if( status === 1 ){
-            //         this.error_info(msg)
-            //         return ;
-            //     }else if( status === 2 ){
-            //         this.error_info(msg)
-            //         return ;
-            //     }else if( status === 10 ){
-            //         this.error_info('请先登录')
-            //         return ;
-            //     }else{
-            //         if( status === 401 && msg === "未登录" ){
-            //             this.error_info(msg)
-            //             this.$router.push("/login")
-            //         }else{
-            //             this.error_info(status + "  " + msg)
-            //         }
-            //     }
-            // },
             // 抓拍
             get_init_data:function(){
                 var params = new URLSearchParams()
@@ -734,7 +802,7 @@
                             this.show_data[i].move_pix = 0
                             this.show_data[i].translatetime = 0.5
                         }
-
+                        // console.log(!this.show_data[11].age)
                     }else{
                         this.mes_handling(res.data.status,res.data.msg)
                     }
@@ -835,19 +903,6 @@
         },
         mounted:function(){
             this.initSocket()
-            // setTimeout(() => {
-            //     this.get_init_data1()
-            // }, 600)
-            // if( this.first_flag ){
-            //     this.get_init_data()
-            //     this.get_init_data2()
-
-            //     this.init_video()
-            //     this.initSocket()
-            //     this.myID = this.guid()
-
-            //     this.first_flag = false
-            // }
         },
         watch:{
             '$store.state.realtime_data.sdkId':function(newVal,old){
@@ -899,11 +954,11 @@
                         setTimeout(() => {
                             vm.active_box_num = 1
                             vm.$store.state.is_search_data = false
-                            console.log(vm.$store.state.realtime_data.sdkId,vm.$store.state.realtime_data.name)
+                            // console.log(vm.$store.state.realtime_data.sdkId,vm.$store.state.realtime_data.name)
                             vm.choose_this_url(vm.$store.state.realtime_data.sdkId,vm.$store.state.realtime_data.name)
                         }, 500)
                     }else{
-                        console.log(vm.$store.state.is_search_data)
+                        // console.log(vm.$store.state.is_search_data)
                         vm.active_box_num = 1
                         vm.$store.state.is_search_data = false
                         vm.choose_this_url(vm.$store.state.realtime_data.sdkId,vm.$store.state.realtime_data.name)
@@ -952,6 +1007,18 @@
     .add_state{
         float: right;
         margin-right:20px;
+    }
+    .choose_box3{
+        position: absolute;
+        right: 40px;
+        top: 0px;
+        width: 150px;
+        height: 40px;
+        transform: scale(0);
+    }
+    .choose_box_active{
+        transform: scale(1);
+        transition: 0.4s;
     }
 
     /* 滚动条 */

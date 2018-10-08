@@ -119,13 +119,14 @@
             post_to_login:function(){
                 var params = new URLSearchParams()
                 params.append("account",this.user.name)
-                params.append("upass",this.user.password)
+                params.append("upass",this.$md5(this.user.password).toUpperCase())
                 this.$ajax.post("/user/login",params).then((res) => {
                     if( res.data.status === 0){
                         sessionStorage.setItem("username", res.data.data.uname)
                         sessionStorage.setItem("role", res.data.data.role)
                         // console.log(res.data.data.role)
                         this.$store.dispatch('login', res.data.data)
+                        this.$store.state.clear_flag = false // 实时监控缓存清除标志
                         // console.log(this.$store.state.user.role)
                         this.$notify({
                             type: 'success',

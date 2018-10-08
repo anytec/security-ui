@@ -4,6 +4,11 @@
 		<div class="list_box">
 			<div class="mask_box">
 				<div class="top_title">
+					<!-- <div>
+						<audio src="/static/music/test1.mp3" autoplay="autoplay">
+						您的浏览器不支持 audio 标签。
+						</audio>
+					</div> -->
 					<div class="title_lefttext">底库配置</div>
 					<div class="title_righttext">结果{{init_data.allnum}}个</div>
 				</div>
@@ -89,7 +94,7 @@
 				<div class="bounced_top">
 					<div class="bounced_title">新建底库</div>
 				</div>
-				<div class="mm1_addbox1">
+				<!--<div class="mm1_addbox1">
 					<div class="addbox1_text">标记色设置</div>
 					<input class="mm1_inputname" 
 						type="text" 
@@ -107,12 +112,64 @@
 							</el-color-picker>
 						</div>
 					</div>
+					<div class="mm1_bottomlist">
+						<select>
+							<option value="">标准报警</option>
+							<option value="">汽笛</option>
+							<option value="">歇斯底里</option>
+							<option value="">喇叭</option>
+							<option value="">唢呐</option>
+						</select>
+					</div>
 					<div class="right_btndiv">
 						<div class="mmbtn_box mm1_btn" @click="request_add_persongroup" v-show="is_confirm_show">新建底库</div>
 						<div class="mmbtn_box mm1_btn left_mmbox" v-show="!is_confirm_show">新建底库</div>
 						<div class="mmbtn_box left_mmbox mm1_btn" @click="close_add_persongroup">暂不添加</div>
 					</div>
+				</div>-->
+				<!--20180928修改 start-->
+				<div class="mm1_alertbox">
+					<div class="alert_leftbox">
+						<div class="ale_toptext">标记颜色</div>
+						<div class="ale_colorbox">
+							<div class="ale_color">
+								<el-color-picker 
+									v-model="add_data.colorLabel"
+									:predefine="predefineColors">
+								</el-color-picker>
+							</div>
+						</div>
+					</div>
+					<div class="alert_middlebox">
+						<div class="ale_toptext">报警声音</div>
+						<div class="ale_selectbox">
+							<div class="mm1_bottomlist">
+                                <audio v-if="is_request2add && add_data.voiceLabel" :src="'/static/music/'+ add_data.voiceLabel +'.mp3'" autoplay="autoplay" >
+                                    您的浏览器不支持 audio 标签。
+                                </audio>
+								<select v-model="add_data.voiceLabel">
+									<option v-for="voice in voiceList">{{ voice }}</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="alert_rightbox">
+						<div class="ale_toptext">
+							<input class="mm1_inputname" 
+							type="text" 
+							v-model="add_data.name"
+							@focus="focus_to_show(-127,429,'name')"
+							@click.stop/>
+							<span>底库名称：</span>
+						</div>
+						<div class="ale_selectbox">
+							<div class="mmbtn_box mm1_btn ale_btn" @click="request_add_persongroup" v-show="is_confirm_show">新建底库</div>
+							<div class="mmbtn_box mm1_btn left_mmbox ale_btn" v-show="!is_confirm_show">新建底库</div>
+							<div class="mmbtn_box left_mmbox mm1_btn ale_btn" @click="close_add_persongroup">暂不添加</div>
+						</div>
+					</div>
 				</div>
+				<!--20180928修改 end-->
 				<div class="mmbottom_input">
 					<input type="text" 
 						placeholder="附加备注信息" 
@@ -132,38 +189,51 @@
 					<div class="bounced_top">
 						<div class="bounced_title">编辑底库信息</div>
 					</div>
-					<div class="mm1_addbox1">
-						<div class="addbox1_text">标记色设置</div>
-						<!-- <input class="mm1_inputname" type="text" v-model="change_data.name"/> -->
-						<div class="shape_input">
-							<input class="mm1_inputname" 
-								type="text" 
-								v-model="change_data.name" 
-								@focus="focus_to_show(-127,429)"
-								@click.stop 
-								/>
-						</div>
-						<span>底库名称：</span>
-					</div>
-					<div class="mm1_addbox2">
-						<div class="left_colordiv">
-							<div class="color_box1">
-								<el-color-picker 
-									v-model="change_data.colorLabel"
-									:predefine="predefineColors">
-								</el-color-picker>
-							</div>
-						</div>
-						<div class="right_btndiv">
-							<div class="mmbtn_box mm1_btn" @click="request_change_persongroup" v-show="is_confirm_show">确认修改</div>
-							<div class="mmbtn_box mm1_btn left_mmbox" v-show="!is_confirm_show">确认修改</div>
-							<div class="mmbtn_box left_mmbox mm1_btn" @click="close_change_persongroup">暂不修改</div>
-						</div>
-					</div>
+                    <div class="mm1_alertbox">
+                        <div class="alert_leftbox">
+                            <div class="ale_toptext">标记颜色</div>
+                            <div class="ale_colorbox">
+                                <div class="ale_color">
+                                    <el-color-picker
+                                        v-model="change_data.colorLabel"
+                                        :predefine="predefineColors">
+                                    </el-color-picker>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert_middlebox">
+                            <div class="ale_toptext">报警声音</div>
+                            <div class="ale_selectbox">
+                                <div class="mm1_bottomlist">
+                                    <audio v-if="is_request2change && change_data.voiceLabel" :src="'/static/music/'+ change_data.voiceLabel +'.mp3'" autoplay="autoplay">
+                                        您的浏览器不支持 audio 标签。
+                                    </audio>
+                                    <select v-model="change_data.voiceLabel">
+                                        <option v-for="voice in voiceList">{{ voice }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert_rightbox">
+                            <div class="ale_toptext">
+                                <input class="mm1_inputname"
+                                       type="text"
+                                       v-model="change_data.name"
+                                       @focus="focus_to_show(-127,429,'name')"
+                                       @click.stop/>
+                                <span>底库名称：</span>
+                            </div>
+                            <div class="ale_selectbox">
+                                <div class="mmbtn_box mm1_btn ale_btn" @click="request_change_persongroup" v-show="is_confirm_show">确认修改</div>
+                                <div class="mmbtn_box mm1_btn left_mmbox ale_btn" v-show="!is_confirm_show">确认修改</div>
+                                <div class="mmbtn_box left_mmbox mm1_btn ale_btn" @click="close_change_persongroup">暂不修改</div>
+                            </div>
+                        </div>
+                    </div>
 					<div class="mmbottom_input">
-						<input type="text" 
-							placeholder="附加备注信息" 
-							v-model="change_data.remarks" 
+						<input type="text"
+							placeholder="附加备注信息"
+							v-model="change_data.remarks"
 							@focus="focus_to_show(-30,18)"
 							@click.stop/>
 					</div>
@@ -204,10 +274,12 @@
 
 				},
 				delete_data:[],
+                voiceList: [],
 				add_data:{
 					name: "",
 					remarks: "",
 					colorLabel: "#ff2f60",
+                    voiceLabel: null,
 				},
 				change_data:{
 				},
@@ -393,6 +465,7 @@
 			},
 			click_to_add_info:function(){
 				// 弹窗添加
+                this.add_data.voiceLabel = this.voiceList[0]
 				this.is_request2add = true
 				// this.add_data.colorLabel = "#ff2f60"
 			},
@@ -473,6 +546,7 @@
 				}
 
 				if( this.change_data.colorLabel === this.tabledata[this.change_data.uuid].colorLabel &&
+                    this.change_data.voiceLabel === this.tabledata[this.change_data.uuid].voiceLabel &&
 					this.change_data.name === this.tabledata[this.change_data.uuid].name &&
 					this.change_data.remarks === this.tabledata[this.change_data.uuid].remarks ){
 					this.error_info("信息未更改")
@@ -512,25 +586,21 @@
 			},
 
 			// 请求数据
-			// mes_handling:function(status, msg){
-   //              if( status === 1 ){
-   //                  this.error_info(msg)
-   //                  return ;
-   //              }else if( status === 2 ){
-   //                  this.error_info(msg)
-   //                  return ;
-   //              }else if( status === 10 ){
-   //                  this.error_info('请先登录')
-   //                  return ;
-   //              }else{
-   //                  if( status === 401 && msg === "未登录" ){
-   //                      this.error_info(msg)
-   //                      this.$router.push("/login")
-   //                  }else{
-   //                      this.error_info(status + "  " + msg)
-   //                  }
-   //              }
-   //          },
+            // 请求报警声音
+            init_confidence:function(){
+                var params = new URLSearchParams()
+                this.$ajax.post("/getWarningVoice",params).then((res) => {
+                    if( res.data.status === 0){
+                        this.voiceList = res.data.data
+                    }else{
+                        this.mes_handling(res.data.status,res.data.msg)
+                    }
+                }).catch((error) => {
+                    console.log(error)
+                    this.error_info('网络连接出错')
+                    return ;
+                })
+            },
 			get_init_data:function(){
 				// 请求库名
 				var params = new URLSearchParams()
@@ -613,6 +683,14 @@
             		this.warning_info("请选择底库颜色")
             		return ;
             	}
+
+                if( add_data.voiceLabel ){
+                    params.append( "voiceLabel", add_data.voiceLabel )
+                }else{
+                    this.is_confirm_show = true
+                    this.warning_info("请选择报警声音")
+                    return ;
+                }
             	// params.append( "colorLabel", add_data.colorLabel )
             	params.append( "remarks", add_data.remarks)
 
@@ -651,6 +729,13 @@
             		this.is_confirm_show = true
             		return ;
             	}
+                if( change_data.voiceLabel ){
+                    params.append( "voiceLabel", change_data.voiceLabel )
+                }else{
+                    this.warning_info("请选择报警声音")
+                    this.is_confirm_show = true
+                    return ;
+                }
             	params.append("id", change_data.id)
             	params.append( "remarks", change_data.remarks)
 
@@ -702,6 +787,7 @@
 		},
 		mounted:function(){
 			this.get_init_data()
+            this.init_confidence()
 		},
 		watch:{
 			'search_data.groupName':function(newval,old){

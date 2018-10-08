@@ -89,6 +89,7 @@
 				this.$ajax.post("/user/logout").then((res) => {
                     if( res.data.status === 0){
                     	this.success_info("注销成功")
+                    	this.$store.state.clear_flag = true
                         this.$store.dispatch('logout').then(() => {
 		                    this.$router.replace('/')
 		                })

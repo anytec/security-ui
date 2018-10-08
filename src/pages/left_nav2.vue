@@ -123,6 +123,8 @@
 				var params = new URLSearchParams()
 				this.$ajax.post("/groupCamera/getAllCameras",params).then((res) => {
 			        if( res.data.status === 0){
+			        	this.groupNames = []
+			        	this.video_names = []
 						for( let item in res.data.data ){
 							let [name,id] = item.split(",")
 							this.groupNames.push( {"name":name,"id":id} )
@@ -133,6 +135,10 @@
 							for( let j = 0; j < this.video_names[i].length; j++ ){
 								this.video_names[i][j].uuid = j
 								this.video_names[i][j].ischecked = 0
+								if( !this.video_names[i][j].groupName ){
+									this.video_names[i][j].groupName = this.groupNames[i].name
+								}
+
 								if( this.$store.state.facepath_model === "online" ){
 									this.video_names[i][j].location = [this.video_names[i][j].location.split(",")[0],this.video_names[i][j].location.split(",")[1]]
 								}else if( this.$store.state.facepath_model === "offline" ){

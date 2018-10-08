@@ -346,7 +346,7 @@
 				}
 
 				if( !this.check_input(this.showData.account,"account") ){
-					this.warning_info("账户格式不正确")
+					this.warning_info("账号格式不正确")
 					return ;
 				}else if(!this.check_input(this.showData.notes,"notes")){
 					this.warning_info("备注格式不正确")
@@ -505,7 +505,11 @@
 			require_add_person:function( add_data ){
 				var params = new URLSearchParams()
                 for( let item in add_data ){
-                	params.append(item,add_data[item])
+                    if( item === "upass" ){
+                        params.append(item,  this.$md5(add_data[item]).toUpperCase() )
+                    }else{
+                        params.append(item,add_data[item])
+                    }
                 }
 
 				this.$ajax.post("/user/register",params).then((res) => {
@@ -543,7 +547,11 @@
 			require_to_update:function( update_date ){
 				var params = new URLSearchParams()
                 for( let item in update_date ){
-                	params.append(item,update_date[item])
+                    if( item === "upass" ){
+                        params.append(item, this.$md5(update_date[item]).toUpperCase() )
+                    }else{
+                        params.append(item,update_date[item])
+                    }
                 }
 
 				this.$ajax.post("/user/update",params).then((res) => {

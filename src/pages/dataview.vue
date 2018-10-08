@@ -82,14 +82,14 @@
                 </div>
                 <div class="ale_leftlist" v-if="choose_groupName!='设备组选择'">
                     <div class="ale_list" v-for="item in info_show_data" v-show="item.isshow" @click="add_search_data(item,'camera')" >
-                        <div class="ale_text">{{item.name}}</div>
+                        <div class="ale_text" :title="item.name">{{item.name}}</div>
                         <div class="ale_icon"></div>
                     </div>
                 </div>
                 <div class="ale_leftlist" v-if="choose_groupName==='设备组选择'">
                     <div class="ale_list"  
                          v-for="item in groupNames" 
-                         v-if="item.name != '设备组选择'"
+                         v-show="item.isshow"
                          @click="add_search_data(item,'group')"
                     >
                         <div class="ale_text">{{item.name}}</div>
@@ -304,17 +304,27 @@
 
                 // 弹窗
                 // 修改设备组，显示数据变更
-                change_show_data:function(num){
-                    this.info_show_data = []
-                    for( let i = 0; i < this.video_names[num].length; i++ ){
-                        if( this.video_names[num][i].name.indexOf( this.cameraName ) === -1 ){
-                            this.video_names[num][i].isshow = false
-                        }else{
-                            this.video_names[num][i].isshow = true
+                change_show_data:function(num,model="video"){
+                    if( model === "group" ){
+                        for(let i = 1; i < this.groupNames.length; i++){
+                            if( this.groupNames[i].name.indexOf( this.cameraName ) === -1 ){
+                                this.groupNames[i].isshow = false
+                            }else{
+                                this.groupNames[i].isshow = true
+                            }
                         }
-                        this.info_show_data.splice(-1,0,this.video_names[num][i])
+                    }else{
+                        // console.log(num-1,model)
+                        this.info_show_data = []
+                        for( let i = 0; i < this.video_names[num-1].length; i++ ){
+                            if( this.video_names[num-1][i].name.indexOf( this.cameraName ) === -1 ){
+                                this.video_names[num-1][i].isshow = false
+                            }else{
+                                this.video_names[num-1][i].isshow = true
+                            }
+                            this.info_show_data.splice(-1,0,this.video_names[num-1][i])
+                        }
                     }
-                    // console.log(this.info_show_data)
                 },
                 add_search_data:function(data,model){
                     if( model === "camera" ){
@@ -430,7 +440,7 @@
                             for( let item in res.data.data ){
                                 // console.log(item)
                                 let [name,uuid] = item.split(",")
-                                this.groupNames.push( {"name":name,"uuid":uuid} )
+                                this.groupNames.push( {"name":name,"uuid":uuid,"isshow":true} )
                                 this.video_names.push( res.data.data[item] )
                             }
                             for( let i = 0; i < this.video_names.length; i++ ){
@@ -546,18 +556,32 @@
                     this.change_mynav_active()
                 },
                 'choose_groupName':function(newVal,old){
-                    for( let i = 1; i < this.groupNames.length; i++ ){
+                    for( let i = 0; i < this.groupNames.length; i++ ){
                         if( this.groupNames[i].name === newVal ){
-                            this.change_show_data(i-1)
+                            if( this.groupNames[i].name === "设备组选择" ){
+                                this.change_show_data(i,"group")
+                            }else{
+                                this.change_show_data(i,"video")
+                            }
                         }
                     }
                 },
                 'cameraName':function(newVal,old){
-                    for( let i = 0; i < this.info_show_data.length; i++ ){
-                        if( this.info_show_data[i].name.indexOf( newVal ) === -1 ){
-                            this.info_show_data[i].isshow = false
-                        }else{
-                            this.info_show_data[i].isshow = true
+                    if( this.choose_groupName === "设备组选择" ){
+                        for( let i = 1; i < this.groupNames.length; i++ ){
+                            if( this.groupNames[i].name.indexOf( newVal ) === -1 ){
+                                this.groupNames[i].isshow = false
+                            }else{
+                                this.groupNames[i].isshow = true
+                            }
+                        }
+                    }else{
+                        for( let i = 0; i < this.info_show_data.length; i++ ){
+                            if( this.info_show_data[i].name.indexOf( newVal ) === -1 ){
+                                this.info_show_data[i].isshow = false
+                            }else{
+                                this.info_show_data[i].isshow = true
+                            }
                         }
                     }
                 },
