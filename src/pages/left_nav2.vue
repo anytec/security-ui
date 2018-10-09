@@ -40,14 +40,14 @@
 				num = parseInt(num)
 				if( !this.groupNames[num].ischecked ){
 					this.groupNames[num].ischecked = 1
-					this.$store.state.facepath_search_data.cameraGroupIds.push(this.groupNames[num].id)
+					// this.$store.state.facepath_search_data.cameraGroupIds.push(this.groupNames[num].id)
 					this.checkall(num)
 				}else{
 					this.groupNames[num].ischecked = 0
-					let index = this.$store.state.facepath_search_data.cameraGroupIds.indexOf(this.groupNames[num].id)
-					if( index != -1){
-						this.$store.state.facepath_search_data.cameraGroupIds.splice(index,1)
-					}
+					// let index = this.$store.state.facepath_search_data.cameraGroupIds.indexOf(this.groupNames[num].id)
+					// if( index != -1){
+					// 	this.$store.state.facepath_search_data.cameraGroupIds.splice(index,1)
+					// }
 					// this.$store.state.facepath_search_data.cameraGroupIds.push()
 					this.notcheckall(num)
 				}
@@ -58,17 +58,26 @@
 				num2 = parseInt(num2)
 				if( !this.video_names[num2][num].ischecked ){
 					this.video_names[num2][num].ischecked = 1
-					this.$store.state.facepath_search_data.cameraIds.push(this.video_names[num2][num].id)
+					// this.$store.state.facepath_search_data.cameraIds.push(this.video_names[num2][num].id)
 					this.ischeckedall(num2)
 				}else{
 					this.video_names[num2][num].ischecked = 0
-					let index = this.$store.state.facepath_search_data.cameraIds.indexOf(this.video_names[num2][num].id)
-					if( index != -1){
-						this.$store.state.facepath_search_data.cameraIds.splice(index,1)
-					}
+					// let index = this.$store.state.facepath_search_data.cameraIds.indexOf(this.video_names[num2][num].id)
+					// if( index != -1){
+					// 	this.$store.state.facepath_search_data.cameraIds.splice(index,1)
+					// }
 
 					this.groupNames[num2].ischecked = 0
 					this.groupNames.splice(num2,1,this.groupNames[num2]);
+					// for( let i = 0; i < this.$store.state.facepath_search_data.cameraGroupIds.length; i++ ){
+					//     // console.log(this.$store.state.facepath_search_data.cameraGroupIds[i])
+                    //     // console.log(this.groupNames[num2].id)
+					//     if( this.$store.state.facepath_search_data.cameraGroupIds[i] === this.groupNames[num2].id ){
+                    //         this.$store.state.facepath_search_data.cameraGroupIds.splice(i,1)
+                    //         // break
+                    //     }
+					//     // console.log(this.$store.state.facepath_search_data.cameraGroupIds)
+                    // }
 				}
 				this.video_names[num2].splice(num,1,this.video_names[num2][num])
 				// console.log(this.$store.state.facepath_search_data.cameraIds)
@@ -97,6 +106,7 @@
 					this.groupNames.splice(num2,1,this.groupNames[num2]);
 				}
 			},
+
 
 			// 请求数据
 			// mes_handling:function(status, msg){
@@ -186,6 +196,32 @@
 		mounted:function(){
 			this.get_init_data()	
 		},
+        watch:{
+            'groupNames':function (newval,old) {
+                this.$store.state.facepath_search_data.cameraGroupIds = []
+                for( let i = 0; i < newval.length; i ++ ){
+                    if( newval[i].ischecked ){
+                        this.$store.state.facepath_search_data.cameraGroupIds.push(newval[i].id)
+                    }
+                }
+                // console.log(this.$store.state.facepath_search_data.cameraGroupIds)
+            },
+            'video_names':function (newval,old) {
+                this.$store.state.facepath_search_data.cameraIds = []
+                for( let i = 0; i < newval.length; i++ ){
+                    if( this.groupNames[i].ischecked ){
+                        continue
+                    }else{
+                        for( let j = 0; j < newval[i].length; j++ ){
+                            if( newval[i][j].ischecked ){
+                                this.$store.state.facepath_search_data.cameraIds.push(newval[i][j].id)
+                            }
+                        }
+                    }
+                }
+                // console.log(this.$store.state.facepath_search_data.cameraIds)
+            },
+        },
 	};
 </script>
 

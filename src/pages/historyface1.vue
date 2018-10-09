@@ -634,6 +634,11 @@
 					this.click_to_search(this.search_data)
 				}
 			},
+            'search_data.personName':function(newval,old){
+                if( newval === "" ){
+                    this.click_to_search(this.search_data)
+                }
+            },
 
 			// 滚动条
 			'tabledata':function(){

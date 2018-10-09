@@ -82,7 +82,7 @@
                 for( let item in search_data ){
                     params.append(item,search_data[item])
                 }
-
+                this.$store.state.dataview1_flag = true
                 this.$ajax.post("/data/peopleCounting",params).then((res) => {
                     if( res.data.status === 0){
                         this.clear_show_data()
@@ -124,10 +124,13 @@
                         }
                         this.update_flag = !this.update_flag
                         this.$store.state.dataview_data.update_flag1 = !this.$store.state.dataview_data.update_flag1
+                        this.$store.state.dataview1_flag = false
                     }else{
+                        this.$store.state.dataview1_flag = false
                         this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
+                    this.$store.state.dataview1_flag = false
                     console.log(error)
                     this.error_info('网络连接出错')
                     return ;

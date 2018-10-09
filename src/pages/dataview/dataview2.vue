@@ -37,8 +37,8 @@
                 items: [],
 
                 // 清除图表数据可视化
-                emotions_data: null,
-                neutral: null,
+                emotions_data: [],
+                neutral: [],
                 gender_age_data:{
                     ageGroupList: [],
                     maleNum: [],
@@ -97,6 +97,7 @@
                         params.append( "endTime", this.dateValue[1]-1)
                     }
                 }
+                this.$store.state.dataview2_flag = true
                 this.$ajax.post("/data/peopleAnalysis",params).then((res) => {
                     if( res.data.status === 0){
                         this.clear_show_data()
@@ -131,10 +132,13 @@
                         // console.log(this.gender_age_data)
 
                         this.$store.state.dataview_data.update_flag2 = !this.$store.state.dataview_data.update_flag2
+                        this.$store.state.dataview2_flag = false
                     }else{
+                        this.$store.state.dataview2_flag = false
                         this.mes_handling(res.data.status,res.data.msg)
                     }
                 }).catch((error) => {
+                    this.$store.state.dataview2_flag = false
                     console.log(error)
                     this.error_info('网络连接出错')
                     return ;

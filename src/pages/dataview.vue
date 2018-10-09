@@ -123,7 +123,8 @@
                 </div>
             </div>
             <div class="se_cancel" @click="is_show_info = false" title="关闭"></div>
-            <div class="se_confirm" @click="confirm_search" title="确认"></div>
+            <div class="se_confirm" @click="confirm_search" title="确认" v-if="confirm_button_flag"></div>
+            <div class="se_confirm" title="请求中..." style="cursor: not-allowed;" v-else></div>
         </div>
     </div>
 </template>
@@ -162,6 +163,7 @@
                     info_show_data: [],
                     info_search_data: [],
                     info_search_data_group: [],
+                    confirm_button_flag: true,
 
                     // 预警栏
                     show_date : null,
@@ -594,6 +596,20 @@
                 '$store.state.dataview_data.update_flag3':function(newVal,old){
                     this.clear_search_data()
                 },
+                '$store.state.dataview1_flag':function (newval,old) {
+                    if( newval ){
+                        this.confirm_button_flag = false
+                    }else{
+                        this.confirm_button_flag = true
+                    }
+                },
+                '$store.state.dataview2_flag':function (newval,old) {
+                    if( newval ){
+                        this.confirm_button_flag = false
+                    }else{
+                        this.confirm_button_flag = true
+                    }
+                },
             },
             beforeRouteLeave(to, from, next){
                 clearInterval(this.timer_num)
@@ -602,7 +618,95 @@
     }
 </script>
 
+<style>
+    .main_ch{
+        width: 100%;
+        height: calc( 100% - 60px );
+        background-color: rgba(0,0,0,0.4);
+    }
+    .main_text{
+        width: 100%;
+        height: 100%;
+        font-size: 25px;
+        color: #03BD71;
+        text-align:center;
+    }
+    .main_loading {
+        width: 100%;
+        height: 100%;
+    }
+    .main_table{
+        display: table;
+        width: 100%;
+        height: 100%;
+    }
+    .main_cell{
+        display: table-cell;
+        vertical-align: middle;
+        width: 100%;
+        height: 100%;
+    }
+    .spinner {
+        margin: auto;
+        width: 50px;
+        height: 60px;
+        text-align: center;
+        font-size: 10px;
+    }
 
+    .spinner>div {
+        background-color: #03BD71;
+        height: 100%;
+        width: 6px;
+        display: inline-block;
+        -webkit-animation: stretchdelay 1.2s infinite ease-in-out;
+        animation: stretchdelay 1.2s infinite ease-in-out;
+    }
+
+    .spinner .rect2 {
+        -webkit-animation-delay: -1.1s;
+        animation-delay: -1.1s;
+    }
+
+    .spinner .rect3 {
+        -webkit-animation-delay: -1.0s;
+        animation-delay: -1.0s;
+    }
+
+    .spinner .rect4 {
+        -webkit-animation-delay: -0.9s;
+        animation-delay: -0.9s;
+    }
+
+    .spinner .rect5 {
+        -webkit-animation-delay: -0.8s;
+        animation-delay: -0.8s;
+    }
+
+    @-webkit-keyframes stretchdelay {
+        0%,
+        40%,
+        100% {
+            -webkit-transform: scaleY(0.4)
+        }
+        20% {
+            -webkit-transform: scaleY(1.0)
+        }
+    }
+
+    @keyframes stretchdelay {
+        0%,
+        40%,
+        100% {
+            transform: scaleY(0.4);
+            -webkit-transform: scaleY(0.4);
+        }
+        20% {
+            transform: scaleY(1.0);
+            -webkit-transform: scaleY(1.0);
+        }
+    }
+</style>
 <style scoped>
     @import "../css/historyface.css";
     

@@ -577,6 +577,8 @@
                             this.rolling_picture(temp_data)
                         }
                     }
+                },(error) => {
+                    console.log(error)
                 });
                 close_cam.id = sdkId
                 this.subscribers.push(close_cam)
@@ -714,6 +716,14 @@
                 let first_time = true
                 this.stompClient = Stomp.over(socket);
                 this.stompClient.connect({}, (frame) =>{
+                    for( let i = 0; i < this.video_srcs.length; i++ ){
+                        if( this.video_srcs[i].playAddress ){
+                            setTimeout(() => {
+                                this.repaly_video(i+1)
+                            },1000);
+                        }
+                    }
+
                     this.stompClient.subscribe('/topic/camera/warning', (data) => {
                         let jsonData = JSON.parse(data.body)
                         if( jsonData.status === 0 && jsonData.msg === "warning"){
@@ -732,14 +742,19 @@
                         }else if( jsonData.status === 0 && jsonData.msg === "snapshotOfDay"){
                             this.catch_oneday = jsonData.data
                         }
+                    }, (error) => {
+                        console.log("连接出错")
                     });
                     if( first_time ){
                         first_time = false
                         this.get_init_data1()
                     }
                 },(message) => {
-                    console.log(message);
-                    setTimeout("initSocket()", 3000);
+                    this.error_info("连接已断开，正在尝试重新连接，请检查网络是否畅通")
+                    // console.log(message);
+                    setTimeout(() => {
+                        this.initSocket()
+                    },3000);
                 });
             },
             // 消息窗口

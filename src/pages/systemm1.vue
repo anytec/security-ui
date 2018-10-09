@@ -285,7 +285,7 @@
 				let reg = /^.{0,20}$/
 
 				if( model === "account" ){
-					reg = /^[0-9a-zA-Z]{6,20}$/
+					reg = /^[0-9a-zA-Z]{4,20}$/
 				}else if( model === "upass"){
 					reg = /^.{4,20}$/
 				}
@@ -298,7 +298,7 @@
 				if( model === "uname" ){
 					this.shape_text = ["不超过20个字符"]
 				}else if( model === "account" ){
-					this.shape_text = ["长度：6~20个字符","可输入数字、字母"]
+					this.shape_text = ["长度：4~20个字符","可输入数字、字母"]
 				}else if( model === "upass" ){
 					this.shape_text = ["长度：4~20个字符"]
 				}else{

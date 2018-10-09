@@ -16,6 +16,9 @@ const store = new Vuex.Store({
         is_add_data: false,
         add_data: null,
 
+        dataview1_flag:false,
+        dataview2_flag:false,
+
         // facepath: [[114.05791,22.543526],[114.059648,22.543665],[114.063725,22.541297]],
         facepath_search_data:{ 
             cameraGroupIds: [],
