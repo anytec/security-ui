@@ -31,7 +31,7 @@
 							<option selected="selected">选择组/不限</option>
 							<option v-for="item in init_data.video_groups">{{ item.name }}</option>
 						</select>
-						<input class="center_input id_card input_right" type="text" v-model="search_data.name" placeholder="通过摄像机名称搜索"/>
+						<input class="center_input id_card input_right" type="text" v-model="search_data.name" placeholder="设备名称(最长20个字符)" maxlength="20"/>
 					</div>
 				</div>
 				<div class="table_box h2_table_box">

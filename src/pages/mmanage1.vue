@@ -17,7 +17,7 @@
 					<div class="export_btn" @click="click_to_delete">删除</div>
 					<div class="right_btn h2_right_btn">
 						<div class="search h2_search" @click="click_to_search(search_data)">搜索</div>
-						<input class="center_input bottom_name" v-model="search_data.groupName" type="text" placeholder="底库名称搜索" />
+						<input class="center_input bottom_name" v-model="search_data.groupName" type="text" placeholder="底库名称(最长20个字符)" maxlength="20"/>
 					</div>
 				</div>
 				<div class="table_box h2_table_box">

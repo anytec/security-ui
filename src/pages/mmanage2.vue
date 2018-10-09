@@ -21,7 +21,7 @@
 							<option>男</option>
 							<option>女</option>
 						</select>
-						<input class="center_input id_card input_right" type="text" v-model="search_data.idNumber" placeholder="标识编码"/>
+						<input class="center_input id_card input_right" type="text" v-model="search_data.idNumber" placeholder="标识编码(最长20个字符)" maxlength="20"/>
 					</div>
 				</div>
 				<div class="table_box h2_table_box">
@@ -614,7 +614,7 @@
                 	if( this.init_data.galleries_id[this.init_data.galleries.indexOf(search_data.groupName)] ){
                 		params.append( "groupId", this.init_data.galleries_id[this.init_data.galleries.indexOf(search_data.groupName)]) // 搜索底库名
                 	}
-                	if( search_data.gender != "性别性别/不限" && search_data.gender ){
+                	if( search_data.gender != "性别/不限" && search_data.gender ){
                 		params.append( "gender", search_data.gender )   // 搜索性别
                 	}
                 	if( search_data.idNumber ){

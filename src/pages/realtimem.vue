@@ -709,16 +709,19 @@
             // sockJS、Stomp
             // 请求初始化
             initSocket:function(){
-                // let socket = new SockJS('http://192.168.10.62:9999/gee');
+                let socket = new SockJS('http://192.168.10.62:9999/gee');
                 // let socket = new SockJS('http://192.168.10.73:9990/gee');
                 // let socket = new SockJS('http://192.168.10.132:9999/gee');
-                let socket = new SockJS('gee');
+                // let socket = new SockJS('gee');
                 let first_time = true
                 this.stompClient = Stomp.over(socket);
                 this.stompClient.connect({}, (frame) =>{
                     for( let i = 0; i < this.video_srcs.length; i++ ){
                         if( this.video_srcs[i].playAddress ){
+                            this.choose_this_url(this.video_srcs[i].sdkId,this.video_srcs[i].name)
                             setTimeout(() => {
+                                // this.repaly_video(i+1)
+                                // this.choose_this_url(this.video_srcs[i].sdkId,this.video_srcs[i].name)
                                 this.repaly_video(i+1)
                             },1000);
                         }
@@ -751,7 +754,7 @@
                     }
                 },(message) => {
                     this.error_info("连接已断开，正在尝试重新连接，请检查网络是否畅通")
-                    // console.log(message);
+                    console.log(message);
                     setTimeout(() => {
                         this.initSocket()
                     },3000);

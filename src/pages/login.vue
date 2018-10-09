@@ -29,7 +29,7 @@
                             </div>
                             <div class="right_input">
                                 <!-- <input v-model="user.name" type="text" placeholder="账号" @focus="my_focus('uname')"/> -->
-                                <input v-model="user.name" type="text" placeholder="账号"/>
+                                <input ref="uname" v-model="user.name" type="text" placeholder="账号"/>
                             </div>
                         </div>
                         <div class="uname_title">{{ warning_uname_msg }}</div>
@@ -108,7 +108,7 @@
                 this.post_to_login()
             },
             change_view:function(){
-                if( this.imgurl == require("../assets/login/eyes.png") ){
+                if( this.imgurl === require("../assets/login/eyes.png") ){
                     this.imgurl = require("../assets/login/eyes2.png")
                     this.pass_type = "text"
                 }else{
@@ -119,7 +119,11 @@
             post_to_login:function(){
                 var params = new URLSearchParams()
                 params.append("account",this.user.name)
-                params.append("upass",this.$md5(this.user.password).toUpperCase())
+                if( this.user.password.length === 32 ){
+                    params.append("upass",this.user.password)
+                }else{
+                    params.append("upass",this.$md5(this.user.password).toUpperCase())
+                }
                 this.$ajax.post("/user/login",params).then((res) => {
                     if( res.data.status === 0){
                         sessionStorage.setItem("username", res.data.data.uname)
@@ -134,8 +138,10 @@
                             duration: 2000,
                             offset: 40,
                         })
-                        if( this.isrem_password ){
+                        if( this.isrem_password && this.user.password.length != 32){
                             this.setCookie( this.user.name,this.user.password,7 )
+                        }else if( this.user.password.length === 32 ){
+                            ;
                         }else{
                             this.clearCookie()
                         }
@@ -174,7 +180,7 @@
                 exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * exdays); //保存的天数
                 //字符串拼接cookie
                 window.document.cookie = "uname" + "=" + c_name + ";path=/;expires=" + exdate.toGMTString();
-                window.document.cookie = "upass" + "=" + c_pwd + ";path=/;expires=" + exdate.toGMTString();
+                window.document.cookie = "upass" + "=" + this.$md5(c_pwd).toUpperCase() + ";path=/;expires=" + exdate.toGMTString();
             },
             //读取cookie
             getCookie: function() {
@@ -238,6 +244,8 @@
             },
         },
         mounted(){
+
+            this.$refs.uname.focus()
             if( this.$store.state.user.username === "" ){
                 this.user = {
                     name: "",
