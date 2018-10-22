@@ -29,7 +29,13 @@
 		},
 		watch:{
 			$route(to,from){
-				this.transitionName = 'slide-left';
+                this.transitionName = 'slide-left';
+			    // console.log(to)
+			    // if( to.path === "/realtimem" || from.path === "/realtimem"){
+                //     this.transitionName = "none";
+                // }else{
+                //     this.transitionName = 'slide-left';
+                // }
 			}
 		}
 	}
@@ -81,4 +87,11 @@
 		/*-webkit-transform: translate3d(-100%,0, 0);*/
 		transform: translate3d(-100%, 0, 0);
 	}
+    .none-enter,
+    .none-enter-active,
+    .none-leave,
+    .none-leave-active{
+        transition: all 0ms ease;
+        position: absolute;
+    }
 </style>

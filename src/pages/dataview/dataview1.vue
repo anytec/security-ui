@@ -76,6 +76,66 @@
             //         }
             //     }
             // },
+            // post_to_change_page:function( search_data ){
+            //     var params = new URLSearchParams()
+            //
+            //     for( let item in search_data ){
+            //         params.append(item,search_data[item])
+            //     }
+            //     this.$store.state.dataview1_flag = true
+            //     this.$ajax.post("/data/peopleCounting",params).then((res) => {
+            //         if( res.data.status === 0){
+            //             this.clear_show_data()
+            //             let all_show_data = {}
+            //             for( let item_day in res.data.data ){
+            //                 this.day_time.push(item_day)
+            //                 let temp_data = []
+            //                 for( let camera_num = 0; camera_num < res.data.data[item_day].length; camera_num++){
+            //                     if( item_day === this.day_time[0] ){
+            //                         for( let item_camera in res.data.data[item_day][camera_num]){
+            //                             this.name.push( item_camera )
+            //                         }
+            //                     }
+            //                     for( let item_camera in res.data.data[item_day][camera_num] ){
+            //                         temp_data.push(res.data.data[item_day][camera_num][item_camera])
+            //                     }
+            //
+            //                 }
+            //                 all_show_data[item_day] = temp_data
+            //             }
+            //             // console.log(all_show_data)
+            //
+            //             // 排序
+            //             this.day_time.sort()
+            //             if( this.showData_day.length < this.name.length ){
+            //                 for( let num = 0; num < this.name.length; num++ ){
+            //                     this.showData_day.push([])
+            //                 }
+            //                 for( let num = 0; num <  this.day_time.length; num++ ){
+            //                     this.showData_hour.push([])
+            //                 }
+            //             }
+            //             for( let i = 0; i < this.day_time.length; i++ ){
+            //                 let temp_data = all_show_data[this.day_time[i]]
+            //                 for( let j = 0; j < this.name.length; j++ ){
+            //                     this.showData_day[j].push(temp_data[j].pop())
+            //                     this.showData_hour[i].push(temp_data[j])
+            //                 }
+            //             }
+            //             this.update_flag = !this.update_flag
+            //             this.$store.state.dataview_data.update_flag1 = !this.$store.state.dataview_data.update_flag1
+            //             this.$store.state.dataview1_flag = false
+            //         }else{
+            //             this.$store.state.dataview1_flag = false
+            //             this.mes_handling(res.data.status,res.data.msg)
+            //         }
+            //     }).catch((error) => {
+            //         this.$store.state.dataview1_flag = false
+            //         console.log(error)
+            //         this.error_info('网络连接出错')
+            //         return ;
+            //     })
+            // },
             post_to_change_page:function( search_data ){
                 var params = new URLSearchParams()
 
@@ -89,17 +149,25 @@
                         let all_show_data = {}
                         for( let item_day in res.data.data ){
                             this.day_time.push(item_day)
+                            // for( let camera_num = 0; camera_num < res.data.data[item_day].length; camera_num++){
+                            //     if( item_day === this.day_time[0] ){
+                            //         for( let item_camera in res.data.data[item_day][camera_num]){
+                            //             this.name.push( item_camera )
+                            //         }
+                            //     }
+                            //     for( let item_camera in res.data.data[item_day][camera_num] ){
+                            //         temp_data.push(res.data.data[item_day][camera_num][item_camera])
+                            //     }
+                            //
+                            // }
+                            if( item_day === this.day_time[0] ) {
+                                for (let item_camera in res.data.data[item_day]) {
+                                    this.name.push(item_camera)
+                                }
+                            }
                             let temp_data = []
-                            for( let camera_num = 0; camera_num < res.data.data[item_day].length; camera_num++){
-                                if( item_day === this.day_time[0] ){
-                                    for( let item_camera in res.data.data[item_day][camera_num]){
-                                        this.name.push( item_camera )
-                                    }
-                                }
-                                for( let item_camera in res.data.data[item_day][camera_num] ){
-                                    temp_data.push(res.data.data[item_day][camera_num][item_camera])
-                                }
-                                
+                            for( let camera_num = 0; camera_num < this.name.length; camera_num++ ){
+                                temp_data.push(res.data.data[item_day][this.name[camera_num]])
                             }
                             all_show_data[item_day] = temp_data
                         }

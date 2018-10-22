@@ -229,7 +229,7 @@
 
 				init_data: {
 					pageNum: 1,
-					pageSize: 10,
+					pageSize: 20,
 					allnum: 0,
 				},
 				search_name: "",
@@ -262,10 +262,12 @@
 			handleSizeChange:function(val) {
 				this.init_data.pageSize = val
 				this.get_init_data( {keyword:this.save_search_data} )
+                this.$refs.table_f.scrollTop = 0
 			},
 			handleCurrentChange:function(val) {
 				this.init_data.pageNum = val
 				this.get_init_data( {keyword:this.save_search_data} )
+                this.$refs.table_f.scrollTop = 0
 			},
 
 			// // 输入-校验

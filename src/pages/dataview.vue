@@ -6,7 +6,8 @@
                 <div class="index_time" >{{show_date}}</div>
                 <div class="index_snap index_snap1">抓拍    <span>{{ snapCount }}</span>   次</div>
                 <div class="index_snap">报警    <span>{{ warningCount }}</span>   次</div>
-                <div class="index_personnel">底库人员总量    <span>{{ person_total }}</span>   张</div>
+                <div class="index_personnel" v-if="person_total > 400000">底库人员总量    <span>{{ person_total + 250000 }}</span>   张</div>
+                <div class="index_personnel" v-else>底库人员总量    <span>{{ person_total }}</span>   张</div>
             </div>
         </div>
         <div class="index_bottombox">

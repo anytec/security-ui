@@ -196,12 +196,14 @@
 				// 单页面显示数量
 				this.init_data.pageSize = val
 				this.post_to_change_page(this.save_search_data)
+                this.$refs.table_f.scrollTop = 0
 			},
 			handleCurrentChange:function(val) {
 				// 页面切换
 				// console.log(val);
 				this.init_data.pageNum = val
 				this.post_to_change_page(this.save_search_data)
+                this.$refs.table_f.scrollTop = 0
 			},
 
 			// 复选框函数
