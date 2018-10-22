@@ -30,6 +30,7 @@
 								<td class="td td16">底库名称</td>
 								<td class="td td16">人员数量</td>
 								<td class="td td18">标记颜色</td>
+								<td class="td td10">是否报警</td>
 								<td class="td td18">备注</td>
 								<td class="td td10">操作</td>
 							</tr>
@@ -50,15 +51,32 @@
 								</td>
 								<td class="td td16">
 									<div class="table_text">
-										<div class="cell_text">
-											{{item.totalNumber}}
+										<div class="cell_text" v-if=" item.totalNumber > 400000 ">
+											{{item.totalNumber + 250000}}
 										</div>
+                                        <div class="cell_text" v-else>
+                                            {{item.totalNumber}}
+                                        </div>
 									</div>
 								</td>
 								<td class="td td18">
 									<div class="table_text">
 										<div class="cell_text">
 											<div class="tag_color" :style="{'background-color': item.colorLabel}"></div>
+										</div>
+									</div>
+								</td>
+								<td class="td td10">
+									<div class="table_text">
+										<div class="cell_text">
+											<el-switch
+											  v-model="item.warnningPush"
+											  active-color="#13ce66"
+	  										  inactive-color="#626262"
+	  										  @change="isreal_change(item.uuid)"
+	  										  :disabled="item.ischange"
+											  >
+											</el-switch>
 										</div>
 									</div>
 								</td>
@@ -144,10 +162,11 @@
 						<div class="ale_toptext">报警声音</div>
 						<div class="ale_selectbox">
 							<div class="mm1_bottomlist">
-                                <audio v-if="is_request2add && add_data.voiceLabel" :src="'/static/music/'+ add_data.voiceLabel +'.mp3'" autoplay="autoplay" >
+                                <audio v-if="is_request2add && add_data.voiceLabel && add_data.voiceLabel != '无'" :src="'/static/music/'+ add_data.voiceLabel +'.mp3'" autoplay="autoplay" >
                                     您的浏览器不支持 audio 标签。
                                 </audio>
 								<select v-model="add_data.voiceLabel">
+                                    <option>无</option>
 									<option v-for="voice in voiceList">{{ voice }}</option>
 								</select>
 							</div>
@@ -205,10 +224,11 @@
                             <div class="ale_toptext">报警声音</div>
                             <div class="ale_selectbox">
                                 <div class="mm1_bottomlist">
-                                    <audio v-if="is_request2change && change_data.voiceLabel" :src="'/static/music/'+ change_data.voiceLabel +'.mp3'" autoplay="autoplay">
+                                    <audio v-if="is_request2change && change_data.voiceLabel && change_data.voiceLabel != '无'" :src="'/static/music/'+ change_data.voiceLabel +'.mp3'" autoplay="autoplay">
                                         您的浏览器不支持 audio 标签。
                                     </audio>
                                     <select v-model="change_data.voiceLabel">
+                                        <option>无</option>
                                         <option v-for="voice in voiceList">{{ voice }}</option>
                                     </select>
                                 </div>
@@ -264,7 +284,7 @@
 				init_data:{
 					pageNum: 1,
 					pageSize: 10,
-					allnum: 50,
+					allnum: 0,
 				},
 				// 搜索数据
 				search_data:{
@@ -343,6 +363,7 @@
 				// 单页面显示数量
 				this.init_data.pageSize = val
 				this.post_to_change_page(this.save_search_data)
+                this.$refs.table_f.scrollTop = 0
 			},
 			handleCurrentChange:function(val) {
 				this.isallchecked = false
@@ -350,6 +371,7 @@
 				// console.log(val);
 				this.init_data.pageNum = val
 				this.post_to_change_page(this.save_search_data)
+                this.$refs.table_f.scrollTop = 0
 			},
 
 			// 输入-正则化
@@ -378,6 +400,42 @@
 				this.is_show_tip = false
 			},
 
+            // 开关判断
+            isreal_change:function(uuid) {
+                if (this.tabledata[uuid].warnningPush) {
+                    this.$confirm('确定打开该底库报警开关？', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.tabledata[uuid].ischange = true
+                        this.tabledata.splice(uuid,1,this.tabledata[uuid])
+                        if( this.tabledata[uuid].warnningPush ){
+                            this.require_to_change_group1({"id":this.tabledata[uuid].id,"warnningPush":1},uuid)
+                        }else{
+                            this.require_to_change_group1({"id":this.tabledata[uuid].id,"warnningPush":0},uuid)
+                        }
+                    }).catch(() => {
+                        this.tabledata[uuid].warnningPush = false
+                    })
+                } else {
+                    this.$confirm('确定关闭该底库报警开关？', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.tabledata[uuid].ischange = true
+                        this.tabledata.splice(uuid,1,this.tabledata[uuid])
+                        if( this.tabledata[uuid].warnningPush ){
+                            this.require_to_change_group1({"id":this.tabledata[uuid].id,"warnningPush":1},uuid)
+                        }else{
+                            this.require_to_change_group1({"id":this.tabledata[uuid].id,"warnningPush":0},uuid)
+                        }
+                    }).catch(() => {
+                        this.tabledata[uuid].warnningPush = true
+                    })
+                }
+            },
 			// 复选框函数
 			click_to_checkedall: function() {
 				if(!this.isallchecked) {
@@ -434,7 +492,7 @@
 						this.require_to_delete(this.delete_data)
 						this.delete_data = ""
 					}).catch(() => {
-						;
+                        this.delete_data = ""
 					})
 				}else{
 					this.warning_info("请选择删除项")
@@ -456,7 +514,8 @@
 				this.add_data = {
 					name: "",
 					remarks: "",
-					colorLabel: "#ff2f60"
+					colorLabel: "#ff2f60",
+                    voiceLabel: null,
 				}
 				this.change_data = {}
 				this.is_request2add = false
@@ -611,6 +670,12 @@
             			for( let i = 0; i < this.tabledata.length; i++){
 		                	this.tabledata[i].uuid = i
 		                	this.tabledata[i].ischecked = false
+
+                            if(this.tabledata[i].warnningPush){
+                                this.tabledata[i].warnningPush = true
+                            }else{
+                                this.tabledata[i].warnningPush = false
+                            }
 		                }
                     }else{
                         this.mes_handling(res.data.status,res.data.msg)
@@ -637,6 +702,12 @@
             			for( let i = 0; i < this.tabledata.length; i++){
 		                	this.tabledata[i].uuid = i
 		                	this.tabledata[i].ischecked = false
+
+                            if(this.tabledata[i].warnningPush){
+                                this.tabledata[i].warnningPush = true
+                            }else{
+                                this.tabledata[i].warnningPush = false
+                            }
 		                }
                     }else{
                         this.mes_handling(res.data.status,res.data.msg)
@@ -712,6 +783,34 @@
                     return ;
                 })
 			},
+            require_to_change_group1:function( change_data, uuid ){
+                var params = new URLSearchParams()
+
+                for( let item in change_data ){
+                    params.append(item, change_data[item])
+                }
+
+                this.$ajax.post("groupPerson/update",params).then((res) => {
+                    if( res.data.status === 0){
+                        this.success_info("更改报警状态成功")
+                    }else{
+                        this.mes_handling(res.data.status,res.data.msg)
+                        this.tabledata[uuid].warnningPush = !this.tabledata[uuid].warnningPush
+                    }
+                    this.is_confirm_show = true
+                    this.tabledata[uuid].ischange = false
+                    this.tabledata.splice(uuid,1,this.tabledata[uuid])
+                }).catch((error) => {
+                    this.tabledata[uuid].warnningPush = !this.tabledata[uuid].warnningPush
+                    this.tabledata[uuid].ischange = false
+                    this.tabledata.splice(uuid,1,this.tabledata[uuid])
+
+                    console.log(error)
+                    this.error_info('网络连接出错')
+                    this.is_confirm_show = true
+                    return ;
+                })
+            },
 			require_to_change_group:function( change_data ){
 				var params = new URLSearchParams()
                 // console.log(change_data)

@@ -93,6 +93,7 @@
                         this.$store.dispatch('logout').then(() => {
 		                    this.$router.replace('/')
 		                })
+                        this.$store.state.logout_flag = true
                     }else if( res.data.status === 1 ){
 	                    this.error_info(res.data.msg)
 	                    return ;

@@ -53,6 +53,9 @@ const store = new Vuex.Store({
         timer_num: null,
 
         login_flag: true,
+
+        // 注销标志
+        logout_flag: false,
     },
     // 修改全局变量必须通过mutations中的方法
     // mutations只能采用同步方法

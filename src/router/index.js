@@ -197,7 +197,7 @@ const  routes=[
 				name: 'mmanage1',
 				component: mmanage1,
 				meta:{
-					title: '布控管理-底库管理',
+					title: '布控管理-底库配置',
 					index: 4,
 					requireAuth: true,
 					keep_alive: false,

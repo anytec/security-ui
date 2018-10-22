@@ -10,6 +10,29 @@
 	width:-moz-calc(100% - 325px); 
 	width:calc(100% - 325px);
 }
+.re_name{
+	float:left;
+	max-width:4em;
+	overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+	height: 100%;
+	margin-right:4px;
+}
+.re_sex{
+	float:left;
+	width:1em;
+	height: 100%;
+	margin-right:4px;
+}
+.re_ku{
+	float:left;
+	max-width:4em;
+	overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+	height: 100%;
+}
 .video_box{
 	height: 708px;
 }
@@ -19,16 +42,27 @@
 	float: left;
 }
 .video_minbox{
-	margin-left: 8px;
-	margin-bottom: 8px;
-	width: 612px;
-	height: 344px;
-	float: left;
+	/*margin-left: 6px;*/
+	/*margin-bottom: 8px;*/
+	/*width: 1235px;*/
+	/*height: 694px;*/
+    width: 100%;
+	height: 100%;
+	/*float: left;*/
 	position: relative;
 	background-color: #e8e8e8;
 	/*overflow: hidden;*/
-	transition: all 0.5s;
-	cursor: pointer;
+	/*transition: all 0.5s;*/
+	/*cursor: pointer;*/
+}
+.translate_box{
+    width: 1235px;
+    height: 694px;
+    position: absolute;
+    left: -2px;
+    transition: all 0.5s;
+    cursor: pointer;
+    z-index: 1;
 }
 .video_minbox1{
 	z-index: 7;
@@ -39,15 +73,17 @@
 	position: absolute;
 	top: 0px;
 	padding: 10px 20px;
+    font-size: 36px;
+    background-color: rgba(0,0,0,0.5);
 }
 .refresh_icon{
-	width: 22px;
-	height: 22px;
+	width: 50px;
+	height: 50px;
 	float: right;
 /*	position: absolute;
 	top: -35px;
 	right: 10px;*/
-	margin-top: 8px;
+	margin-top: 10px;
 	cursor: pointer;
 }
 .refresh_icon img{
@@ -60,12 +96,12 @@
 /*	position: absolute;
 	right: 40px;
 	top: -35px;*/
-	width: 110px;
-	height: 35px;
+	width: 220px;
+	height: 70px;
 	text-align: center;
-	line-height: 28px;
+	line-height: 62px;
 	color: white;
-	font-size: 16px;
+	font-size: 30px;
 	font-family: "微软雅黑";
 	cursor: pointer;
 	z-index: 8;
@@ -188,7 +224,7 @@ to {top: -35;}
 	overflow: hidden;
 }
 .info_alarm{
-	height: calc(100% +161px); 
+	height: calc(100% + 161px);
 	margin-top:-175px;
 }
 .info_minbox{
