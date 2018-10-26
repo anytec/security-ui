@@ -133,7 +133,7 @@
 					startTime: "",
 					endTime: ""
 				},
-				date_value:[(new Date() - 3600 * 1000 * 24 * 1),new Date()-1],
+				date_value:[],
 				save_search_data:{
 
 				},
@@ -196,12 +196,14 @@
 				// 单页面显示数量
 				this.init_data.pageSize = val
 				this.post_to_change_page(this.save_search_data)
+                this.$refs.table_f.scrollTop = 0
 			},
 			handleCurrentChange:function(val) {
 				// 页面切换
 				// console.log(val);
 				this.init_data.pageNum = val
 				this.post_to_change_page(this.save_search_data)
+                this.$refs.table_f.scrollTop = 0
 			},
 
 			// 复选框函数
@@ -365,8 +367,10 @@
                 }
                 if( this.date_value ){
     				// console.log(date_value)
-        			params.append("startTime",this.date_value[0] - 1)
-        			params.append("endTime",this.date_value[1] - 1)
+    				if( this.date_value.length ){
+	        			params.append("startTime",this.date_value[0] - 1)
+	        			params.append("endTime",this.date_value[1] - 1)
+        			}
     			}
 
                 params.append("pageNum",this.init_data.pageNum)

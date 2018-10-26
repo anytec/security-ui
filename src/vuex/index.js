@@ -16,6 +16,9 @@ const store = new Vuex.Store({
         is_add_data: false,
         add_data: null,
 
+        dataview1_flag:false,
+        dataview2_flag:false,
+
         // facepath: [[114.05791,22.543526],[114.059648,22.543665],[114.063725,22.541297]],
         facepath_search_data:{ 
             cameraGroupIds: [],
@@ -28,6 +31,7 @@ const store = new Vuex.Store({
             video_names: null,
             groupNames: null,
         },
+        clear_flag: false, // 实时监控缓存清除标志
 
         facepath_data:{
             photo: "",
@@ -49,6 +53,9 @@ const store = new Vuex.Store({
         timer_num: null,
 
         login_flag: true,
+
+        // 注销标志
+        logout_flag: false,
     },
     // 修改全局变量必须通过mutations中的方法
     // mutations只能采用同步方法

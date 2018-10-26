@@ -6,7 +6,32 @@
                 <option v-for="item in dayTime" class="pie_option">{{item}}</option>
             </select>
 		</div>
-		<div class="main"></div>
+		<!--<div class="main"></div>-->
+        <div class="main" v-if="showData.length || dayTime.length || fname.length"></div>
+        <div class="main_ch" v-else-if="$store.state.dataview1_flag">
+            <div class="main_loading">
+                <div class="main_table">
+                    <div class="main_cell">
+                        <div class="spinner">
+                            <div class="rect1"></div>
+                            <div class="rect2"></div>
+                            <div class="rect3"></div>
+                            <div class="rect4"></div>
+                            <div class="rect5"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="main_ch" v-else>
+            <div class="main_text">
+                <div class="main_table">
+                    <div class="main_cell">
+                        -- 暂无数据 --
+                    </div>
+                </div>
+            </div>
+        </div>
 	</div>
 </template>
 
@@ -211,45 +236,72 @@
 		},
 		watch:{
 			'choose_day':function(newval,old){
-				let index = this.dayTime.indexOf(newval)
-				let data = [], total = 0
-				// console.log(this.showData.length)
-				for( let i = 0; i < this.showData.length; i++){
-					data.push(
-						{
-							value : this.showData[i][index],
-							name : this.fname[i]
-						}
-					)
-					total = total + Number(data[i].value)
-				}
-				this.myChart = echarts.init(document.querySelector('.pie1 .main'))
-				this.line_echart_init_test(total,data)
-				this.my_init()
+			    let index = this.dayTime.indexOf(newval)
+                if( index != -1 ) {
+                    this.$nextTick(function () {
 
-				this.$store.state.dataview_data.choose_day = newval
+                        let data = [], total = 0
+                        // console.log(this.showData.length)
+                        for (let i = 0; i < this.showData.length; i++) {
+                            data.push(
+                                {
+                                    value: this.showData[i][index],
+                                    name: this.fname[i]
+                                }
+                            )
+                            total = total + Number(data[i].value)
+                        }
+                        // this.myChart = echarts.init(document.querySelector('.pie1 .main'))
+                        this.line_echart_init_test(total, data)
+                        this.my_init()
+
+                        this.$store.state.dataview_data.choose_day = newval
+                    })
+                }
 			},
 			'$store.state.dataview_data.choose_day':function(newval,old){
 				this.choose_day = newval
 			},
-			'flag':function(newval,old){
-				this.choose_day = this.dayTime[this.dayTime.length-1]
+			// 'flag':function(newval,old){
+            // 	this.choose_day = this.dayTime[this.dayTime.length-1]
+            //
+            // 	let index = this.dayTime.indexOf(this.choose_day)
+            // 	let data = [], total = 0
+            // 	// console.log(this.showData.length)
+            // 	for( let i = 0; i < this.showData.length; i++){
+            // 		data.push(
+            // 			{
+            // 				value : this.showData[i][index],
+            // 				name : this.fname[i]
+            // 			}
+            // 		)
+            // 		total = total + Number(data[i].value)
+            // 	}
+            // 	this.myChart = echarts.init(document.querySelector('.pie1 .main'))
+            // 	this.line_echart_init_test(total,data)
+            // }
+            'flag':function(newval,old){
+            	this.choose_day = this.dayTime[this.dayTime.length-1]
 
-				let index = this.dayTime.indexOf(this.choose_day)
-				let data = [], total = 0
-				// console.log(this.showData.length)
-				for( let i = 0; i < this.showData.length; i++){
-					data.push(
-						{
-							value : this.showData[i][index],
-							name : this.fname[i]
-						}
-					)
-					total = total + Number(data[i].value)
-				}
-				this.myChart = echarts.init(document.querySelector('.pie1 .main'))
-				this.line_echart_init_test(total,data)
-			}
+            	let index = this.dayTime.indexOf(this.choose_day)
+                if( index != -1 ){
+                    this.$nextTick(function () {
+                        let data = [], total = 0
+                        // console.log(this.showData.length)
+                        for( let i = 0; i < this.showData.length; i++){
+                            data.push(
+                                {
+                                    value : this.showData[i][index],
+                                    name : this.fname[i]
+                                }
+                            )
+                            total = total + Number(data[i].value)
+                        }
+                        this.myChart = echarts.init(document.querySelector('.pie1 .main'))
+                        this.line_echart_init_test(total,data)
+                    })
+                }
+            }
 		},
 	}
 	

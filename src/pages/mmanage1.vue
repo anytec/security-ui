@@ -4,6 +4,11 @@
 		<div class="list_box">
 			<div class="mask_box">
 				<div class="top_title">
+					<!-- <div>
+						<audio src="/static/music/test1.mp3" autoplay="autoplay">
+						您的浏览器不支持 audio 标签。
+						</audio>
+					</div> -->
 					<div class="title_lefttext">底库配置</div>
 					<div class="title_righttext">结果{{init_data.allnum}}个</div>
 				</div>
@@ -12,7 +17,7 @@
 					<div class="export_btn" @click="click_to_delete">删除</div>
 					<div class="right_btn h2_right_btn">
 						<div class="search h2_search" @click="click_to_search(search_data)">搜索</div>
-						<input class="center_input bottom_name" v-model="search_data.groupName" type="text" placeholder="底库名称搜索" />
+						<input class="center_input bottom_name" v-model="search_data.groupName" type="text" placeholder="底库名称(最长20个字符)" maxlength="20"/>
 					</div>
 				</div>
 				<div class="table_box h2_table_box">
@@ -25,6 +30,7 @@
 								<td class="td td16">底库名称</td>
 								<td class="td td16">人员数量</td>
 								<td class="td td18">标记颜色</td>
+								<td class="td td10">是否报警</td>
 								<td class="td td18">备注</td>
 								<td class="td td10">操作</td>
 							</tr>
@@ -45,15 +51,32 @@
 								</td>
 								<td class="td td16">
 									<div class="table_text">
-										<div class="cell_text">
-											{{item.totalNumber}}
+										<div class="cell_text" v-if=" item.totalNumber > 400000 ">
+											{{item.totalNumber + 250000}}
 										</div>
+                                        <div class="cell_text" v-else>
+                                            {{item.totalNumber}}
+                                        </div>
 									</div>
 								</td>
 								<td class="td td18">
 									<div class="table_text">
 										<div class="cell_text">
 											<div class="tag_color" :style="{'background-color': item.colorLabel}"></div>
+										</div>
+									</div>
+								</td>
+								<td class="td td10">
+									<div class="table_text">
+										<div class="cell_text">
+											<el-switch
+											  v-model="item.warnningPush"
+											  active-color="#13ce66"
+	  										  inactive-color="#626262"
+	  										  @change="isreal_change(item.uuid)"
+	  										  :disabled="item.ischange"
+											  >
+											</el-switch>
 										</div>
 									</div>
 								</td>
@@ -89,7 +112,7 @@
 				<div class="bounced_top">
 					<div class="bounced_title">新建底库</div>
 				</div>
-				<div class="mm1_addbox1">
+				<!--<div class="mm1_addbox1">
 					<div class="addbox1_text">标记色设置</div>
 					<input class="mm1_inputname" 
 						type="text" 
@@ -107,12 +130,65 @@
 							</el-color-picker>
 						</div>
 					</div>
+					<div class="mm1_bottomlist">
+						<select>
+							<option value="">标准报警</option>
+							<option value="">汽笛</option>
+							<option value="">歇斯底里</option>
+							<option value="">喇叭</option>
+							<option value="">唢呐</option>
+						</select>
+					</div>
 					<div class="right_btndiv">
 						<div class="mmbtn_box mm1_btn" @click="request_add_persongroup" v-show="is_confirm_show">新建底库</div>
 						<div class="mmbtn_box mm1_btn left_mmbox" v-show="!is_confirm_show">新建底库</div>
 						<div class="mmbtn_box left_mmbox mm1_btn" @click="close_add_persongroup">暂不添加</div>
 					</div>
+				</div>-->
+				<!--20180928修改 start-->
+				<div class="mm1_alertbox">
+					<div class="alert_leftbox">
+						<div class="ale_toptext">标记颜色</div>
+						<div class="ale_colorbox">
+							<div class="ale_color">
+								<el-color-picker 
+									v-model="add_data.colorLabel"
+									:predefine="predefineColors">
+								</el-color-picker>
+							</div>
+						</div>
+					</div>
+					<div class="alert_middlebox">
+						<div class="ale_toptext">报警声音</div>
+						<div class="ale_selectbox">
+							<div class="mm1_bottomlist">
+                                <audio v-if="is_request2add && add_data.voiceLabel && add_data.voiceLabel != '无'" :src="'/static/music/'+ add_data.voiceLabel +'.mp3'" autoplay="autoplay" >
+                                    您的浏览器不支持 audio 标签。
+                                </audio>
+								<select v-model="add_data.voiceLabel">
+                                    <option>无</option>
+									<option v-for="voice in voiceList">{{ voice }}</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="alert_rightbox">
+						<div class="ale_toptext">
+							<input class="mm1_inputname" 
+							type="text" 
+							v-model="add_data.name"
+							@focus="focus_to_show(-127,429,'name')"
+							@click.stop/>
+							<span>底库名称：</span>
+						</div>
+						<div class="ale_selectbox">
+							<div class="mmbtn_box mm1_btn ale_btn" @click="request_add_persongroup" v-show="is_confirm_show">新建底库</div>
+							<div class="mmbtn_box mm1_btn left_mmbox ale_btn" v-show="!is_confirm_show">新建底库</div>
+							<div class="mmbtn_box left_mmbox mm1_btn ale_btn" @click="close_add_persongroup">暂不添加</div>
+						</div>
+					</div>
 				</div>
+				<!--20180928修改 end-->
 				<div class="mmbottom_input">
 					<input type="text" 
 						placeholder="附加备注信息" 
@@ -132,38 +208,52 @@
 					<div class="bounced_top">
 						<div class="bounced_title">编辑底库信息</div>
 					</div>
-					<div class="mm1_addbox1">
-						<div class="addbox1_text">标记色设置</div>
-						<!-- <input class="mm1_inputname" type="text" v-model="change_data.name"/> -->
-						<div class="shape_input">
-							<input class="mm1_inputname" 
-								type="text" 
-								v-model="change_data.name" 
-								@focus="focus_to_show(-127,429)"
-								@click.stop 
-								/>
-						</div>
-						<span>底库名称：</span>
-					</div>
-					<div class="mm1_addbox2">
-						<div class="left_colordiv">
-							<div class="color_box1">
-								<el-color-picker 
-									v-model="change_data.colorLabel"
-									:predefine="predefineColors">
-								</el-color-picker>
-							</div>
-						</div>
-						<div class="right_btndiv">
-							<div class="mmbtn_box mm1_btn" @click="request_change_persongroup" v-show="is_confirm_show">确认修改</div>
-							<div class="mmbtn_box mm1_btn left_mmbox" v-show="!is_confirm_show">确认修改</div>
-							<div class="mmbtn_box left_mmbox mm1_btn" @click="close_change_persongroup">暂不修改</div>
-						</div>
-					</div>
+                    <div class="mm1_alertbox">
+                        <div class="alert_leftbox">
+                            <div class="ale_toptext">标记颜色</div>
+                            <div class="ale_colorbox">
+                                <div class="ale_color">
+                                    <el-color-picker
+                                        v-model="change_data.colorLabel"
+                                        :predefine="predefineColors">
+                                    </el-color-picker>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert_middlebox">
+                            <div class="ale_toptext">报警声音</div>
+                            <div class="ale_selectbox">
+                                <div class="mm1_bottomlist">
+                                    <audio v-if="is_request2change && change_data.voiceLabel && change_data.voiceLabel != '无'" :src="'/static/music/'+ change_data.voiceLabel +'.mp3'" autoplay="autoplay">
+                                        您的浏览器不支持 audio 标签。
+                                    </audio>
+                                    <select v-model="change_data.voiceLabel">
+                                        <option>无</option>
+                                        <option v-for="voice in voiceList">{{ voice }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert_rightbox">
+                            <div class="ale_toptext">
+                                <input class="mm1_inputname"
+                                       type="text"
+                                       v-model="change_data.name"
+                                       @focus="focus_to_show(-127,429,'name')"
+                                       @click.stop/>
+                                <span>底库名称：</span>
+                            </div>
+                            <div class="ale_selectbox">
+                                <div class="mmbtn_box mm1_btn ale_btn" @click="request_change_persongroup" v-show="is_confirm_show">确认修改</div>
+                                <div class="mmbtn_box mm1_btn left_mmbox ale_btn" v-show="!is_confirm_show">确认修改</div>
+                                <div class="mmbtn_box left_mmbox mm1_btn ale_btn" @click="close_change_persongroup">暂不修改</div>
+                            </div>
+                        </div>
+                    </div>
 					<div class="mmbottom_input">
-						<input type="text" 
-							placeholder="附加备注信息" 
-							v-model="change_data.remarks" 
+						<input type="text"
+							placeholder="附加备注信息"
+							v-model="change_data.remarks"
 							@focus="focus_to_show(-30,18)"
 							@click.stop/>
 					</div>
@@ -194,7 +284,7 @@
 				init_data:{
 					pageNum: 1,
 					pageSize: 10,
-					allnum: 50,
+					allnum: 0,
 				},
 				// 搜索数据
 				search_data:{
@@ -204,10 +294,12 @@
 
 				},
 				delete_data:[],
+                voiceList: [],
 				add_data:{
 					name: "",
 					remarks: "",
 					colorLabel: "#ff2f60",
+                    voiceLabel: null,
 				},
 				change_data:{
 				},
@@ -271,6 +363,7 @@
 				// 单页面显示数量
 				this.init_data.pageSize = val
 				this.post_to_change_page(this.save_search_data)
+                this.$refs.table_f.scrollTop = 0
 			},
 			handleCurrentChange:function(val) {
 				this.isallchecked = false
@@ -278,6 +371,7 @@
 				// console.log(val);
 				this.init_data.pageNum = val
 				this.post_to_change_page(this.save_search_data)
+                this.$refs.table_f.scrollTop = 0
 			},
 
 			// 输入-正则化
@@ -306,6 +400,42 @@
 				this.is_show_tip = false
 			},
 
+            // 开关判断
+            isreal_change:function(uuid) {
+                if (this.tabledata[uuid].warnningPush) {
+                    this.$confirm('确定打开该底库报警开关？', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.tabledata[uuid].ischange = true
+                        this.tabledata.splice(uuid,1,this.tabledata[uuid])
+                        if( this.tabledata[uuid].warnningPush ){
+                            this.require_to_change_group1({"id":this.tabledata[uuid].id,"warnningPush":1},uuid)
+                        }else{
+                            this.require_to_change_group1({"id":this.tabledata[uuid].id,"warnningPush":0},uuid)
+                        }
+                    }).catch(() => {
+                        this.tabledata[uuid].warnningPush = false
+                    })
+                } else {
+                    this.$confirm('确定关闭该底库报警开关？', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.tabledata[uuid].ischange = true
+                        this.tabledata.splice(uuid,1,this.tabledata[uuid])
+                        if( this.tabledata[uuid].warnningPush ){
+                            this.require_to_change_group1({"id":this.tabledata[uuid].id,"warnningPush":1},uuid)
+                        }else{
+                            this.require_to_change_group1({"id":this.tabledata[uuid].id,"warnningPush":0},uuid)
+                        }
+                    }).catch(() => {
+                        this.tabledata[uuid].warnningPush = true
+                    })
+                }
+            },
 			// 复选框函数
 			click_to_checkedall: function() {
 				if(!this.isallchecked) {
@@ -362,7 +492,7 @@
 						this.require_to_delete(this.delete_data)
 						this.delete_data = ""
 					}).catch(() => {
-						;
+                        this.delete_data = ""
 					})
 				}else{
 					this.warning_info("请选择删除项")
@@ -384,7 +514,8 @@
 				this.add_data = {
 					name: "",
 					remarks: "",
-					colorLabel: "#ff2f60"
+					colorLabel: "#ff2f60",
+                    voiceLabel: null,
 				}
 				this.change_data = {}
 				this.is_request2add = false
@@ -393,6 +524,7 @@
 			},
 			click_to_add_info:function(){
 				// 弹窗添加
+                this.add_data.voiceLabel = this.voiceList[0]
 				this.is_request2add = true
 				// this.add_data.colorLabel = "#ff2f60"
 			},
@@ -473,6 +605,7 @@
 				}
 
 				if( this.change_data.colorLabel === this.tabledata[this.change_data.uuid].colorLabel &&
+                    this.change_data.voiceLabel === this.tabledata[this.change_data.uuid].voiceLabel &&
 					this.change_data.name === this.tabledata[this.change_data.uuid].name &&
 					this.change_data.remarks === this.tabledata[this.change_data.uuid].remarks ){
 					this.error_info("信息未更改")
@@ -512,25 +645,21 @@
 			},
 
 			// 请求数据
-			// mes_handling:function(status, msg){
-   //              if( status === 1 ){
-   //                  this.error_info(msg)
-   //                  return ;
-   //              }else if( status === 2 ){
-   //                  this.error_info(msg)
-   //                  return ;
-   //              }else if( status === 10 ){
-   //                  this.error_info('请先登录')
-   //                  return ;
-   //              }else{
-   //                  if( status === 401 && msg === "未登录" ){
-   //                      this.error_info(msg)
-   //                      this.$router.push("/login")
-   //                  }else{
-   //                      this.error_info(status + "  " + msg)
-   //                  }
-   //              }
-   //          },
+            // 请求报警声音
+            init_confidence:function(){
+                var params = new URLSearchParams()
+                this.$ajax.post("/getWarningVoice",params).then((res) => {
+                    if( res.data.status === 0){
+                        this.voiceList = res.data.data
+                    }else{
+                        this.mes_handling(res.data.status,res.data.msg)
+                    }
+                }).catch((error) => {
+                    console.log(error)
+                    this.error_info('网络连接出错')
+                    return ;
+                })
+            },
 			get_init_data:function(){
 				// 请求库名
 				var params = new URLSearchParams()
@@ -541,6 +670,12 @@
             			for( let i = 0; i < this.tabledata.length; i++){
 		                	this.tabledata[i].uuid = i
 		                	this.tabledata[i].ischecked = false
+
+                            if(this.tabledata[i].warnningPush){
+                                this.tabledata[i].warnningPush = true
+                            }else{
+                                this.tabledata[i].warnningPush = false
+                            }
 		                }
                     }else{
                         this.mes_handling(res.data.status,res.data.msg)
@@ -567,6 +702,12 @@
             			for( let i = 0; i < this.tabledata.length; i++){
 		                	this.tabledata[i].uuid = i
 		                	this.tabledata[i].ischecked = false
+
+                            if(this.tabledata[i].warnningPush){
+                                this.tabledata[i].warnningPush = true
+                            }else{
+                                this.tabledata[i].warnningPush = false
+                            }
 		                }
                     }else{
                         this.mes_handling(res.data.status,res.data.msg)
@@ -613,6 +754,14 @@
             		this.warning_info("请选择底库颜色")
             		return ;
             	}
+
+                if( add_data.voiceLabel ){
+                    params.append( "voiceLabel", add_data.voiceLabel )
+                }else{
+                    this.is_confirm_show = true
+                    this.warning_info("请选择报警声音")
+                    return ;
+                }
             	// params.append( "colorLabel", add_data.colorLabel )
             	params.append( "remarks", add_data.remarks)
 
@@ -634,6 +783,34 @@
                     return ;
                 })
 			},
+            require_to_change_group1:function( change_data, uuid ){
+                var params = new URLSearchParams()
+
+                for( let item in change_data ){
+                    params.append(item, change_data[item])
+                }
+
+                this.$ajax.post("groupPerson/update",params).then((res) => {
+                    if( res.data.status === 0){
+                        this.success_info("更改报警状态成功")
+                    }else{
+                        this.mes_handling(res.data.status,res.data.msg)
+                        this.tabledata[uuid].warnningPush = !this.tabledata[uuid].warnningPush
+                    }
+                    this.is_confirm_show = true
+                    this.tabledata[uuid].ischange = false
+                    this.tabledata.splice(uuid,1,this.tabledata[uuid])
+                }).catch((error) => {
+                    this.tabledata[uuid].warnningPush = !this.tabledata[uuid].warnningPush
+                    this.tabledata[uuid].ischange = false
+                    this.tabledata.splice(uuid,1,this.tabledata[uuid])
+
+                    console.log(error)
+                    this.error_info('网络连接出错')
+                    this.is_confirm_show = true
+                    return ;
+                })
+            },
 			require_to_change_group:function( change_data ){
 				var params = new URLSearchParams()
                 // console.log(change_data)
@@ -651,6 +828,13 @@
             		this.is_confirm_show = true
             		return ;
             	}
+                if( change_data.voiceLabel ){
+                    params.append( "voiceLabel", change_data.voiceLabel )
+                }else{
+                    this.warning_info("请选择报警声音")
+                    this.is_confirm_show = true
+                    return ;
+                }
             	params.append("id", change_data.id)
             	params.append( "remarks", change_data.remarks)
 
@@ -702,6 +886,7 @@
 		},
 		mounted:function(){
 			this.get_init_data()
+            this.init_confidence()
 		},
 		watch:{
 			'search_data.groupName':function(newval,old){

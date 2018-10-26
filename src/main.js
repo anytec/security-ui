@@ -6,9 +6,11 @@ import router from './router'
 import './element'
 import './axios'
 import store from './vuex'
+import md5 from 'js-md5'
 // import echarts from 'echarts'
 
 Vue.config.productionTip = false
+Vue.prototype.$md5 = md5
 
 /* eslint-disable no-new */
 new Vue({
@@ -61,6 +63,8 @@ Vue.prototype.mes_handling = function(status, msg){
         if( status === 401 && msg === "未登录" ){
             this.error_info(msg)
             this.$router.push("/login")
+        }else if( status === 500 ){
+            console.log("出现系统错误")
         }else{
             this.error_info(msg)
         }

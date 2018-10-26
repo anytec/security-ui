@@ -122,9 +122,10 @@
                 // 检索数据
                 dataUrl: "",
                 pic_value: "",
+                default_confidence: 70,
                 search_data:{
                     photo: "",
-                    confidence: 75,
+                    confidence: 70,
                     startTime: "",
                     endTime: "",
                     identifyNumber: 10
@@ -595,7 +596,7 @@
                     this.$refs.inputer.value = ""
                     this.search_data = {
                         photo: "",
-                        confidence: 75,
+                        confidence: this.default_confidence,
                         startTime: "",
                         endTime: "",
                         identifyNumber: 10,
@@ -709,6 +710,24 @@
                 // this.$router.push('/historyface1')
                 console.log(res)
             },
+
+            // 请求默认可信度
+            init_confidence:function(){
+                var params = new URLSearchParams()
+                this.$ajax.post("/getIdentifySnapThreshold",params).then((res) => {
+                    if( res.data.status === 0){
+                        this.default_confidence = res.data.data
+                        this.search_data.confidence = this.default_confidence
+                    }else{
+                        this.mes_handling(res.data.status,res.data.msg)
+                    }
+                }).catch((error) => {
+                    console.log(error)
+                    this.error_info('网络连接出错')
+                    return ;
+                })
+            },
+
             skip_to_realtimem:function(sdkId,name){
                 // 实时监控
                 this.$store.state.realtime_data.sdkId = sdkId
@@ -724,6 +743,9 @@
             },
         },
         mounted:function(){
+            // 请求默认可信度
+            this.init_confidence()
+
             // 将window原生事件绑定到vue的事件中
             window['skip_to_realtimem'] = (sdkId,name) => {
                 this.skip_to_realtimem(sdkId,name)

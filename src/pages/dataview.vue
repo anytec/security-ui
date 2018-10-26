@@ -6,7 +6,8 @@
                 <div class="index_time" >{{show_date}}</div>
                 <div class="index_snap index_snap1">抓拍    <span>{{ snapCount }}</span>   次</div>
                 <div class="index_snap">报警    <span>{{ warningCount }}</span>   次</div>
-                <div class="index_personnel">底库人员总量    <span>{{ person_total }}</span>   张</div>
+                <div class="index_personnel" v-if="person_total > 400000">底库人员总量    <span>{{ person_total + 250000 }}</span>   张</div>
+                <div class="index_personnel" v-else>底库人员总量    <span>{{ person_total }}</span>   张</div>
             </div>
         </div>
         <div class="index_bottombox">
@@ -82,14 +83,14 @@
                 </div>
                 <div class="ale_leftlist" v-if="choose_groupName!='设备组选择'">
                     <div class="ale_list" v-for="item in info_show_data" v-show="item.isshow" @click="add_search_data(item,'camera')" >
-                        <div class="ale_text">{{item.name}}</div>
+                        <div class="ale_text" :title="item.name">{{item.name}}</div>
                         <div class="ale_icon"></div>
                     </div>
                 </div>
                 <div class="ale_leftlist" v-if="choose_groupName==='设备组选择'">
                     <div class="ale_list"  
                          v-for="item in groupNames" 
-                         v-if="item.name != '设备组选择'"
+                         v-show="item.isshow"
                          @click="add_search_data(item,'group')"
                     >
                         <div class="ale_text">{{item.name}}</div>
@@ -123,7 +124,8 @@
                 </div>
             </div>
             <div class="se_cancel" @click="is_show_info = false" title="关闭"></div>
-            <div class="se_confirm" @click="confirm_search" title="确认"></div>
+            <div class="se_confirm" @click="confirm_search" title="确认" v-if="confirm_button_flag"></div>
+            <div class="se_confirm" title="请求中..." style="cursor: not-allowed;" v-else></div>
         </div>
     </div>
 </template>
@@ -162,6 +164,7 @@
                     info_show_data: [],
                     info_search_data: [],
                     info_search_data_group: [],
+                    confirm_button_flag: true,
 
                     // 预警栏
                     show_date : null,
@@ -304,17 +307,27 @@
 
                 // 弹窗
                 // 修改设备组，显示数据变更
-                change_show_data:function(num){
-                    this.info_show_data = []
-                    for( let i = 0; i < this.video_names[num].length; i++ ){
-                        if( this.video_names[num][i].name.indexOf( this.cameraName ) === -1 ){
-                            this.video_names[num][i].isshow = false
-                        }else{
-                            this.video_names[num][i].isshow = true
+                change_show_data:function(num,model="video"){
+                    if( model === "group" ){
+                        for(let i = 1; i < this.groupNames.length; i++){
+                            if( this.groupNames[i].name.indexOf( this.cameraName ) === -1 ){
+                                this.groupNames[i].isshow = false
+                            }else{
+                                this.groupNames[i].isshow = true
+                            }
                         }
-                        this.info_show_data.splice(-1,0,this.video_names[num][i])
+                    }else{
+                        // console.log(num-1,model)
+                        this.info_show_data = []
+                        for( let i = 0; i < this.video_names[num-1].length; i++ ){
+                            if( this.video_names[num-1][i].name.indexOf( this.cameraName ) === -1 ){
+                                this.video_names[num-1][i].isshow = false
+                            }else{
+                                this.video_names[num-1][i].isshow = true
+                            }
+                            this.info_show_data.splice(-1,0,this.video_names[num-1][i])
+                        }
                     }
-                    // console.log(this.info_show_data)
                 },
                 add_search_data:function(data,model){
                     if( model === "camera" ){
@@ -430,7 +443,7 @@
                             for( let item in res.data.data ){
                                 // console.log(item)
                                 let [name,uuid] = item.split(",")
-                                this.groupNames.push( {"name":name,"uuid":uuid} )
+                                this.groupNames.push( {"name":name,"uuid":uuid,"isshow":true} )
                                 this.video_names.push( res.data.data[item] )
                             }
                             for( let i = 0; i < this.video_names.length; i++ ){
@@ -546,18 +559,32 @@
                     this.change_mynav_active()
                 },
                 'choose_groupName':function(newVal,old){
-                    for( let i = 1; i < this.groupNames.length; i++ ){
+                    for( let i = 0; i < this.groupNames.length; i++ ){
                         if( this.groupNames[i].name === newVal ){
-                            this.change_show_data(i-1)
+                            if( this.groupNames[i].name === "设备组选择" ){
+                                this.change_show_data(i,"group")
+                            }else{
+                                this.change_show_data(i,"video")
+                            }
                         }
                     }
                 },
                 'cameraName':function(newVal,old){
-                    for( let i = 0; i < this.info_show_data.length; i++ ){
-                        if( this.info_show_data[i].name.indexOf( newVal ) === -1 ){
-                            this.info_show_data[i].isshow = false
-                        }else{
-                            this.info_show_data[i].isshow = true
+                    if( this.choose_groupName === "设备组选择" ){
+                        for( let i = 1; i < this.groupNames.length; i++ ){
+                            if( this.groupNames[i].name.indexOf( newVal ) === -1 ){
+                                this.groupNames[i].isshow = false
+                            }else{
+                                this.groupNames[i].isshow = true
+                            }
+                        }
+                    }else{
+                        for( let i = 0; i < this.info_show_data.length; i++ ){
+                            if( this.info_show_data[i].name.indexOf( newVal ) === -1 ){
+                                this.info_show_data[i].isshow = false
+                            }else{
+                                this.info_show_data[i].isshow = true
+                            }
                         }
                     }
                 },
@@ -570,6 +597,20 @@
                 '$store.state.dataview_data.update_flag3':function(newVal,old){
                     this.clear_search_data()
                 },
+                '$store.state.dataview1_flag':function (newval,old) {
+                    if( newval ){
+                        this.confirm_button_flag = false
+                    }else{
+                        this.confirm_button_flag = true
+                    }
+                },
+                '$store.state.dataview2_flag':function (newval,old) {
+                    if( newval ){
+                        this.confirm_button_flag = false
+                    }else{
+                        this.confirm_button_flag = true
+                    }
+                },
             },
             beforeRouteLeave(to, from, next){
                 clearInterval(this.timer_num)
@@ -578,7 +619,95 @@
     }
 </script>
 
+<style>
+    .main_ch{
+        width: 100%;
+        height: calc( 100% - 60px );
+        background-color: rgba(0,0,0,0.4);
+    }
+    .main_text{
+        width: 100%;
+        height: 100%;
+        font-size: 25px;
+        color: #03BD71;
+        text-align:center;
+    }
+    .main_loading {
+        width: 100%;
+        height: 100%;
+    }
+    .main_table{
+        display: table;
+        width: 100%;
+        height: 100%;
+    }
+    .main_cell{
+        display: table-cell;
+        vertical-align: middle;
+        width: 100%;
+        height: 100%;
+    }
+    .spinner {
+        margin: auto;
+        width: 50px;
+        height: 60px;
+        text-align: center;
+        font-size: 10px;
+    }
 
+    .spinner>div {
+        background-color: #03BD71;
+        height: 100%;
+        width: 6px;
+        display: inline-block;
+        -webkit-animation: stretchdelay 1.2s infinite ease-in-out;
+        animation: stretchdelay 1.2s infinite ease-in-out;
+    }
+
+    .spinner .rect2 {
+        -webkit-animation-delay: -1.1s;
+        animation-delay: -1.1s;
+    }
+
+    .spinner .rect3 {
+        -webkit-animation-delay: -1.0s;
+        animation-delay: -1.0s;
+    }
+
+    .spinner .rect4 {
+        -webkit-animation-delay: -0.9s;
+        animation-delay: -0.9s;
+    }
+
+    .spinner .rect5 {
+        -webkit-animation-delay: -0.8s;
+        animation-delay: -0.8s;
+    }
+
+    @-webkit-keyframes stretchdelay {
+        0%,
+        40%,
+        100% {
+            -webkit-transform: scaleY(0.4)
+        }
+        20% {
+            -webkit-transform: scaleY(1.0)
+        }
+    }
+
+    @keyframes stretchdelay {
+        0%,
+        40%,
+        100% {
+            transform: scaleY(0.4);
+            -webkit-transform: scaleY(0.4);
+        }
+        20% {
+            transform: scaleY(1.0);
+            -webkit-transform: scaleY(1.0);
+        }
+    }
+</style>
 <style scoped>
     @import "../css/historyface.css";
     

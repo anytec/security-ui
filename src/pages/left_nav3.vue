@@ -52,6 +52,8 @@
 				var params = new URLSearchParams()
 				params.append( "status", "activated" )
 				this.$ajax.post("/groupCamera/getAllCameras",params).then((res) => {
+					this.groupNames = []
+					this.video_names = []
 			        if( res.data.status === 0){
 						for( let item in res.data.data ){
 							// console.log(item)
@@ -62,6 +64,9 @@
 						for( let i = 0; i < this.video_names.length; i++ ){
 							for( let j = 0; j < this.video_names[i].length; j++ ){
 								this.video_names[i][j].uuid = j
+								if( !this.video_names[i][j].groupName ){
+									this.video_names[i][j].groupName = this.groupNames[i].name
+								}
 								// this.$store.state.facepath_search_data.allcamera_list.splice(-1,0,this.video_names[i][j])
 							}
 						}
@@ -87,8 +92,14 @@
 		},
 		mounted:function(){
 			this.get_init_data()
-			// console.log(this.show_allcamera)
 		},
+		watch:{
+        	$route(to,from){
+        		if( to.path === "/realtimem" ){
+        			this.get_init_data()
+        		}
+			},
+        },
 	}
 </script>
 

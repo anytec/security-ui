@@ -21,8 +21,8 @@
 					</select>
 				</div>
 				<div class="input_box" @keyup.enter="keyup_to_search">
-					<input class="center_input id_card" type="text" v-model="search_data.personName" placeholder="姓名" />
-					<input class="center_input id_card" type="text" v-model="search_data.idNumber" placeholder="标识编码" />
+					<input class="center_input id_card" type="text" v-model="search_data.personName" placeholder="姓名(最长20个字符)" maxlength="20"/>
+					<input class="center_input id_card" type="text" v-model="search_data.idNumber" placeholder="标识编码(最长50个字符)" maxlength="50"/>
 					<select class="center_select" v-model="search_data.gender">
 						<option selected="selected">性别/不限</option>
 						<option>男</option>
@@ -197,7 +197,7 @@
 					cameraId: "",
 					cameraName_data: "设备/不限",
 				},
-				date_value: [(new Date() - 3600 * 1000 * 24 * 1),new Date()-1],
+				date_value: [],
 				save_search_data:{
 				},
 				pickeroptions:{
@@ -257,6 +257,7 @@
 				this.isallchecked = false
 				this.init_data.pageSize = val
 				this.post_to_change_page(this.save_search_data)
+                this.$refs.table_f.scrollTop = 0;
 			},
 			handleCurrentChange:function(val) {
 				// 页面切换
@@ -264,6 +265,7 @@
 				this.isallchecked = false
 				this.init_data.pageNum = val
 				this.post_to_change_page(this.save_search_data)
+                this.$refs.table_f.scrollTop = 0;
 			},
 
 			// 选择框获取值
@@ -301,7 +303,7 @@
 			},
 			click_to_search:function(search_data){
 				if( !this.check_idNumber(search_data.idNumber) ){
-					this.warning_info("标识编码应输入字母、数字;长度小于20")
+					this.warning_info("标识编码应输入字母、数字;长度小于50")
 					return ;
 				}
 				this.isallchecked = false
@@ -314,7 +316,7 @@
 				} 
 			},
 			check_idNumber:function(idNumber){
-				let reg = /^[a-zA-Z0-9]{0,30}$/
+				let reg = /^[a-zA-Z0-9\-]{0,50}$/
 
                 return reg.test(idNumber)
 			},
@@ -532,8 +534,10 @@
 
                 if( this.date_value ){
     				// console.log(date_value)
-        			params.append("startTime",this.date_value[0] - 1)
-        			params.append("endTime",this.date_value[1] - 1)
+   					if( this.date_value.length ){
+   						params.append("startTime",this.date_value[0] - 1)
+        				params.append("endTime",this.date_value[1] - 1)
+   					}
     			}
                 params.append("pageNum",this.init_data.pageNum)
                 params.append("pageSize",this.init_data.pageSize)
@@ -632,6 +636,11 @@
 					this.click_to_search(this.search_data)
 				}
 			},
+            'search_data.personName':function(newval,old){
+                if( newval === "" ){
+                    this.click_to_search(this.search_data)
+                }
+            },
 
 			// 滚动条
 			'tabledata':function(){

@@ -4,8 +4,33 @@
 			<div class="pie_title">周人流量统计图</div>
 			<div class="pie_title"></div>
 		</div>
-		<div class="main"></div>
-	</div>
+		<!--<div class="main"></div>-->
+        <div class="main" v-if="showData.length || dayTime.length || fname.length"></div>
+        <div class="main_ch" v-else-if="$store.state.dataview1_flag">
+            <div class="main_loading">
+                <div class="main_table">
+                    <div class="main_cell">
+                        <div class="spinner">
+                            <div class="rect1"></div>
+                            <div class="rect2"></div>
+                            <div class="rect3"></div>
+                            <div class="rect4"></div>
+                            <div class="rect5"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="main_ch" v-else>
+            <div class="main_text">
+                <div class="main_table">
+                    <div class="main_cell">
+                        -- 暂无数据 --
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 
@@ -145,8 +170,10 @@
 				    series: this.series_data( data )
 				}
 
-				this.myChart = echarts.init(document.querySelector('.bar1 .main'))
-				this.myChart.setOption(option,true)
+
+                this.myChart = echarts.init(document.querySelector('.bar1 .main'))
+                this.myChart.setOption(option, true)
+
 			},
 			// 数据组装
 			series_data:function( showdata ){
@@ -166,16 +193,21 @@
 			}
 		},
 		mounted(){
-			// this.myChart = echarts.init(document.querySelector('.bar1 .main'))
-			// this.line_echart_init()
-			this.line_echart_init_test( this.showData )
-			this.my_init()
+            // this.line_echart_init_test(this.showData)
 		},
 		watch:{
-			'flag':function(newval,old){
-				// console.log(newval)
-				this.line_echart_init_test( this.showData )
-			}
+		    'flag':function (newval,old) {
+                this.$nextTick(function() {
+                    this.line_echart_init_test(this.showData)
+                    this.my_init()
+                })
+            },
+			// 'flag':function(newval,old){
+            //     // this.$nextTick(function() {
+            //     //     this.line_echart_init_test(this.showData)
+            //     //     this.my_init()
+            //     // })
+			// }
 		},
 
 	}

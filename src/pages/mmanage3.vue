@@ -11,7 +11,7 @@
 					<div class="export_btn" @click="click_to_delete">删除</div>
 					<div class="right_btn h2_right_btn m3_right_box">
 						<div class="search h2_search" @click="click_to_search(search_data)">搜索</div>
-						<input class="center_input id_card input_right" type="text" v-model="search_data.groupName" placeholder="通过设备组名称搜索"/>
+						<input class="center_input id_card input_right" type="text" v-model="search_data.groupName" placeholder="设备组名称(最长20个字符)" maxlength="20"/>
 					</div>
 				</div>
 				<div class="table_box h2_table_box">
@@ -213,11 +213,13 @@
 				// 单页面显示数量
 				this.init_data.pageSize = val
 				this.post_to_change_page(this.save_search_data)
+                this.$refs.table_f.scrollTop = 0
 			},
 			handleCurrentChange:function(val) {
 				// 页面切换
 				this.init_data.pageNum = val
 				this.post_to_change_page(this.save_search_data)
+                this.$refs.table_f.scrollTop = 0
 			},
 
 			// 输入-正则化
@@ -353,7 +355,7 @@
 						this.require_to_delete(this.delete_data)
 						this.delete_data = ""
 					}).catch(() => {
-						;
+                        this.delete_data = ""
 					})
 				}else{
 					this.warning_info("请选择删除项")

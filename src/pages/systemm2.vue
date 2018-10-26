@@ -138,13 +138,13 @@
 				value:[(new Date() - 3600 * 1000 * 24 * 1),new Date()],
 				init_data: {
 					pageNum: 1,
-					pageSize: 10,
+					pageSize: 20,
 					allnum: 0,
 				},
 				tabledata: [],
 
 				operands: [ "操作对象/全部","底库","底库人员","设备组","设备" ],
-				optypes: [ "操作类型/全部","添加","修改","删除","注册"],
+				optypes: [ "操作类型/全部","添加","修改","删除","注册","登录"],
 				search_data: {
 					operationObj: "操作对象/全部",
 					operationType: "操作类型/全部",
@@ -170,10 +170,12 @@
 			handleSizeChange:function(val) {
 				this.init_data.pageSize = val
 				this.get_init_data( this.save_search_data )
+                this.$refs.table_f.scrollTop = 0
 			},
 			handleCurrentChange:function(val) {
 				this.init_data.pageNum = val
 				this.get_init_data( this.save_search_data )
+                this.$refs.table_f.scrollTop = 0
 			},
 
 			// 输入-校验

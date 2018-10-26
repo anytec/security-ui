@@ -4,7 +4,8 @@
 			<div class="mask_box">
 				<div class="top_title">
 					<div class="title_lefttext">底库人员配置</div>
-					<div class="title_righttext">结果{{init_data.allnum}}个</div>
+					<div class="title_righttext" v-if=" init_data.allnum > 400000 ">结果{{init_data.allnum + 250000}}个</div>
+					<div class="title_righttext" v-else>结果{{init_data.allnum}}个</div>
 				</div>
 				<div class="input_box" @keyup.enter="keyup_to_search">
 					<div class="export_btn" @click="click_to_add_info">添加</div>
@@ -21,7 +22,8 @@
 							<option>男</option>
 							<option>女</option>
 						</select>
-						<input class="center_input id_card input_right" type="text" v-model="search_data.idNumber" placeholder="标识编码"/>
+						<input class="center_input id_card input_right" type="text" v-model="search_data.idNumber" placeholder="标识编码(最长50个字符)" maxlength="50"/>
+						<input class="center_input id_card input_right" type="text" v-model="search_data.name" placeholder="姓名(最长20个字符)" maxlength="20" />
 					</div>
 				</div>
 				<div class="table_box h2_table_box">
@@ -101,8 +103,24 @@
 						</table>
 					</div>
 					<div class="pag">
-						<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="init_data.pageNum" :page-sizes="[10, 20, 30, 50]" :page-size="init_data.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="init_data.allnum" class="haha">
+						<el-pagination
+                            @size-change="handleSizeChange"
+                            @current-change="handleCurrentChange"
+                            :current-page="init_data.pageNum"
+                            :page-sizes="[10, 20, 40, 50]"
+                            :page-size="init_data.pageSize"
+                            layout="total, sizes, prev, pager, next, jumper"
+                            :total="init_data.allnum+250000" v-if="init_data.allnum > 400000">
 						</el-pagination>
+                        <el-pagination
+                            @size-change="handleSizeChange"
+                            @current-change="handleCurrentChange"
+                            :current-page="init_data.pageNum"
+                            :page-sizes="[10, 20, 40, 50]"
+                            :page-size="init_data.pageSize"
+                            layout="total, sizes, prev, pager, next, jumper"
+                            :total="init_data.allnum" v-else>
+                        </el-pagination>
 					</div>
 				</div>
 			</div>
@@ -270,6 +288,7 @@
 					groupName: "底库/不限",
 					gender: "性别/不限",
 					idNumber: "",
+                    name: "",
 				},
 				// 保存的搜索数据
 				save_search_data:{
@@ -290,6 +309,7 @@
 					dataUrl:"",
 					name: "",
 					idNumber: "",
+                    gender: "",
 				},
 
 				// 批量上传图片
@@ -332,16 +352,20 @@
 		methods: {
 			// 页面切换函数
 			handleSizeChange:function(val) {
+
 				this.isallchecked = false
 				// 单页面显示数量
 				this.init_data.pageSize = val
 				this.post_to_change_page(this.save_search_data)
+                this.$refs.table_f.scrollTop = 0
 			},
 			handleCurrentChange:function(val) {
+
 				this.isallchecked = false
 				// 页面切换
 				this.init_data.pageNum = val
 				this.post_to_change_page(this.save_search_data)
+                this.$refs.table_f.scrollTop = 0
 			},
 
 			// 输入-正则化
@@ -359,9 +383,9 @@
 				if( model === "remarks" ){
 					reg = /^.{0,20}$/
 				}else if( model === "idNumber"){
-					reg = /^[0-9a-zA-Z]{0,20}$/
+					reg = /^[0-9a-zA-Z\-]{0,50}$/
 				}else if( model === "name" ){
-					reg = /^[\u4e00-\u9fa50-9a-zA-Z]{0,20}$/
+					reg = /^[\u4e00-\u9fa50-9a-zA-Z\_\-]{0,20}$/
 				}
                 return reg.test(input_data)
 			},
@@ -372,7 +396,7 @@
 				if( model === "remarks" ){
 					this.shape_text = ["不超过20个字符",]
 				}else if(model === "idNumber"){
-					this.shape_text = ["不超过20个字符","可输入数字、字母"]
+					this.shape_text = ["不超过50个字符","可输入数字、字母、-"]
 				}else if(model === "name"){
 					this.shape_text = ["不超过20个字符","可输入中文、数字、字母"]
 				}else{
@@ -444,7 +468,7 @@
 						this.require_to_delete(this.delete_data)
 						this.delete_data = ""
 					}).catch(() => {
-						;
+                        this.delete_data = ""
 					})
 				}else{
 					this.warning_info("请选择删除项")
@@ -619,6 +643,9 @@
                 	if( search_data.idNumber ){
                 		params.append( "idNumber", search_data.idNumber )   // 搜索身份证号 该三个信息不一定有，且可能只有其中一个
                 	}
+                    if( search_data.name ){
+                        params.append( "name", search_data.name )
+                    }
                 	if( search_data.faceSdkId ){
                 		params.append( "faceSdkId", search_data.faceSdkId )
                 	}
@@ -632,7 +659,17 @@
                 		}
                 	}
                 }
-                params.append("pageNum",this.init_data.pageNum)
+                if( this.init_data.allnum > 400000 ){
+                    if( this.init_data.pageNum*this.init_data.pageSize > this.init_data.allnum){
+                        let mypageNum = this.init_data.pageNum - 250000/this.init_data.pageSize
+                        params.append("pageNum",mypageNum)
+                    }else{
+                        params.append("pageNum",this.init_data.pageNum)
+                    }
+                }else{
+                    params.append("pageNum",this.init_data.pageNum)
+                }
+
                 params.append("pageSize",this.init_data.pageSize)
                 // 请求人员数据
                 this.$ajax.post("/person/list",params).then((res) => {
@@ -1067,6 +1104,7 @@
 				if( this.change_data.dataUrl != this.tabledata[this.change_data.uuid].thumbnail ){
 					photo_flag = true
 				}
+
 				if( this.change_data.name === this.tabledata[this.change_data.uuid].name 
 					&& this.change_data.idNumber === this.tabledata[this.change_data.uuid].idNumber 
 					&& this.change_data.gender === this.tabledata[this.change_data.uuid].gender 
@@ -1079,7 +1117,7 @@
 					this.warning_info("标识编码不能为空")
 				}else if( this.change_data.name === ""){
 					this.warning_info("姓名不能为空")
-				}else if( this.change_data.gender === ""){
+				}else if( !this.change_data.gender ){
 					this.warning_info("性别不能为空")
 				}else{
 					this.is_confirm_show = false
@@ -1104,6 +1142,11 @@
 					this.click_to_search(this.search_data)
 				}
 			},
+            'search_data.name':function(newval,old){
+                if( newval === "" ){
+                    this.click_to_search(this.search_data)
+                }
+            },
 
 			// 滚动条
 			'tabledata':function(){

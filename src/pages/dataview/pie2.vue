@@ -3,7 +3,32 @@
 		<div class="line_head">
 			<div class="pie_title">年龄比重图</div>
 		</div>
-		<div class="main"></div>
+        <!--<div class="main" ></div>-->
+		<div class="main" v-if="ageGroupList.length || genderData.length || AgeGengerData.length"></div>
+        <div class="main_ch" v-else-if="$store.state.dataview2_flag">
+        	<div class="main_loading">
+				<div class="main_table">
+					<div class="main_cell">
+						<div class="spinner">
+							<div class="rect1"></div>
+							<div class="rect2"></div>
+							<div class="rect3"></div>
+							<div class="rect4"></div>
+							<div class="rect5"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+        </div>
+        <div class="main_ch" v-else>
+            <div class="main_text">
+                <div class="main_table">
+                    <div class="main_cell">
+                        -- 暂无数据 --
+                    </div>
+                </div>
+            </div>
+        </div>
 	</div>
 </template>
 
@@ -212,9 +237,14 @@
 					}
 				}
 				mydata.yAxis = yAxis
-				
-				this.line_echart_init( mydata )
-				this.my_init()
+
+                this.$nextTick(function(){
+                    this.line_echart_init( mydata )
+                    this.my_init()
+                });
+
+                // this.line_echart_init( mydata )
+				// this.my_init()
 			},
 		},
 	}
